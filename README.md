@@ -1,6 +1,50 @@
 # 📦 **Shipment Price Prediction**  
 
 ![alt text](ref_images/shipment_image.jpg)
+----
+
+
+
+
+---
+
+## How to Use This Repository Locally
+
+### 1. Clone the Repository  
+Clone this repository to your local machine:
+```bash
+git clone https://github.com/rashmiKumari03/Shipment-Price-Prediction.git
+cd Shipment-Price-Prediction
+```
+
+### 2. Create a Conda Environment  
+Create a Conda environment with Python 3.7:
+```bash
+conda create -p shipment_env python==3.7 -y
+```
+
+### 3. Activate the Environment  
+Activate the newly created environment:
+```bash
+conda activate shipment_env/
+```
+
+### 4. Install Required Packages  
+Install the necessary dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Install IPykernel for Jupyter Notebook  
+Install `ipykernel` to use Jupyter Notebook:
+```bash
+pip install ipykernel
+```
+
+---
+
+This will set up the environment and install everything , need to run the project. 
+
 -------
 
 ## **Table of Contents (High-Level Overview)**
