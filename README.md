@@ -18,9 +18,9 @@ cd Shipment-Price-Prediction
 ```
 
 ### 2. Create a Conda Environment  
-Create a Conda environment with Python 3.7:
+Create a Conda environment with Python 3.9:
 ```bash
-conda create -p shipment_env python==3.7 -y
+conda create -p shipment_env python==3.9 -y
 ```
 
 ### 3. Activate the Environment  
@@ -97,7 +97,7 @@ Traditional shipment pricing models are based on predefined rates for specific d
 
 #### 🎯**Problem Statement**
 
-The supply chain analytics market is growing at an expected Compound Annual Growth Rate (CAGR) of 17.3% from 2019 to 2024, reflecting the increasing need for accurate predictive models in supply chain management. Logistics companies need the ability to predict shipment prices with a high degree of certainty in order to optimize their pricing strategies, reduce costs, and enhance service levels. This project aims to predict shipment prices based on available factors such as weight, distance, delivery deadlines, mode of transport, and other key logistics variables.
+The supply chain analytics market is growing at an expected Compound Annual Growth Rate (CAGR) of 17.3% from 2019 to 2024, reflecting the increasing need for accurate predictive models in supply chain management. Logistics companies need the ability to predict shipment prices with a high degree of certainty in order to optimize their pricing strategies, reduce costs, and enhance service levels. This project aims to predict shipment prices based on available factors such as weight, delivery deadlines, mode of transport, and other key logistics variables.
 
 #### 🎯**Approach**
 
