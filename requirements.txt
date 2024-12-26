@@ -1,10 +1,43 @@
-numpy
-pandas
-scipy
-matplotlib
-seaborn
-scikit-learn
-pymongo
-dnspython
+# Data Manipulation and Analysis
+numpy                  # Fundamental package for numerical computations and array handling.
+pandas                 # Data manipulation and analysis library, ideal for structured data.
+scipy                  # Library for scientific computing, providing additional mathematical functions.
 
-# -e .
+# Data Visualization
+matplotlib             # Plotting library for creating static, animated, and interactive visualizations.
+seaborn                # Statistical data visualization library built on matplotlib for attractive graphics.
+
+# Machine Learning
+scikit-learn           # Comprehensive machine learning library for classification, regression, and clustering.
+xgboost                # Optimized gradient boosting library for efficient model training on structured data.
+catboost               # Gradient boosting library that handles categorical features automatically.
+category-encoders      # Provides various encoding techniques for categorical variables in ML models.
+
+# Model Evaluation
+evidently              # Tool for monitoring ML models in production, assessing performance over time.
+
+# Web Development
+fastapi                # Modern web framework for building APIs quickly with Python type hints.
+uvicorn                # Fast ASGI server implementation to run FastAPI applications.
+Jinja2                 # Templating engine to render HTML dynamically in web applications.
+python-multipart       # Library to handle multipart form data, useful for file uploads in FastAPI.
+
+# Cloud Services
+boto3                  # AWS SDK for Python to interact with AWS services like S3 and EC2.
+mypy-boto3-s3         # Type stubs for Boto3's S3 service, aiding static type checking.
+
+# Database Interaction
+pymongo                # MongoDB driver for Python, used to interact with MongoDB databases.
+dnspython              # DNS toolkit for Python; useful for working with DNS records in pymongo.
+
+# Serialization
+dill                   # Serialization library that extends pickle to support more Python objects.
+
+# Configuration
+PyYAML                 # YAML parser and emitter for Python, useful for configuration files.
+
+# Miscellaneous
+from-root              # Simplifies imports from the root directory of a project.
+
+# Development
+# -e .                 # Editable install of the current package (useful during development).
