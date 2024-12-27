@@ -21,4 +21,6 @@ try:
     print(num)
     
 except Exception as e:
+    # Logging the Issue 
+    logging.info(CustomException(e,sys))
     raise CustomException(e,sys)
