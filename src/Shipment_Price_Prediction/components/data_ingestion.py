@@ -102,6 +102,9 @@ Purpose:
 This workflow ensures modular, reproducible, and efficient data ingestion for machine learning pipelines, with clear separation of raw data, cleaned data, and training/testing datasets.
 """
 
+# Creating data ingestion related constants in constant folder
+
+
 
 
 
