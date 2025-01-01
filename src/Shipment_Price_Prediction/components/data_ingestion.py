@@ -191,6 +191,7 @@ class Data_Ingestion:
             return train_set , test_set
         
         except Exception as e:
+            logging.info(CustomException(e,sys))
             raise CustomException(e,sys)
         
     

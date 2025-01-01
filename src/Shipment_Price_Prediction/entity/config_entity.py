@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from from_root import from_root
 import os
-from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
+
+# from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
+
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
 from src.Shipment_Price_Prediction.constant import * 
 

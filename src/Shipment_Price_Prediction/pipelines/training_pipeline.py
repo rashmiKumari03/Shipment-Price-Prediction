@@ -1,7 +1,6 @@
 import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
-
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts)
 from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config)
@@ -13,6 +12,7 @@ from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingesti
 class TrainPipeline:
     def __init__(self):
         self.data_ingestion_config = Data_Ingestion_Config()
+        self.mongo_op = MongoDB_Operation()
         
     
     # The method is used to start the data ingestion
@@ -29,6 +29,7 @@ class TrainPipeline:
             return data_ingestion_artifact
         
         except Exception as e:
+            logging.info(CustomException(e,sys))
             raise CustomException(e,sys)
         
         

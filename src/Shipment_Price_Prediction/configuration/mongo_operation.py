@@ -105,7 +105,7 @@ class MongoDB_Operation:
         
         
    
-   def insert_dataframe_as_record(self,dataframe,db_name,collection_name) -> None:
+    def insert_dataframe_as_record(self,dataframe,db_name,collection_name) -> None :
        """
        Method Name : insert_dataframe_as_record 
        
@@ -132,6 +132,7 @@ class MongoDB_Operation:
            logging.info("Exited the insert_dataframe_as_record method of MongoDB_Operation class")
            
        except Exception as e:
+           logging.info(CustomException(e,sys))
            raise CustomException(e,sys)
        
        
