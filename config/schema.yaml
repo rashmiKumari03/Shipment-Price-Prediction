@@ -1,0 +1,86 @@
+columns:
+  - ID: string
+  - Project Code: string
+  - PQ #: string
+  - PO / SO #: string
+  - ASN/DN #: string
+  - Country: string
+  - Managed By: string
+  - Fulfill Via: string
+  - Vendor INCO Term: string
+  - Shipment Mode: string
+  - PQ First Sent to Client Date: date
+  - PO Sent to Vendor Date: date
+  - Scheduled Delivery Date: date
+  - Delivered to Client Date: date
+  - Delivery Recorded Date: date
+  - Product Group: string
+  - Sub Classification: string
+  - Vendor: string
+  - Item Description: string
+  - Molecule/Test Type: string
+  - Brand: string
+  - Dosage: string
+  - Dosage Form: string
+  - Unit of Measure (Per Pack): string
+  - Line Item Quantity: integer
+  - Line Item Value: float          
+  - Pack Price: float
+  - Unit Price: float
+  - Manufacturing Site: string
+  - First Line Designation: string
+  - Weight (Kilograms): float
+  - Freight Cost (USD): float
+  - Line Item Insurance (USD): float
+  - Shipment Price: float
+
+numerical_columns:
+  - Line Item Quantity
+  - Line Item Value
+  - Pack Price
+  - Unit Price
+  - Weight (Kilograms)
+  - Freight Cost (USD)
+  - Line Item Insurance (USD)
+  - Shipment Price
+
+categorical_columns:
+  - Country
+  - Managed By
+  - Fulfill Via
+  - Vendor INCO Term
+  - Shipment Mode
+  - Product Group
+  - Sub Classification
+  - Vendor
+  - Molecule/Test Type
+  - Brand
+  - Dosage
+  - Dosage Form
+  - Unit of Measure (Per Pack)
+  - Manufacturing Site
+  - First Line Designation
+
+one_hot_columns:
+  - Country
+  - Shipment Mode
+  - Vendor INCO Term
+  - Product Group
+  - Sub Classification
+  - First Line Designation
+
+drop_columns:
+  - ID
+  - Project Code
+  - PQ #
+  - PO / SO #
+  - ASN/DN #
+  - PQ First Sent to Client Date
+  - PO Sent to Vendor Date
+  - Item Description
+
+binary_columns:
+  - First Line Designation
+
+target_column:
+  - Shipment Price
