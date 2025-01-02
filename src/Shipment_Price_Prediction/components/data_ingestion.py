@@ -130,17 +130,16 @@ class Data_Ingestion:
             
             # Getting collection from MongoDB database
             df = self.mongo_op.get_collection_as_dataframe(self.data_ingestion_config.DB_NAME,
-                                                            self.data_ingestion_config.COLLECTION_NAME)
-            logging.info("Got the dataframe from mongodb")
+                                                           self.data_ingestion_config.COLLECTION_NAME)
+            logging.info("Data fetched successfully from MongoDB.")
             logging.info("Exited the get_data_from_mongodb method of Data_Ingestion class")
             
             return df
         
         except Exception as e :
-            raise CustomException(e,sys)
+            raise CustomException(f"Error in fetching data from MongoDB: {str(e)}", sys)
         
-        
-        
+       
     # This method will split the data
     def split_data_as_train_test(self,df : DataFrame) -> Tuple[DataFrame,DataFrame]:
         
@@ -172,27 +171,21 @@ class Data_Ingestion:
             
             
             # Saving train.csv file to train directory
-            train_set.to_csv(self.data_ingestion_config.TRAIN_DATA_FILE_PATH,
-                             index = False,
-                             header = True)
+            train_set.to_csv(self.data_ingestion_config.TRAIN_DATA_FILE_PATH,index = False,header = True)
             
             # Saving test.csv file to test directory
-            test_set.to_csv(self.data_ingestion_config.TEST_DATA_FILE_PATH,
-                            Index = False,
-                            header = True)
+            test_set.to_csv(self.data_ingestion_config.TEST_DATA_FILE_PATH,index = False,header = True)
             
             logging.info("Converted Train DataFrame and Test DataFrame into csv")
-            logging.info(f"Saved {os.path.basename(self.data_ingestion_config.TRAIN_DATA_FILE_PATH)},\
-                {os.path.basename(self.data_ingestion_config.TEST_DATA_FILE_PATH)} in\
-                {os.path.basename(self.data_ingestion_config.DATA_INGESTION_ARTIFACTS_DIR)}.")
+            logging.info(f"Saved {os.path.basename(self.data_ingestion_config.TRAIN_DATA_FILE_PATH)},{os.path.basename(self.data_ingestion_config.TEST_DATA_FILE_PATH)} in {os.path.basename(self.data_ingestion_config.DATA_INGESTION_ARTIFACTS_DIR)}.")
             
             logging.info("Exited split_data_as_train_test method of Data_Ingestion class")
             
             return train_set , test_set
-        
+  
         except Exception as e:
-            logging.info(CustomException(e,sys))
-            raise CustomException(e,sys)
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
         
     
     # This method initiates data ingestion
@@ -210,16 +203,16 @@ class Data_Ingestion:
         
         try : 
             # Getting data from MongoDB
-            df = self.get_data_from_mongodb()
+            raw_data = self.get_data_from_mongodb()
             
-            #Dropping the unneccessary columns from dataframe
-            df1 = df.drop(self.data_ingestion_config.DROP_COLS,axis=1)
-            df1 = df1.dropna()
+            #Dropping the unneccessary columns and handle missing values
+            cleaned_data = raw_data.drop(columns=self.data_ingestion_config.DROP_COLS , errors='ignore')
+            cleaned_data.dropna(inplace=True)
             logging.info("Got the data from mongodb")
             
             
             # Splitting the data as train set and test set
-            self.split_data_as_train_test(df1)
+            self.split_data_as_train_test(cleaned_data)
             logging.info("Exited initiate_data_ingestion method of Data_Ingestion class")
             
             # Saving data ingestion artifacts
@@ -227,12 +220,13 @@ class Data_Ingestion:
                 train_data_file_path = self.data_ingestion_config.TRAIN_DATA_FILE_PATH,
                 test_data_file_path = self.data_ingestion_config.TEST_DATA_FILE_PATH
                 )
-            
+            logging.info("Data Ingestion process completed successfully.")
             return data_ingestion_artifacts
         
         
         except Exception as e:
-            raise CustomException(e,sys)
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
         
         
         

@@ -39,7 +39,7 @@ class MongoDB_Operation:
             return db
             
         except Exception as e:
-            raise CustomException(e,sys)
+            raise CustomException(f"Error in get_database: {str(e)}", sys)
         
         
     """
@@ -68,7 +68,7 @@ class MongoDB_Operation:
             return collection
         
         except Exception as e :
-            raise CustomException(e,sys)
+            raise CustomException(f"Error in get_collection: {str(e)}", sys)
         
         
     def get_collection_as_dataframe(self,db_name,collection_name) -> DataFrame:
@@ -101,7 +101,7 @@ class MongoDB_Operation:
             return df
         
         except Exception as e:
-            raise CustomException(e,sys)
+            raise CustomException(f"Error in get_collection_as_dataframe: {str(e)}", sys)
         
         
    
@@ -132,8 +132,8 @@ class MongoDB_Operation:
            logging.info("Exited the insert_dataframe_as_record method of MongoDB_Operation class")
            
        except Exception as e:
-           logging.info(CustomException(e,sys))
-           raise CustomException(e,sys)
+          raise  CustomException(f"Error in insert_dataframe_as_record: {str(e)}", sys)
+    
        
        
            

@@ -29,21 +29,21 @@ class TrainPipeline:
             return data_ingestion_artifact
         
         except Exception as e:
-            logging.info(CustomException(e,sys))
-            raise CustomException(e,sys)
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
         
         
         
-# To start this data ingestion we need to make another method call run_pipeline
-# This method is used to start the training pipeline
-def run_pipeline(self) -> None:
-    logging.info("Entered the run_pipeline method of Training class")
-    try:
-        data_ingestion_artifact = self.start_data_ingestion()
-            
-    except Exception as e:
-        raise CustomException(e,sys)
-    
-    
-# Lets start the data ingestion pipeline.. for that we can go to trail_app.py 
+    # To start this data ingestion we need to make another method call run_pipeline
+    # This method is used to start the training pipeline
+    def run_pipeline(self) -> None:
+        logging.info("Entered the run_pipeline method of Training class")
+        try:
+            data_ingestion_artifact = self.start_data_ingestion()
                 
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+        
+    # Lets start the data ingestion pipeline.. for that we can go to trial_runner_app.py 

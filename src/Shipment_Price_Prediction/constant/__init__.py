@@ -11,7 +11,7 @@ from from_root.root import from_root
 TIMESTAMP: str = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 
 # Configuration file paths
-MONGO_CONFIG_FILE = "config/model.yaml"  # Path to the MongoDB configuration file
+MODEL_CONFIG_FILE = "config/model.yaml"  # Path to the MongoDB configuration file
 SCHEMA_FILE_PATH = "config/schema.yaml"  # Path to the schema validation file
 
 # Database configuration

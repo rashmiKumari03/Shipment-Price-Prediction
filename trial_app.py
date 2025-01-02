@@ -22,5 +22,5 @@ try:
     
 except Exception as e:
     # Logging the Issue 
-    logging.info(CustomException(e,sys))
-    raise CustomException(e,sys)
+    logging.info(CustomException(str(e),sys))
+    raise CustomException(str(e),sys)
