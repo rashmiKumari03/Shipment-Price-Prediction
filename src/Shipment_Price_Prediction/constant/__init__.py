@@ -47,3 +47,8 @@ DATA_INGESTION_TEST_FILE_NAME =  "test.csv"
 
 # Now creating the configuration ---> Go to entity folder and there --> config_entity.py
 
+
+# Data Validation related Constants:
+
+DATA_VALIDATION_ARTIFACT_DIR = "Data_Validation_Artifacts"
+DATA_DRIFT_FILE_NAME = "Data_Drift_Report.yaml"

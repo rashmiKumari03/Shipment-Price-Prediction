@@ -7,10 +7,20 @@ import os
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
 from src.Shipment_Price_Prediction.constant import * 
 
+
+# class Data_Ingestion_Config: Configuration class for the data ingestion process.
+
 @dataclass
 class Data_Ingestion_Config:
     
     def __init__(self):
+        
+        """
+        Configuration class for the data ingestion process.
+        This class sets up paths and parameters required for ingesting data.
+        """
+        
+    
         # This will help us use common functions (like reading a YAML file) later.
         self.UTILS = MainUtils()
 
@@ -59,3 +69,53 @@ class Data_Ingestion_Config:
         )
         
 # After this all , now creating artifacts_entity.py...
+
+
+
+# class Data_Validation_Config : Configuration class for the data validation process.
+
+@dataclass
+class Data_Validation_Config:
+    """
+    Configuration class for the data validation process.
+    This class provides paths and settings required for validating the data.
+    """
+
+    def __init__(self):
+        # Initialize utility class for common operations
+        self.UTILS = MainUtils()
+
+        # Read the schema configuration from a YAML file
+        self.SCHEMA_CONFIG = self.UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
+
+        # Database and collection names for validation purposes
+        self.DB_NAME = DB_NAME  # Database name
+        self.COLLECTION_NAME = COLLECTION_NAME  # Collection name
+
+        # Columns to drop based on the schema configuration
+        self.DROP_COLS = list(self.SCHEMA_CONFIG["drop_columns"])
+
+        # Directory to store artifacts generated during data validation
+        self.DATA_INGESTION_ARTIFACTS_DIR: str = os.path.join(
+            from_root(), ARTIFACTS_DIR, DATA_INGESTION_ARTIFACTS_DIR
+        )
+
+        # Subdirectories for training and testing data validation
+        self.TRAIN_DATA_ARTIFACTS_FILE_DIR: str = os.path.join(
+            self.DATA_INGESTION_ARTIFACTS_DIR, DATA_INGESTION_TRAIN_DIR
+        )
+        self.TEST_DATA_ARTIFACTS_FILE_DIR: str = os.path.join(
+            self.DATA_INGESTION_ARTIFACTS_DIR, DATA_INGESTION_TEST_DIR
+        )
+
+        # File paths for training and testing datasets after validation
+        self.TRAIN_DATA_FILE_PATH: str = os.path.join(
+            self.TRAIN_DATA_ARTIFACTS_FILE_DIR, DATA_INGESTION_TRAIN_FILE_NAME
+        )
+        self.TEST_DATA_FILE_PATH: str = os.path.join(
+            self.TEST_DATA_ARTIFACTS_FILE_DIR, DATA_INGESTION_TEST_FILE_NAME
+        )
+        
+        
+        
+        
