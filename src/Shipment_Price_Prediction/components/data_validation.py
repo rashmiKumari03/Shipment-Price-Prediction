@@ -145,6 +145,25 @@ class Data_Validation:
         
         """
         logging.info("Entered validate_is_numerical_column_exists method of Data_Validation class")
+        try :
+            logging.info("Validating dataset schema for numericl datatypes.")
+            
+            # Validating numerical columns with Train DataFrame
+            train_num_datatype_status = self.is_numerical_column_exists(self.train_set)
+            logging.info("Validated dataset schema for numerical datatypes for trainset.")
+            
+            # Validating numerical columns with Test DataFrame.
+            test_num_datatype_status = self.is_numerical_column_exists(self.test_set)
+            logging.info("Validated dataset schema for numerical datatype for testset.")
+            
+            logging.info("Exited validate_is_numerical_column_exists method of Data_Validation class.")
+            
+            
+            return train_num_datatype_status , test_num_datatype_status
         
-                   
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+                         
 
