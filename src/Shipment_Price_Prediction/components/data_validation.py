@@ -221,7 +221,7 @@ class Data_Validation:
             
             # Generating the data drift report in JSON format
             report = data_drift_profile.json()
-            json_report = json_loads(report)
+            json_report = json.loads(report)
             
             # Saving the JSON report to the artifacts directory for further analysis
             data_drift_file_path = self.data_validation_config.DATA_DRIFT_FILE_PATH
@@ -266,7 +266,7 @@ class Data_Validation:
             
             # Creating the directory to save data validation artifacts
             os.makedirs(self.data_validation_config.DATA_INGESTION_ARTIFACTS_DIR, exist_ok=True)
-            logging.info(f"Created artifacts directory for {os.path.basename(self.data_validation_config.DATA_VALIDATION_ARTIFACTS)}")
+            logging.info(f"Created artifacts directory for {os.path.basename(self.data_validation_config.DATA_DRIFT_FILE_PATH)}")
             
             # Checking for dataset drift between the train and test datasets
             drift = self.detect_dataset_drift(self.train_set, self.test_set)
@@ -301,11 +301,11 @@ class Data_Validation:
             
             # Saving data validation artifacts with the drift status and report path
             data_validation_artifacts = Data_Validation_Artifacts(
-                data_drift_file_path=self.data_validation_config.DATA_DRIFT_FILE_PATH,
+                data_drift_file_path= self.data_validation_config.DATA_DRIFT_FILE_PATH,
                 validation_status=drift_status
             )
             return data_validation_artifacts
-        
+
         except Exception as e:
             # Logging and raising custom exceptions for error tracking
             logging.info(CustomException(str(e), sys))

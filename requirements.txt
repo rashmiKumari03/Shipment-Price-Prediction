@@ -14,7 +14,7 @@ catboost               # Gradient boosting library that handles categorical feat
 category-encoders      # Provides various encoding techniques for categorical variables in ML models.
 
 # Model Evaluation
-evidently              # Tool for monitoring ML models in production, assessing performance over time.
+evidently==0.1.45.dev0          # Tool for monitoring ML models in production, assessing performance over time.
 
 # Web Development
 fastapi                # Modern web framework for building APIs quickly with Python type hints.
