@@ -139,7 +139,7 @@ class Data_Validation:
         """
         Method Name : validate_is_numerical_column_exists
         
-        Description : This method validates wheather numerical columns exists for Train DataFrame and 
+        Description : This method validates wheather numerical columns exists for Train DataFrame and Test DataFrame. 
         
         Output      : True or False 
         
@@ -165,5 +165,42 @@ class Data_Validation:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
         
+        
+    
+    def validate_is_categorical_column_exists(self) -> Tuple[bool,bool]:
+        """
+        Method Name : validate_is_categorical_column_exists
+        
+        Description : This method validates wheather categorical columns exists for Train Dataframe and Test DataFrame. 
+        
+        Output      : True or False
+        
+        """
+        logging.info("Entered validate_is_categorical_columns_exists method of Data_Validation class.")
+        try:
+            logging.info("Validating dataset schema for categorical datatype")
+            
+            # Validating categorical columns with Train DataFrame
+            train_cat_datatype_status = self.is_categorical_column_exists(self.train_set)
+            logging.info("Validated dataset schema for categorical datatype for trainset.")
+            
+            # Validating categorical columns with Test DataFrame
+            test_cat_datatype_status = self.is_categorical_column_exists(self.test_set)
+            logging.info("Validated dataset schema for categorical datatype for testset.")
+            
+            logging.info("Exited validate_is_categorical_column_exists method of Data_Validation class.")
+            
+            return train_cat_datatype_status , test_cat_datatype_status
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+        
+        
+            
+            
+            
+                    
                          
 
