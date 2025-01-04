@@ -198,6 +198,65 @@ class Data_Validation:
         
         
         
+        
+    def detect_dataset_drift(self, reference : DataFrame , production : DataFrame , get_ratio : bool = False) -> Union[bool , float]:
+        """ 
+        Method Name : detect_dataset_drift
+        
+        Description : This method detects wheather data drift is present or not.
+        
+        Output      : Report in json format and drift status True or False.
+        
+        """
+        try:
+            data_drift_profile = Profile(sections = [DataDriftProfileSection()])
+            data_drift_profile.calculate(reference,production)
+            
+            # Getting data drift report in json format.
+            report = data_drift_profile.json()
+            json_report = json_loads(report)
+            
+            # Saving the json report in artifacts directory
+            data_drift_file_path = self.data_validation_config.DATA_DRIFT_FILE_PATH
+            self.data_validation_config.UTILS.write_json_to_yaml_file(json_report , data_drift_file_path) 
+            
+            n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
+            n_drifted_features = json_report["data_drift"]["data"]["metrics"]["n_drifted"]
+            
+            if get_ratio:
+                return n_drifted_features / n_features  # Calculating the drift ratio
+            else :
+                return json_report["data_drift"]["data"]["metrics"]["dataset_drift"] 
+            
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys) 
+        
+         
+    def initiate_data_validation(self) -> Data_Validation_Artifacts:
+        """ 
+        Method Name : initiate_data_validation
+        
+        Description : This method initiates data validation.
+        
+        Output      : Data validation artifacts
+        
+        """
+        logging.info("Entered initiate_data_validation method of Data_Validation class")
+        try:
+            
+            # Reading the Train and Test data from Data Ingestion Artifacts folders.
+            self.train_set = pd.read_csv(self.data_ingestion_artifacts.train_data_file_path)
+            self.test_set = pd.read_csv(self.data_ingestion_artifacts.test_data_file_path)
+            
+            logging.info("Initiated data validation for the dataset")
+            
+            
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+        
             
             
             
