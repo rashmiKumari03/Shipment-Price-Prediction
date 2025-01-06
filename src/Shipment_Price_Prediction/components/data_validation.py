@@ -25,6 +25,7 @@ class Data_Validation:
         self.data_ingestion_artifacts = data_ingestion_artifacts
         self.data_validation_config = data_validation_config
         
+        
     # This method is used to validate schema columns
     def validate_schema_columns(self,df:DataFrame) -> bool :
         """
@@ -224,12 +225,12 @@ class Data_Validation:
             json_report = json.loads(report)
             
             # Saving the JSON report to the artifacts directory for further analysis
-            data_drift_file_path = self.data_validation_config.DATA_INGESTION_ARTIFACTS_DIR
+            data_drift_file_path = self.data_validation_config.DATA_DRIFT_FILE_PATH
             self.data_validation_config.UTILS.write_json_to_yaml_file(json_report, data_drift_file_path)
             
             # Extracting the number of features and the number of drifted features from the JSON report
             n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
-            n_drifted_features = json_report["data_drift"]["data"]["metrics"]["n_drifted"]
+            n_drifted_features = json_report["data_drift"]["data"]["metrics"]
             
             if get_ratio:
                 # Returning the ratio of drifted features to the total number of features
@@ -286,13 +287,13 @@ class Data_Validation:
             # Combining all validation results to determine overall drift status
             drift_status = None  # Initial drift status is None
             if (
-                schema_train_cols_status is True and
-                schema_test_cols_status is True and
-                schema_train_num_cols_status is True and
-                schema_test_num_cols_status is True and
-                schema_train_cat_cols_status is True and
-                schema_test_cat_cols_status is True and
-                drift is False
+                schema_train_cols_status is True 
+                and schema_test_cols_status is True
+                and schema_train_num_cols_status is True 
+                and schema_test_num_cols_status is True 
+                and schema_train_cat_cols_status is True 
+                and schema_test_cat_cols_status is True 
+                and drift is False
             ):
                 logging.info("Dataset schema validation completed successfully")
                 drift_status = True  # All checks passed
