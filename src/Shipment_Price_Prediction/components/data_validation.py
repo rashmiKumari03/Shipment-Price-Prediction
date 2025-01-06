@@ -224,7 +224,7 @@ class Data_Validation:
             json_report = json.loads(report)
             
             # Saving the JSON report to the artifacts directory for further analysis
-            data_drift_file_path = self.data_validation_config.DATA_DRIFT_FILE_PATH
+            data_drift_file_path = self.data_validation_config.DATA_INGESTION_ARTIFACTS_DIR
             self.data_validation_config.UTILS.write_json_to_yaml_file(json_report, data_drift_file_path)
             
             # Extracting the number of features and the number of drifted features from the JSON report
@@ -265,8 +265,8 @@ class Data_Validation:
             logging.info("Initiated data validation for the dataset")
             
             # Creating the directory to save data validation artifacts
-            os.makedirs(self.data_validation_config.DATA_INGESTION_ARTIFACTS_DIR, exist_ok=True)
-            logging.info(f"Created artifacts directory for {os.path.basename(self.data_validation_config.DATA_DRIFT_FILE_PATH)}")
+            os.makedirs(self.data_validation_config.DATA_VALIDATION_ARTIFACTS_DIR, exist_ok=True)
+            logging.info(f"Created artifacts directory for {os.path.basename(self.data_validation_config.DATA_VALIDATION_ARTIFACTS_DIR)}")
             
             # Checking for dataset drift between the train and test datasets
             drift = self.detect_dataset_drift(self.train_set, self.test_set)
