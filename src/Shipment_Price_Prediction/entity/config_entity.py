@@ -90,17 +90,10 @@ class Data_Validation_Config:
         self.SCHEMA_CONFIG = self.UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
 
     
-        self.DATA_INGESTION_ARTIFACTS_DIR: str = os.path.join(
-            from_root(), ARTIFACTS_DIR, DATA_INGESTION_ARTIFACTS_DIR
-        )
+        self.DATA_INGESTION_ARTIFACTS_DIR: str = os.path.join(from_root(), ARTIFACTS_DIR, DATA_INGESTION_ARTIFACTS_DIR)
+        self.DATA_VALIDATION_ARTIFACTS_DIR: str = os.path.join(from_root(),ARTIFACTS_DIR , DATA_VALIDATION_ARTIFACT_DIR)
+        self.DATA_DRIFT_FILE_PATH: str = os.path.join(self.DATA_VALIDATION_ARTIFACTS_DIR, DATA_DRIFT_FILE_NAME)
         
-        self.DATA_VALIDATION_ARTIFACTS_DIR: str = os.path.join(
-            from_root(),ARTIFACTS_DIR , DATA_VALIDATION_ARTIFACT_DIR
-        )
-        
-        self.DATA_DRIFT_FILE_PATH: str = os.path.join(
-            self.DATA_VALIDATION_ARTIFACTS_DIR, DATA_DRIFT_FILE_NAME
-        )
         
         
         
