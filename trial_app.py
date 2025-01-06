@@ -1,6 +1,8 @@
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 
 
 # Example to cross check wheather logger working or not?
