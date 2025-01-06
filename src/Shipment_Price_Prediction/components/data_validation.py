@@ -230,7 +230,7 @@ class Data_Validation:
             
             # Extracting the number of features and the number of drifted features from the JSON report
             n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
-            n_drifted_features = json_report["data_drift"]["data"]["metrics"]
+            n_drifted_features = json_report["data_drift"]["data"]["metrics"]["n_drifted_features"]
             
             if get_ratio:
                 # Returning the ratio of drifted features to the total number of features
@@ -273,15 +273,15 @@ class Data_Validation:
             drift = self.detect_dataset_drift(self.train_set, self.test_set)
             
             # Validating schema columns for train and test datasets
-            schema_train_cols_status, schema_test_cols_status = self.validate_dataset_schema_columns()
+            (schema_train_cols_status, schema_test_cols_status) = self.validate_dataset_schema_columns()
             logging.info(f"Schema train columns status is {schema_train_cols_status} and schema test columns status is {schema_test_cols_status}")
             
             # Validating that numerical columns are present in train and test datasets
-            schema_train_num_cols_status, schema_test_num_cols_status = self.validate_is_numerical_column_exists()
+            (schema_train_num_cols_status, schema_test_num_cols_status) = self.validate_is_numerical_column_exists()
             logging.info(f"Schema train numerical columns status is {schema_train_num_cols_status} and schema test columns status is {schema_test_num_cols_status}")
             
             # Validating that categorical columns are present in train and test datasets
-            schema_train_cat_cols_status, schema_test_cat_cols_status = self.validate_is_categorical_column_exists()
+            (schema_train_cat_cols_status, schema_test_cat_cols_status) = self.validate_is_categorical_column_exists()
             logging.info(f"Schema train categorical columns status is {schema_train_cat_cols_status} and schema test categorical columns status is {schema_test_cat_cols_status}")
             
             # Combining all validation results to determine overall drift status
