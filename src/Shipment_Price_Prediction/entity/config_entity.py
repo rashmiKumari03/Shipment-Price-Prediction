@@ -85,36 +85,24 @@ class Data_Validation_Config:
         # Initialize utility class for common operations
         self.UTILS = MainUtils()
 
-        # Read the schema configuration from a YAML file
+    
+        # This class returns all the necessary paths required in Data Validation 
         self.SCHEMA_CONFIG = self.UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
 
-        # Database and collection names for validation purposes
-        self.DB_NAME = DB_NAME  # Database name
-        self.COLLECTION_NAME = COLLECTION_NAME  # Collection name
-
-        # Columns to drop based on the schema configuration
-        self.DROP_COLS = list(self.SCHEMA_CONFIG["drop_columns"])
-
-        # Directory to store artifacts generated during data validation
+    
         self.DATA_INGESTION_ARTIFACTS_DIR: str = os.path.join(
             from_root(), ARTIFACTS_DIR, DATA_INGESTION_ARTIFACTS_DIR
         )
-
-        # Subdirectories for training and testing data validation
-        self.TRAIN_DATA_ARTIFACTS_FILE_DIR: str = os.path.join(
-            self.DATA_INGESTION_ARTIFACTS_DIR, DATA_INGESTION_TRAIN_DIR
+        
+        self.DATA_VALIDATION_ARTIFACTS_DIR: str = os.path.join(
+            from_root(),ARTIFACTS_DIR , DATA_VALIDATION_ARTIFACT_DIR
         )
-        self.TEST_DATA_ARTIFACTS_FILE_DIR: str = os.path.join(
-            self.DATA_INGESTION_ARTIFACTS_DIR, DATA_INGESTION_TEST_DIR
+        
+        self.DATA_DRIFT_FILE_PATH: str = os.path.join(
+            self.DATA_VALIDATION_ARTIFACTS_DIR, DATA_DRIFT_FILE_NAME
         )
-
-        # File paths for training and testing datasets after validation
-        self.TRAIN_DATA_FILE_PATH: str = os.path.join(
-            self.TRAIN_DATA_ARTIFACTS_FILE_DIR, DATA_INGESTION_TRAIN_FILE_NAME
-        )
-        self.TEST_DATA_FILE_PATH: str = os.path.join(
-            self.TEST_DATA_ARTIFACTS_FILE_DIR, DATA_INGESTION_TEST_FILE_NAME
-        )
+        
+        
         
         
         
