@@ -1,7 +1,7 @@
 # Data Manipulation and Analysis
 numpy                  # Fundamental package for numerical computations and array handling.
 pandas                 # Data manipulation and analysis library, ideal for structured data.
-scipy                  # Library for scientific computing, providing additional mathematical functions.
+scipy == 1.6.0         # Library for scientific computing, providing additional mathematical functions.
 
 # Data Visualization
 matplotlib             # Plotting library for creating static, animated, and interactive visualizations.
