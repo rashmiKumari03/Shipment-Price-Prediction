@@ -42,3 +42,33 @@ class Data_Validation_Artifacts:
     """
     data_drift_file_path: str
     validation_status: bool
+    
+    
+# Data Transformation Artifacts
+
+@dataclass
+class Data_Transformation_Artifacts:
+    """
+    This class holds the file paths and information generated during the data transformation process.
+
+    Attributes:
+    - transformed_object_file_path (str): The path to the file that contains the transformation object (e.g., scaler, encoder) 
+      used during data preprocessing. This object is used to apply consistent transformations to both training and testing data, 
+      as well as to any new data during inference.
+    - transformed_train_file_path (str): The path to the file containing the transformed training data. 
+      This data has been preprocessed and is ready to be used for model training.
+    - transformed_test_file_path (str): The path to the file containing the transformed testing data. 
+      This data has been preprocessed and is ready to be used for evaluating the model.
+
+    Purpose:
+    The data transformation process ensures that the raw data is converted into a format suitable for machine learning models. 
+    This includes operations like scaling, encoding categorical features, and handling missing values. 
+    This class stores the paths to the artifacts generated during this process, which are essential for maintaining 
+    consistency between training and inference.
+    """
+    transformed_object_file_path: str
+    transformed_train_file_path: str
+    transformed_test_file_path: str
+
+    
+  
