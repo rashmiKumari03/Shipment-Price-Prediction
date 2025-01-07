@@ -52,3 +52,12 @@ DATA_INGESTION_TEST_FILE_NAME =  "test.csv"
 
 DATA_VALIDATION_ARTIFACT_DIR = "Data_Validation_Artifacts"
 DATA_DRIFT_FILE_NAME = "Data_Drift_Report.yaml"
+
+
+# Data Transformation related Constants:
+DATA_TRANSFORMATION_ARTIFACTS_DIR = "Data_Transformation_Artifacts"
+TRANSFORMED_TRAIN_DATA_DIR = "Transformed_Train"
+TRANSFORMED_TEST_DATA_DIR = "Transformed_Test"
+TRANSFORMED_TRAIN_DATA_FILE_NAME = "Transformed_train_data.npz"
+TRANSFORMED_TEST_DATA_FILE_NAME = "Transformed_test_data.npz"
+PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"

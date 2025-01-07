@@ -13,3 +13,6 @@ from category_encoders.binary import BinaryEncoder
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts,Data_Validation_Artifacts,Data_Transformation_Artifacts)
 
+# Initialize the constant 
+# Then go to config_entity and artifacts_entity to code for data validation.
+
