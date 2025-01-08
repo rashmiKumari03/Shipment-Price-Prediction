@@ -32,7 +32,7 @@ columns:
   - Weight (Kilograms): float
   - Freight Cost (USD): float
   - Line Item Insurance (USD): float
-  - Shipment Price: float
+
 
 numerical_columns:
   - Line Item Quantity
@@ -42,7 +42,6 @@ numerical_columns:
   - Weight (Kilograms)
   - Freight Cost (USD)
   - Line Item Insurance (USD)
-  - Shipment Price
 
 categorical_columns:
   - Country
