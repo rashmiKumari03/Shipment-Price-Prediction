@@ -173,6 +173,50 @@ class Data_Transformation:
             logging.info("Used the preprocessor object to transform the test features")
             
             
+            # Concatenating input feature array and target feature array of Train Dataset.
+            train_arr = np.c_[input_feature_train_arr,np.array(target_feature_train_df)]
+            logging.info("Created Train array")
+            
+            # Creating the directory for transformed traind dataset array and saving the array.
+            os.makedirs(self.data_transformation_config.TRANSFORMED_TRAIN_DATA_DIR, exist_ok= True)
+            
+            transformed_train_file = self.data_transformation_config.UTILS.save_numpy_array_data(self.data_transformation_config.TRANSFORMED_TRAIN_FILE_PATH,train_arr)
+            logging.info(f"Saved train array to {os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS)}")
+            
+            # Concatenating input feature array and target feature array of Test dataset
+            test_arr = np.c_[input_features_test_arr,np.array(target_feature_test_df)]
+            logging.info("Created Test array")
+            
+            # Creating directory for transformed test dataset array and saving the array
+            os.makedirs(self.data_transformation_config.TRANSFORMED_TEST_DATA_DIR,exist_ok= True)
+            
+            transformed_test_file = self.data_transformation_config.UTILS.save_numpy_array_data(self.data_transformation_config.TRANSFORMED_TEST_FILE_PATH,test_arr)
+            logging.info(f"Saved test array to {os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS)}")
+            
+            # Saving the preprocessor object to data transformation artifacts directory.
+            preprocessor_obj_file = self.data_transformation_config.UTILS.save_object(self.data_transformation_config.PREPROCESSOR_FILE_PATH,preprocessor)
+            logging.info("Saved the preprocessor object in Data Transformation Artifacts Directory")
+            
+            logging.info("Exited initiate_data_transformation method of Data_Transformation class")
+            
+            
+            # Saving the data transformation artifacts:
+            data_transformation_artifacts = Data_Transformation_Artifacts(
+                transformed_object_file_path= preprocessor_obj_file,
+                transformed_train_file_path= transformed_train_file,
+                transformed_test_file = transformed_test_file
+            )
+            
+            return data_transformation_artifacts
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+            
+    
+
+                
+# To run this we need to call this class in training_pipeline..
             
             
          
