@@ -2,11 +2,12 @@ import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts)
+from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config)
 
 from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingestion
 from src.Shipment_Price_Prediction.components.data_validation import Data_Validation
+from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 
 
 # Initializing the Training Pipeline.
@@ -16,6 +17,7 @@ class TrainPipeline:
         self.mongo_op = MongoDB_Operation()
         
         self.data_validation_config = Data_Validation_Config()
+        self.data_transformation_config = Data_Transformation_Config()
         
     
     # The method is used to start the data ingestion
@@ -60,6 +62,30 @@ class TrainPipeline:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
         
+        
+        
+        
+        
+        
+    # This method is used to start the data transformation
+    def start_data_transformation(self,data_ingestion_artifact : Data_Ingestion_Artifacts) -> Data_Transformation_Artifacts:
+        logging.info("Entered the start_data_transformation method of TrainPipeline class")
+        try:
+            data_transformation = Data_Transformation(
+                data_ingestion_artifacts= data_ingestion_artifact,
+                data_transformation_config= self.data_transformation_config
+            )
+            
+            data_transformation_artifact = data_transformation.initiate_data_transformation()
+            logging.info("Exited the start_data_transformation method of TrainPipeline")
+            
+            return data_transformation_artifact
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+    
+        
  
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
     # This method is used to start the training pipeline
@@ -69,6 +95,7 @@ class TrainPipeline:
         try:
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact= data_ingestion_artifact)
+            data_transformation_artifact = self.start_data_transformation(data_ingestion_artifact=data_ingestion_artifact)
             logging.info("Exited the run_pipeline method of TrainPipeline class")
                 
         except Exception as e:
