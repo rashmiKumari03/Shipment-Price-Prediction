@@ -73,8 +73,7 @@ class TrainPipeline:
         try:
             data_transformation = Data_Transformation(
                 data_ingestion_artifacts= data_ingestion_artifact,
-                data_transformation_config= self.data_transformation_config
-            )
+                data_transformation_config= self.data_transformation_config)
             
             data_transformation_artifact = data_transformation.initiate_data_transformation()
             logging.info("Exited the start_data_transformation method of TrainPipeline")
@@ -103,6 +102,5 @@ class TrainPipeline:
             raise CustomException(str(e),sys)
         
         
-    # Lets start the pipeline.. for that we can go to trial_runner_app.py 
-    
+    # Lets start the pipeline.. for that we can go to trial_runner_app.py
     
