@@ -1,38 +1,44 @@
 columns:
+  # Metadata Columns (dropped during preprocessing)
   - ID: string
   - Project Code: string
   - PQ #: string
   - PO / SO #: string
   - ASN/DN #: string
+  - Item Description: string
+
+  # Key Categorical Columns
   - Country: string
   - Managed By: string
   - Fulfill Via: string
   - Vendor INCO Term: string
   - Shipment Mode: string
-  - PQ First Sent to Client Date: date
-  - PO Sent to Vendor Date: date
-  - Scheduled Delivery Date: date
-  - Delivered to Client Date: date
-  - Delivery Recorded Date: date
   - Product Group: string
   - Sub Classification: string
   - Vendor: string
-  - Item Description: string
   - Molecule/Test Type: string
   - Brand: string
   - Dosage: string
   - Dosage Form: string
-  - Unit of Measure (Per Pack): string
+  - Manufacturing Site: string
+  - First Line Designation: binary  # Specified as binary since it needs encoding as 0/1
+
+  # Date Columns
+  - PQ First Sent to Client Date: datetime
+  - PO Sent to Vendor Date: datetime
+  - Scheduled Delivery Date: datetime
+  - Delivered to Client Date: datetime
+  - Delivery Recorded Date: datetime
+
+  # Numerical Columns
   - Line Item Quantity: integer
-  - Line Item Value: float          
+  - Line Item Value: float
   - Pack Price: float
   - Unit Price: float
-  - Manufacturing Site: string
-  - First Line Designation: string
   - Weight (Kilograms): float
   - Freight Cost (USD): float
   - Line Item Insurance (USD): float
-
+  - Unit of Measure (Per Pack): float
 
 numerical_columns:
   - Line Item Quantity
@@ -58,7 +64,9 @@ categorical_columns:
   - Dosage Form
   - Unit of Measure (Per Pack)
   - Manufacturing Site
-  - First Line Designation
+
+binary_columns:
+  - First Line Designation  # To be encoded into binary (0/1)
 
 one_hot_columns:
   - Country
@@ -66,7 +74,6 @@ one_hot_columns:
   - Vendor INCO Term
   - Product Group
   - Sub Classification
-  - First Line Designation
 
 drop_columns:
   - ID
@@ -77,9 +84,19 @@ drop_columns:
   - PQ First Sent to Client Date
   - PO Sent to Vendor Date
   - Item Description
+ 
 
-binary_columns:
-  - First Line Designation
+datetime_columns:
+  - PQ First Sent to Client Date
+  - PO Sent to Vendor Date
+  - Scheduled Delivery Date
+  - Delivered to Client Date
+  - Delivery Recorded Date
 
-target_column:
-  - Shipment Price
+target_column: Shipment Price  # Define the target explicitly
+
+notes:
+  - Specify data types explicitly for consistent preprocessing.
+  - Binary columns like "First Line Designation" are pre-marked for binary encoding.
+  - One-hot encoding is suggested for columns with multiple unique categories.
+  - Drop unnecessary metadata columns before model training.
