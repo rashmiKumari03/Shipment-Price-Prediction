@@ -13,7 +13,7 @@ from sklearn.metrics import r2_score
 from sklearn.utils import all_estimators
 from xgboost import __dict__ as xgb_dict
 from typing import Dict, Tuple, List, Union, Any
-from yaml import safe_dump
+from yaml import safe_load
 
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
