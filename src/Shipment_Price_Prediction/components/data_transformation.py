@@ -55,8 +55,7 @@ class Data_Transformation:
     """
 
 
-    def basic_inspection(self, data:DataFrame):
-        
+    def basic_inspection(self, data: DataFrame):
         """
         Method Name : basic_inspection
 
@@ -72,120 +71,111 @@ class Data_Transformation:
                     - Number of duplicate rows
                     - Descriptive statistics (mean, std, min, 25%, 50%, 75%, max) for numerical columns
         """
-        logging.info("Entered segregate_datatype method of Data_Transformation class")
+        logging.info("Entered basic_inspection method of Data_Transformation class")
         try:
+            # Fetch columns configuration from SCHEMA_CONFIG
+            data_cols = self.data_transformation_config.SCHEMA_CONFIG["columns"]
+
+            # Log shape and sample of the dataset
+            logging.info(f"The Number of Rows/Records in the dataset: {data.shape[0]}")
+            logging.info(f"The Number of Columns/Features in the dataset: {data.shape[1]}")
+            logging.info(f"Dataset Preview (First 5 records):\n{data.head()}")
+
+            # Log data types and general info about the dataset
+            logging.info("Data Information:")
+            logging.info(data.info())
+
+            # Log missing values count in each column
+            logging.info("Checking for Missing (Null) Values in each column:")
+            logging.info(data.isnull().sum())
+
+            # Log duplicate rows count
+            logging.info("Checking for Duplicates in the dataset:")
+            logging.info(data.duplicated().sum())
+
+            # Log descriptive statistics for numerical and categorical columns
+            logging.info("Descriptive Statistics of Numerical and Categorical Data:")
+            logging.info("Numerical Data Statistics:")
+            logging.info(data.describe(include=['number']))
+            
+            logging.info("Categorical Data Statistics:")
+            logging.info(data.describe(include=['object']))
+
+            """
+            Converts specified columns to appropriate data types: 
+                - Numerical columns to numeric type 
+                - Categorical columns to string type
+                - Date/Time columns to datetime type
+                It handles errors by coercing invalid values to NaN
+            """
+
             # Segregate columns by type using SCHEMA_CONFIG
             numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
             categorical_cols = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
             datetime_cols = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
 
-            # Convert numerical columns
+            # Convert numerical columns to numeric type
             if numerical_cols:
                 data[numerical_cols] = data[numerical_cols].apply(pd.to_numeric, errors='coerce')
                 logging.info(f"Converted {len(numerical_cols)} numerical columns to numeric type.")
 
-            # Convert categorical columns
+            # Convert categorical columns to string type
             if categorical_cols:
                 data[categorical_cols] = data[categorical_cols].astype("string")
                 logging.info(f"Converted {len(categorical_cols)} categorical columns to string type.")
 
-            # Convert datetime columns
+            # Convert datetime columns to datetime type
             if datetime_cols:
                 data[datetime_cols] = data[datetime_cols].apply(pd.to_datetime, errors='coerce')
                 logging.info(f"Converted {len(datetime_cols)} datetime columns to datetime type.")
 
+            # Log success message for data conversion
             logging.info("Data types have been successfully converted.")
-            logging.info("Exited segregate_datatype method of Data_Transformation class")
+            logging.info("Exited basic_inspection method of Data_Transformation class")
+
             return data
 
         except Exception as e:
-            logging.exception(f"Error in segregate_datatype method:{CustomException(str(e),sys)}")
+            logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
 
-        
 
-    def segregate_datatype(self, data: DataFrame) -> DataFrame:
-        """
-        Method Name : segregate_datatype
-
-        Description : This method segregates and converts columns in the DataFrame to their appropriate data types.
-                    It ensures that numerical columns are of numeric type, categorical columns are converted to
-                    categorical type, and datetime columns are appropriately parsed.
-
-        Output      : DataFrame with columns converted to the appropriate data types.
-        """
-        logging.info("Entered segregate_datatype method of Data_Transformation class")
-        try:
-            # Segregate columns by type
-            numerical_cols = data.select_dtypes(include=['number']).columns
-            categorical_cols = data.select_dtypes(include=['object','string']).columns
-            datetime_cols = data.select_dtypes(include=['datetime']).columns
-
-            # Convert numerical columns
-            if not numerical_cols.empty:
-                data[numerical_cols] = data[numerical_cols].apply(pd.to_numeric, errors='coerce')
-                logging.info(f"Converted {len(numerical_cols)} numerical columns to numeric type.")
-
-            # Convert categorical columns
-            if not categorical_cols.empty:
-                data[categorical_cols] = data[categorical_cols].astype("string")
-                logging.info(f"Converted {len(categorical_cols)} categorical columns to string type.")
-
-            # Convert datetime columns
-            if not datetime_cols.empty:
-                data[datetime_cols] = data[datetime_cols].apply(pd.to_datetime, errors='coerce')
-                logging.info(f"Converted {len(datetime_cols)} datetime columns to datetime type.")
-
-            logging.info("Data types have been successfully converted.")
-            logging.info("Exited segregate_datatype method of Data_Transformation class")
-            return data
-
-        except Exception as e:
-            error_message = f"Error in segregate_datatype method: {str(e)}"
-            logging.error(error_message)
-            raise CustomException(error_message, sys)
-        
-
-
-        
+    
     def handle_missing_values(self, data: DataFrame) -> DataFrame:
         """
         Method Name : handle_missing_values
         
         Description : This method handles missing values in the dataset by applying imputation strategies. 
                       Numerical columns are imputed with the median value, categorical columns are imputed 
-                      with the most frequent value, and datetime columns are imputed with the most frequent value.
-
-        Output      : DataFrame with missing values imputed.
+                      with the most frequent value, and datetime columns are processed to extract meaningful features.
+                      No imputation is done for datetime columns as there are no missing values.
+        
+        Output      : DataFrame with missing values imputed and date features transformed into meaningful columns.
         """
         logging.info("Entered handle_missing_values method of Data_Transformation class")
         try:
             # Get columns from SCHEMA_CONFIG
             numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
             categorical_cols = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
-            datetime_cols = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
 
             # Impute missing values in numerical columns
-            numerical_imputer = SimpleImputer(strategy='median')
-            data[numerical_cols] = numerical_imputer.fit_transform(data[numerical_cols])
-            logging.info(f"Imputed missing values in numerical columns: {numerical_cols}")
+            if numerical_cols:
+                numerical_imputer = SimpleImputer(strategy='median')
+                data[numerical_cols] = numerical_imputer.fit_transform(data[numerical_cols])
+                logging.info(f"Imputed missing values in numerical columns: {numerical_cols}")
 
             # Impute missing values in categorical columns
-            categorical_imputer = SimpleImputer(strategy='most_frequent')
-            data[categorical_cols] = categorical_imputer.fit_transform(data[categorical_cols])
-            logging.info(f"Imputed missing values in categorical columns: {categorical_cols}")
-
-            # Impute missing values in datetime columns
-            if datetime_cols:
-                datetime_imputer = SimpleImputer(strategy='most_frequent')
-                data[datetime_cols] = datetime_imputer.fit_transform(data[datetime_cols])
-                logging.info(f"Imputed missing values in datetime columns: {datetime_cols}")
+            if categorical_cols:
+                categorical_imputer = SimpleImputer(strategy='most_frequent')
+                data[categorical_cols] = categorical_imputer.fit_transform(data[categorical_cols])
+                logging.info(f"Imputed missing values in categorical columns: {categorical_cols}")
 
             logging.info("Exited handle_missing_values method of Data_Transformation class")
             return data
         except Exception as e:
-            logging.info(CustomException(str(e), sys))
-            raise CustomException(str(e), sys)
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+
 
     def handle_outliers(self, data: DataFrame) -> DataFrame:
         """
@@ -235,28 +225,20 @@ class Data_Transformation:
             logging.info(CustomException(str(e), sys))
             raise CustomException(str(e), sys)
         
-
         
         
     def get_data_transformer_object(self) -> object:
+        
         """
         Method Name : get_data_transformer_object
         
-        Description : 
-                    This method returns a preprocessor object that applies various data transformations such as 
-                    imputation, encoding, and scaling to the dataset. The method builds a transformation pipeline 
-                    using SimpleImputer, OneHotEncoder, and BinaryEncoder to process different feature types.
-                    
-                    This method creates a preprocessor (transformer) that:
-                        - Drops irrelevant columns.
-                        - Fills missing values.
-                        - Scales numerical data.
-                        - Encodes categorical data.
-                        - Transforms datetime columns into useful features.
+        This method returns a preprocessor object that applies various data transformations such as 
+        imputation, encoding, and scaling to the dataset. It creates a preprocessor pipeline with 
+        SimpleImputer, OneHotEncoder, BinaryEncoder, and StandardScaler for different feature types.
 
-        Output      : Preprocessor object (ColumnTransformer) for transforming the dataset.
+        Output :
+        Preprocessor object (ColumnTransformer) for transforming the dataset.
         """
-        
         logging.info("Entered get_data_transformer_object method of Data_Transformation class")
 
         try:
@@ -265,71 +247,71 @@ class Data_Transformation:
             categorical_columns = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
             binary_columns = self.data_transformation_config.SCHEMA_CONFIG["binary_columns"]
             datetime_columns = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
-            irrelevant_columns_to_drop = self.data_transformation_config.SCHEMA_CONFIG["drop_columns"]
 
-            # Define how to process numerical columns: impute missing values and scale them
-            numeric_imputer = SimpleImputer(strategy="median")  # Fill missing values with the median value
-            numeric_transformer = Pipeline(steps=[
+            # Handle numerical columns: Impute and scale
+            numeric_imputer = SimpleImputer(strategy="median")
+            numeric_pipeline = Pipeline(steps=[
                 ('imputer', numeric_imputer),
-                ('scaler', StandardScaler())  # Scale the data to have mean=0 and variance=1
+                ('scaler', StandardScaler())  # Standardize numerical data
             ])
+            logging.info("Numerical pipeline created.")
 
-            # Define how to process categorical columns: impute missing values and apply one-hot encoding
-            categorical_imputer = SimpleImputer(strategy="most_frequent")  # Fill missing values with the most frequent value
-            categorical_transformer = Pipeline(steps=[
+            # Handle categorical columns: Impute and one-hot encode
+            categorical_imputer = SimpleImputer(strategy="most_frequent")
+            categorical_pipeline = Pipeline(steps=[
                 ('imputer', categorical_imputer),
-                ('one_hot_encoder', OneHotEncoder(handle_unknown="ignore"))  # One-hot encode the categorical data
+                ('one_hot_encoder', OneHotEncoder(handle_unknown="ignore"))  # One-hot encode categorical data
             ])
+            logging.info("Categorical pipeline created.")
 
-            # Define how to process binary columns: apply binary encoding
-            binary_transformer = Pipeline(steps=[
+            # Handle binary columns: Apply binary encoding
+            binary_pipeline = Pipeline(steps=[
                 ('binary_encoder', BinaryEncoder())
             ])
-
-            # Define how to process datetime columns: extract useful datetime features
-            def extract_datetime_features(df):
+            logging.info("Binary pipeline created.")
+            
+            
+             
+            # Handle datetime columns: Extract features from datetime columns
+            def datetime_transformer(X):
                 for col in datetime_columns:
-                    df[col] = pd.to_datetime(df[col], errors='coerce')
-                    df[f'{col}_year'] = df[col].dt.year
-                    df[f'{col}_month'] = df[col].dt.month
-                    df[f'{col}_day'] = df[col].dt.day
-                    df[f'{col}_hour'] = df[col].dt.hour
-                    df[f'{col}_weekday'] = df[col].dt.weekday
-                return df.drop(columns=datetime_columns)  # Drop original datetime columns
+                    if col in X.columns:
+                        X[f'{col}_year'] = X[col].dt.year
+                        X[f'{col}_month'] = X[col].dt.month
+                        X[f'{col}_day'] = X[col].dt.day
+                        X[f'{col}_hour'] = X[col].dt.hour
+                        X[f'{col}_minute'] = X[col].dt.minute
+                        X[f'{col}_second'] = X[col].dt.second
+                    else:
+                        logging.warning(f"Column {col} not found in DataFrame.")
+                return X.drop(columns=datetime_columns)
 
-            datetime_transformer = FunctionTransformer(
-                lambda df: extract_datetime_features(df),
-                validate=False
-            )
-
-            # Drop irrelevant columns
-            drop_transformer = FunctionTransformer(
-                lambda x: x.drop(columns=irrelevant_columns_to_drop, errors='ignore'),
-                validate=False
-            )
-
-            # Create a ColumnTransformer to apply different transformations to different columns
+            # Create pipeline for datetime transformation
+            datetime_pipeline = Pipeline(steps=[('datetime_features', FunctionTransformer(func=datetime_transformer, validate=False))])
+            
+            
+            # Combine all transformations into a ColumnTransformer
             preprocessor = ColumnTransformer(
                 transformers=[
-                    ('drop_irrelevant_columns', drop_transformer, irrelevant_columns_to_drop),  # Drop irrelevant columns first
-                    ('numerical', numeric_transformer, numerical_columns),  # Process numerical columns
-                    ('categorical', categorical_transformer, categorical_columns),  # Process categorical columns
-                    ('binary', binary_transformer, binary_columns),  # Process binary columns
-                    ('datetime', datetime_transformer, datetime_columns)  # Transform datetime columns
+                    ('numerical', numeric_pipeline, numerical_columns),
+                    ('categorical', categorical_pipeline, categorical_columns),
+                    ('binary', binary_pipeline, binary_columns),
+                    ('datetime', datetime_pipeline, datetime_columns)
                 ]
             )
 
             logging.info("Data transformer object created successfully.")
+            logging.info("Exited get_data_transformer_object method of Data_Transformation class")
             return preprocessor
-        
+
         except Exception as e:
-            logging.error(f"Error in creating data transformer object: {str(e)}")
-            raise CustomException(f"Error in creating data transformer object: {str(e)}", sys)
-
-
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+   
+            
     def initiate_data_transformation(self) -> Data_Transformation_Artifacts:
         """
-        Method Name : apply_transformations
+        Method Name : initiate_data_transformation
         
         Description : This method applies the entire data transformation process to the train and test datasets. 
                     It handles data type conversion, missing value imputation, outlier handling, and feature 
@@ -337,63 +319,73 @@ class Data_Transformation:
 
         Output      : Data_Transformation_Artifacts containing processed data and model-ready artifacts.
         """
-        logging.info("Entered apply_transformations method of Data_Transformation class")
-        try:
-            # Creating directory for data transformation artifacts
-            os.makedirs(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, exist_ok=True)
-            logging.info(f"Created artifacts directory for {os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)}")
+        logging.info("Entered initiate_data_transformation method of Data_Transformation class")
 
-            # Step 0: Basic Inspection of the Train and Test sets
+        try:
+            # Create directory for data transformation artifacts if not exists
+            os.makedirs(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, exist_ok=True)
+            artifacts_dir = os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)
+            logging.info(f"Created artifacts directory: {artifacts_dir}")
+
+            # Step 1: Basic Inspection of Train and Test sets
             logging.info("Basic Inspection of Train dataset:")
             logging.info(self.basic_inspection(self.train_set))
             
             logging.info("Basic Inspection of Test dataset:")
             logging.info(self.basic_inspection(self.test_set))
             
-            # Step 1: Segregate the Data based on datatype (This will be schema-aware if needed)
-            self.train_set = self.segregate_datatype(self.train_set)
-            self.test_set = self.segregate_datatype(self.test_set)
-            logging.info("Data types converted for train and test datasets")
-
             # Step 2: Handle Missing Values
             self.train_set = self.handle_missing_values(self.train_set)
             self.test_set = self.handle_missing_values(self.test_set)
-            logging.info("Missing values handled for train and test datasets")
+            logging.info("Handled missing values in train and test datasets.")
+            logging.info(f"Train dataset after missing value imputation:\n {self.train_set.head()}")
+            logging.info(f"Test dataset after missing value imputation:\n {self.test_set.head()}")
 
             # Step 3: Handle Outliers
             self.train_set = self.handle_outliers(self.train_set)
             self.test_set = self.handle_outliers(self.test_set)
-            logging.info("Outliers handled for train and test datasets")
+            logging.info("Handled outliers in train and test datasets.")
+            logging.info(f"Train dataset after outlier handling:\n {self.train_set.head()}")
+            logging.info(f"Test dataset after outlier handling:\n {self.test_set.head()}")
 
             # Step 4: Apply Feature Transformation Pipeline
             preprocessor = self.get_data_transformer_object()
 
             # Fit and transform the training data
+            logging.info("Fitting and transforming training data using the preprocessor...")
             X_train_transformed = preprocessor.fit_transform(self.train_set)
-            logging.info("Transformed training data using preprocessor")
+            logging.info(f"Transformed training data (first few rows):\n {pd.DataFrame(X_train_transformed).head()}")
 
             # Transform the test data
+            logging.info("Transforming test data using the preprocessor...")
             X_test_transformed = preprocessor.transform(self.test_set)
-            logging.info("Transformed test data using preprocessor")
+            logging.info(f"Transformed test data (first few rows):\n {pd.DataFrame(X_test_transformed).head()}")
 
-            # Saving processed data as artifacts
+            # Step 5: Saving the processed data as artifacts
             transformed_train_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_train_data.csv")
             transformed_test_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_test_data.csv")
+            transformed_object_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_object.pkl")
 
-            # Saving the transformed data to CSV
+            # Save transformed datasets to CSV
             pd.DataFrame(X_train_transformed).to_csv(transformed_train_file_path, index=False)
             pd.DataFrame(X_test_transformed).to_csv(transformed_test_file_path, index=False)
-            logging.info("Transformed data saved as CSV")
+            logging.info("Transformed data saved as CSV files.")
 
-            # Creating and returning Data_Transformation_Artifacts
+            # Save the preprocessor (transformer object)
+            import joblib
+            joblib.dump(preprocessor, transformed_object_file_path)
+            logging.info("Preprocessor object saved as a pickle file.")
+
+            # Step 6: Creating Data_Transformation_Artifacts object to return processed data paths
             data_transformation_artifacts = Data_Transformation_Artifacts(
                 transformed_train_file_path=transformed_train_file_path,
-                transformed_test_file_path=transformed_test_file_path
+                transformed_test_file_path=transformed_test_file_path,
+                transformed_object_file_path=transformed_object_file_path  # Add this argument
             )
-            
-            logging.info("Exited apply_transformations method of Data_Transformation class")
+
+            logging.info("Exited initiate_data_transformation method of Data_Transformation class")
             return data_transformation_artifacts
 
         except Exception as e:
-            logging.error(f"Error in apply_transformations method: {str(e)}")
-            raise CustomException(str(e), sys)
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
