@@ -40,6 +40,18 @@ columns:
   - Line Item Insurance (USD): float
   - Unit of Measure (Per Pack): float
 
+
+drop_columns:
+  - ID
+  - Project Code
+  - 'PQ #'
+  - 'PO / SO #'
+  - 'ASN/DN #'
+  - PQ First Sent to Client Date
+  - PO Sent to Vendor Date
+  - Item Description
+
+# We will list these columns thinking of that we have dropped the columns we wanted..
 numerical_columns:
   - Line Item Quantity
   - Line Item Value
@@ -48,6 +60,7 @@ numerical_columns:
   - Weight (Kilograms)
   - Freight Cost (USD)
   - Line Item Insurance (USD)
+  - Unit of Measure (Per Pack)
 
 categorical_columns:
   - Country
@@ -62,8 +75,13 @@ categorical_columns:
   - Brand
   - Dosage
   - Dosage Form
-  - Unit of Measure (Per Pack)
   - Manufacturing Site
+
+datetime_columns:
+  - Scheduled Delivery Date
+  - Delivered to Client Date
+  - Delivery Recorded Date
+
 
 binary_columns:
   - First Line Designation  # To be encoded into binary (0/1)
@@ -75,28 +93,5 @@ one_hot_columns:
   - Product Group
   - Sub Classification
 
-drop_columns:
-  - ID
-  - Project Code
-  - PQ #
-  - PO / SO #
-  - ASN/DN #
-  - PQ First Sent to Client Date
-  - PO Sent to Vendor Date
-  - Item Description
- 
-
-datetime_columns:
-  - PQ First Sent to Client Date
-  - PO Sent to Vendor Date
-  - Scheduled Delivery Date
-  - Delivered to Client Date
-  - Delivery Recorded Date
-
 target_column: Shipment Price  # Define the target explicitly
 
-notes:
-  - Specify data types explicitly for consistent preprocessing.
-  - Binary columns like "First Line Designation" are pre-marked for binary encoding.
-  - One-hot encoding is suggested for columns with multiple unique categories.
-  - Drop unnecessary metadata columns before model training.
