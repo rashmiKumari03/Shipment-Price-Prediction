@@ -1,13 +1,11 @@
 columns:
-  # Metadata Columns (dropped during preprocessing)
   - ID: string
   - Project Code: string
-  - PQ #: string
-  - PO / SO #: string
-  - ASN/DN #: string
+  - 'PQ #': string
+  - 'PO / SO #': string
+  - 'ASN/DN #': string
   - Item Description: string
 
-  # Key Categorical Columns
   - Country: string
   - Managed By: string
   - Fulfill Via: string
@@ -21,16 +19,14 @@ columns:
   - Dosage: string
   - Dosage Form: string
   - Manufacturing Site: string
-  - First Line Designation: binary  # Specified as binary since it needs encoding as 0/1
+  - First Line Designation: binary  
 
-  # Date Columns
   - PQ First Sent to Client Date: datetime
   - PO Sent to Vendor Date: datetime
   - Scheduled Delivery Date: datetime
   - Delivered to Client Date: datetime
   - Delivery Recorded Date: datetime
 
-  # Numerical Columns
   - Line Item Quantity: integer
   - Line Item Value: float
   - Pack Price: float
