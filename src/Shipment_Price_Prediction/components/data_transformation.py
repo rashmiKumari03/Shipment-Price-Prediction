@@ -13,6 +13,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from scipy.stats import skew
 from scipy.stats.mstats import winsorize
+import joblib
 
 # Custom imports for logging and exception handling
 from src.Shipment_Price_Prediction.logger import logging
@@ -55,7 +56,7 @@ class Data_Transformation:
     """
 
 
-    def basic_inspection(self, data: DataFrame):
+    def basic_inspection(self):
         """
         Method Name : basic_inspection
 
@@ -73,72 +74,51 @@ class Data_Transformation:
         """
         logging.info("Entered basic_inspection method of Data_Transformation class")
         try:
-            # Fetch columns configuration from SCHEMA_CONFIG
-            data_cols = self.data_transformation_config.SCHEMA_CONFIG["columns"]
-
-            # Log shape and sample of the dataset
-            logging.info(f"The Number of Rows/Records in the dataset: {data.shape[0]}")
-            logging.info(f"The Number of Columns/Features in the dataset: {data.shape[1]}")
-            logging.info(f"Dataset Preview (First 5 records):\n{data.head()}")
-
-            # Log data types and general info about the dataset
-            logging.info("Data Information:")
-            logging.info(data.info())
-
-            # Log missing values count in each column
-            logging.info("Checking for Missing (Null) Values in each column:")
-            logging.info(data.isnull().sum())
-
-            # Log duplicate rows count
-            logging.info("Checking for Duplicates in the dataset:")
-            logging.info(data.duplicated().sum())
-
-            # Log descriptive statistics for numerical and categorical columns
-            logging.info("Descriptive Statistics of Numerical and Categorical Data:")
-            logging.info("Numerical Data Statistics:")
-            logging.info(data.describe(include=['number']))
+            data = {"Training_dataset": self.train_set, "Testing_dataset": self.test_set}
             
-            logging.info("Categorical Data Statistics:")
-            logging.info(data.describe(include=['object']))
+            for dataset_name, dataset in data.items():
+                logging.info(f"Inspection of {dataset_name}:")
+                logging.info(f"The Number of Rows/Records in the dataset: {dataset.shape[0]}")
+                logging.info(f"The Number of Columns/Features in the dataset: {dataset.shape[1]}")
+                logging.info(f"Dataset Preview (First 5 records):\n{dataset.head()}")
 
-            """
-            Converts specified columns to appropriate data types: 
-                - Numerical columns to numeric type 
-                - Categorical columns to string type
-                - Date/Time columns to datetime type
-                It handles errors by coercing invalid values to NaN
-            """
+                # Log data types and general info about the dataset
+                logging.info("Data Information:")
+                logging.info(dataset.info())
 
-            # Segregate columns by type using SCHEMA_CONFIG
-            numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
-            categorical_cols = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
-            datetime_cols = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
+                # Log missing values count in each column
+                logging.info("Checking for Missing (Null) Values in each column:")
+                logging.info(dataset.isnull().sum())
 
-            # Convert numerical columns to numeric type
-            if numerical_cols:
-                data[numerical_cols] = data[numerical_cols].apply(pd.to_numeric, errors='coerce')
-                logging.info(f"Converted {len(numerical_cols)} numerical columns to numeric type.")
+                # Log duplicate rows count
+                logging.info("Checking for Duplicates in the dataset:")
+                logging.info(dataset.duplicated().sum())
 
-            # Convert categorical columns to string type
-            if categorical_cols:
-                data[categorical_cols] = data[categorical_cols].astype("string")
-                logging.info(f"Converted {len(categorical_cols)} categorical columns to string type.")
+                # Log descriptive statistics for numerical and categorical columns
+                logging.info("Descriptive Statistics of Numerical and Categorical Data:")
+                logging.info("Numerical Data Statistics:")
+                logging.info(dataset.describe(include=['number']))
+                
+                logging.info("Categorical Data Statistics:")
+                logging.info(dataset.describe(include=['object']))
 
-            # Convert datetime columns to datetime type
-            if datetime_cols:
-                data[datetime_cols] = data[datetime_cols].apply(pd.to_datetime, errors='coerce')
-                logging.info(f"Converted {len(datetime_cols)} datetime columns to datetime type.")
+                # Segregate columns by type using SCHEMA_CONFIG
+                numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
+                categorical_cols = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
+                datetime_cols = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
 
-            # Log success message for data conversion
-            logging.info("Data types have been successfully converted.")
+               
+                logging.info(f"Converted {len(numerical_cols)} numerical columns to numeric type.Those are : {numerical_cols}")
+                logging.info(f"Converted {len(categorical_cols)} categorical columns to string type.Those are :{categorical_cols}")
+                logging.info(f"Converted {len(datetime_cols)} datetime columns to datetime type.Those are :{datetime_cols}")
+
             logging.info("Exited basic_inspection method of Data_Transformation class")
-
-            return data
+            return None
 
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
-
+        
 
     
     def handle_missing_values(self, data: DataFrame) -> DataFrame:
@@ -157,24 +137,59 @@ class Data_Transformation:
             # Get columns from SCHEMA_CONFIG
             numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
             categorical_cols = self.data_transformation_config.SCHEMA_CONFIG["categorical_columns"]
-
-            # Impute missing values in numerical columns
+            
+            # Impute missing values for numerical columns
             if numerical_cols:
+                # Convert non-numeric values to NaN in numerical columns
+                data[numerical_cols] = data[numerical_cols].apply(pd.to_numeric, errors='coerce')
+
                 numerical_imputer = SimpleImputer(strategy='median')
                 data[numerical_cols] = numerical_imputer.fit_transform(data[numerical_cols])
-                logging.info(f"Imputed missing values in numerical columns: {numerical_cols}")
 
-            # Impute missing values in categorical columns
+            # Impute missing values for categorical columns
             if categorical_cols:
+
                 categorical_imputer = SimpleImputer(strategy='most_frequent')
                 data[categorical_cols] = categorical_imputer.fit_transform(data[categorical_cols])
-                logging.info(f"Imputed missing values in categorical columns: {categorical_cols}")
 
             logging.info("Exited handle_missing_values method of Data_Transformation class")
             return data
+    
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
+        
+        
+        
+        
+    def handle_duplicate_values(self,data:DataFrame) -> DataFrame:
+        """
+        Method Name : handle_duplicates
+        
+        Description : This method handles duplicate rows in the dataset by checking for exact duplicates and removing them.
+                    It ensures that only unique rows are retained in the dataset.
+        
+        Output      : DataFrame with duplicates removed.
+        """
+        logging.info("Entered handle_duplicates method of Data_Transformation class")
+        
+        try:
+            # Check for duplicate rows
+            duplicates_count = data.duplicated().sum()
+
+            if duplicates_count > 0:
+                logging.info(f"Found {duplicates_count} duplicate rows. Removing duplicates.")
+                data = data.drop_duplicates()
+                logging.info(f"Duplicates removed. The new number of rows: {data.shape[0]}")
+            else:
+                logging.info("No duplicates found in the dataset.")
+            
+            logging.info("Exited handle_duplicates method of Data_Transformation class")
+            return data
+
+        except Exception as e:
+            logging.info(CustomException(str(e), sys))
+            raise CustomException(str(e), sys)
 
 
     def handle_outliers(self, data: DataFrame) -> DataFrame:
@@ -249,6 +264,7 @@ class Data_Transformation:
             datetime_columns = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
 
             # Handle numerical columns: Impute and scale
+
             numeric_imputer = SimpleImputer(strategy="median")
             numeric_pipeline = Pipeline(steps=[
                 ('imputer', numeric_imputer),
@@ -276,19 +292,19 @@ class Data_Transformation:
             def datetime_transformer(X):
                 for col in datetime_columns:
                     if col in X.columns:
+                        if not pd.api.types.is_datetime64_any_dtype(X[col]):
+                            X[col] = pd.to_datetime(X[col], errors='coerce')  # Ensure datetime type
                         X[f'{col}_year'] = X[col].dt.year
                         X[f'{col}_month'] = X[col].dt.month
                         X[f'{col}_day'] = X[col].dt.day
-                        X[f'{col}_hour'] = X[col].dt.hour
-                        X[f'{col}_minute'] = X[col].dt.minute
-                        X[f'{col}_second'] = X[col].dt.second
                     else:
                         logging.warning(f"Column {col} not found in DataFrame.")
-                return X.drop(columns=datetime_columns)
+                return X.drop(columns=datetime_columns, errors='ignore')
 
             # Create pipeline for datetime transformation
             datetime_pipeline = Pipeline(steps=[('datetime_features', FunctionTransformer(func=datetime_transformer, validate=False))])
-            
+            logging.info("Datetime pipeline created.")
+                
             
             # Combine all transformations into a ColumnTransformer
             preprocessor = ColumnTransformer(
@@ -324,20 +340,24 @@ class Data_Transformation:
         try:
             # Create directory for data transformation artifacts if not exists
             os.makedirs(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, exist_ok=True)
-            artifacts_dir = os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)
-            logging.info(f"Created artifacts directory: {artifacts_dir}")
+            logging.info(f"Created artifacts directory: {self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR}")
 
             # Step 1: Basic Inspection of Train and Test sets
-            logging.info("Basic Inspection of Train dataset:")
-            logging.info(self.basic_inspection(self.train_set))
+            logging.info("Basic Inspection of Train dataset and Test dataset:")
+            logging.info(self.basic_inspection())
+
+            # Step 2: Handle Duplicates and Missing Values
             
-            logging.info("Basic Inspection of Test dataset:")
-            logging.info(self.basic_inspection(self.test_set))
+            self.train_set = self.handle_duplicate_values(self.train_set)
+            self.test_set = self.handle_duplicate_values(self.test_set)
+            logging.info("Handed duplicate values in train and test datasets.")
+            logging.info(f"Duplicate Values in Trainset Now : {self.train_set.duplicated().sum()}")
+            logging.info(f"Duplicate Values in Testset Now : {self.test_set.duplicated().sum()}")
             
-            # Step 2: Handle Missing Values
+            
             self.train_set = self.handle_missing_values(self.train_set)
             self.test_set = self.handle_missing_values(self.test_set)
-            logging.info("Handled missing values in train and test datasets.")
+            logging.info("Handed missing values in train and test datasets.")
             logging.info(f"Train dataset after missing value imputation:\n {self.train_set.head()}")
             logging.info(f"Test dataset after missing value imputation:\n {self.test_set.head()}")
 
@@ -353,39 +373,44 @@ class Data_Transformation:
 
             # Fit and transform the training data
             logging.info("Fitting and transforming training data using the preprocessor...")
-            X_train_transformed = preprocessor.fit_transform(self.train_set)
-            logging.info(f"Transformed training data (first few rows):\n {pd.DataFrame(X_train_transformed).head()}")
+            X_train_transformed_arr = preprocessor.fit_transform(self.train_set)
+            logging.info(f"Transformed training data (first few rows):\n {pd.DataFrame(X_train_transformed_arr).head()}")
 
             # Transform the test data
             logging.info("Transforming test data using the preprocessor...")
-            X_test_transformed = preprocessor.transform(self.test_set)
-            logging.info(f"Transformed test data (first few rows):\n {pd.DataFrame(X_test_transformed).head()}")
+            X_test_transformed_arr = preprocessor.transform(self.test_set)
+            logging.info(f"Transformed test data (first few rows):\n {pd.DataFrame(X_test_transformed_arr).head()}")
 
             # Step 5: Saving the processed data as artifacts
-            transformed_train_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_train_data.csv")
-            transformed_test_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_test_data.csv")
+            
+            # Define the file paths for saving transformed data and preprocessor object
+            transformed_train_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_train_data.npz")
+            transformed_test_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_test_data.npz")
             transformed_object_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_object.pkl")
 
-            # Save transformed datasets to CSV
-            pd.DataFrame(X_train_transformed).to_csv(transformed_train_file_path, index=False)
-            pd.DataFrame(X_test_transformed).to_csv(transformed_test_file_path, index=False)
-            logging.info("Transformed data saved as CSV files.")
+            # Save the transformed training data
+            self.data_transformation_config.UTILS.save_numpy_array_data(transformed_train_file_path, X_train_transformed_arr)
+            logging.info(f"Saved transformed training data to {transformed_train_file_path}")
 
+            # Save the transformed test data
+            self.data_transformation_config.UTILS.save_numpy_array_data(transformed_test_file_path, X_test_transformed_arr)
+            logging.info(f"Saved transformed test data to {transformed_test_file_path}")
+        
             # Save the preprocessor (transformer object)
-            import joblib
+           
             joblib.dump(preprocessor, transformed_object_file_path)
-            logging.info("Preprocessor object saved as a pickle file.")
+            logging.info(f"Preprocessor object saved as a pickle file to {transformed_object_file_path}")
 
             # Step 6: Creating Data_Transformation_Artifacts object to return processed data paths
             data_transformation_artifacts = Data_Transformation_Artifacts(
                 transformed_train_file_path=transformed_train_file_path,
                 transformed_test_file_path=transformed_test_file_path,
-                transformed_object_file_path=transformed_object_file_path  # Add this argument
+                transformed_object_file_path=transformed_object_file_path
             )
 
             logging.info("Exited initiate_data_transformation method of Data_Transformation class")
             return data_transformation_artifacts
 
         except Exception as e:
-            logging.info(CustomException(str(e),sys))
-            raise CustomException(str(e),sys)
+            logging.error("Error in initiate_data_transformation", exc_info=True)
+            raise CustomException(str(e), sys)
