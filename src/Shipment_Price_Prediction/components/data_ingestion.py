@@ -207,7 +207,6 @@ class Data_Ingestion:
             
             #Dropping the unneccessary columns and handle missing values
             cleaned_data = raw_data.drop(columns=self.data_ingestion_config.DROP_COLS , errors='ignore')
-            cleaned_data.dropna(inplace=True)
             logging.info("After Dropping the columns we have the dataset as")
             logging.info(cleaned_data.head())
             logging.info("Got the data from mongodb")
