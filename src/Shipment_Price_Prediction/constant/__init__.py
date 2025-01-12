@@ -61,3 +61,9 @@ TRANSFORMED_TEST_DATA_DIR = "Transformed_Test"
 TRANSFORMED_TRAIN_DATA_FILE_NAME = "Transformed_train_data.npz"
 TRANSFORMED_TEST_DATA_FILE_NAME = "Transformed_test_data.npz"
 PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"   # used for predicting new data
+
+
+# Model Trainer related Constants:
+MODEL_TRAINER_ARTIFACTS_DIR = "Model_Trainer_Artifacts"
+MODEL_FILE_NAME = "Shipping_Price_Pred_Model.pkl"
+MODEL_SAVE_FORMAT = ".pkl"
