@@ -71,4 +71,21 @@ class Data_Transformation_Artifacts:
     transformed_test_file_path: str
 
     
+    
+@dataclass
+class Model_Trainer_Artifacts:
+    """
+    This class holds the information and file paths generated during the model training process.
+
+    Attributes:
+    - trained_model_file_path (str): The path where the trained model is saved after the training process is completed.
+      This model file contains the weights, and other necessary parameters that define the trained machine learning model.
+
+    Purpose:
+    After the model training process, the trained model is saved to a file. This class stores the path to that saved model,
+    making it easily accessible for later stages such as evaluation, deployment, or inference. The saved model can be used to
+    predict outcomes based on new, unseen data.
+    """
+    trained_model_file_path: str
+
   
