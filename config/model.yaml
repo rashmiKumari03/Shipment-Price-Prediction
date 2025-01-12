@@ -1,0 +1,120 @@
+train_model:
+  # Linear Regression
+  LinearRegression:
+    fit_intercept: [true, false]
+    normalize: [true, false]
+
+  # Ridge Regression
+  Ridge:
+    alpha:
+      - 0.1
+      - 1
+      - 10
+    solver: ['auto', 'saga']
+
+  # Lasso Regression
+  Lasso:
+    alpha:
+      - 0.1
+      - 1
+      - 10
+    max_iter: [1000, 2000]
+
+  # ElasticNet Regression
+  ElasticNet:
+    alpha:
+      - 0.1
+      - 1
+      - 10
+    l1_ratio:
+      - 0.1
+      - 0.5
+      - 0.9
+    max_iter: [1000, 2000]
+
+  # Support Vector Regression (SVR)
+  SVR:
+    C:
+      - 0.1
+      - 1
+      - 10
+    epsilon:
+      - 0.01
+      - 0.1
+    kernel: ['linear', 'rbf']
+
+  # Decision Tree Regressor (DTR)
+  DecisionTreeRegressor:
+    max_depth:
+      - 5
+      - 10
+      - 15
+    min_samples_split:
+      - 2
+      - 5
+      - 10
+    max_features: ['auto', 'sqrt', 'log2']
+
+  # Random Forest Regressor
+  RandomForestRegressor:
+    max_depth:
+      - 5
+      - 8
+      - 10
+    max_features:
+      - 5
+      - 7
+    n_estimators:
+      - 50
+      - 100
+      - 150
+
+  # XGBoost Regressor (XGBRegressor)
+  XGBRegressor:
+    learning_rate:
+      - 0.01
+      - 0.1
+    max_depth:
+      - 5
+      - 6
+      - 8
+    n_estimators:
+      - 100
+      - 200
+    booster: ['gbtree', 'dart']
+
+  # K-Nearest Neighbors Regressor (KNN)
+  KNeighborsRegressor:
+    n_neighbors:
+      - 3
+      - 5
+      - 10
+    weights: ['uniform', 'distance']
+    algorithm: ['auto', 'ball_tree', 'kd_tree']
+
+  # Gradient Boosting Regressor
+  GradientBoostingRegressor:
+    n_estimators:
+      - 50
+      - 100
+      - 150
+    learning_rate:
+      - 0.01
+      - 0.1
+    max_depth:
+      - 3
+      - 5
+      - 7
+    subsample: [0.8, 1.0]
+
+  # AdaBoost Regressor
+  AdaBoostRegressor:
+    n_estimators:
+      - 50
+      - 100
+      - 150
+    learning_rate:
+      - 0.01
+      - 0.1
+
+base_model_score: '0.1'
