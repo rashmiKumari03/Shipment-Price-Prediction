@@ -63,7 +63,7 @@ class MainUtils:
         logging.info("Entered the load_numpy_array_data method of MainUtils class")
         try:
             with open(file_path, "rb") as file_obj:
-                return np.load(file_obj)
+                return np.load(file_obj,allow_pickle=True)
         except Exception as e:
             raise CustomException(f"Error loading numpy array: {str(e)}", sys)
 
