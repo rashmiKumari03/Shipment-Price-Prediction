@@ -299,13 +299,25 @@ class Data_Transformation:
                 ('scaler', StandardScaler())  # Standardize numerical data
             ])
             logging.info("Numerical pipeline created.")
+            
+            
+            """
+                One-hot encode categorical data.
+                The 'sparse_output=False' argument is crucial because by default, OneHotEncoder returns the result as a sparse matrix.
+                Sparse matrices store data in a compact form, only saving non-zero values, which may result in output like:
+                (0, 0) 0.18, (1, 3) 0.25, etc. While this is memory-efficient for large datasets, it is not ideal when we need 
+                the result in a regular DataFrame form with all features in dense representation.
+                By setting 'sparse_output=False', the result is returned as a dense array (a regular 2D array), which can be easily 
+                converted into a DataFrame for further processing.
+            """
+
 
             # Handle categorical columns: Impute and one-hot encode
             categorical_imputer = SimpleImputer(strategy="most_frequent")
             categorical_pipeline = Pipeline(steps=[
                 ('imputer', categorical_imputer),
-                ('one_hot_encoder', OneHotEncoder(handle_unknown="ignore"))  # One-hot encode categorical data
-            ])
+                ('one_hot_encoder', OneHotEncoder(sparse_output= False ,handle_unknown="ignore"))
+                ])
             logging.info("Categorical pipeline created.")
 
             # Handle binary columns: Apply binary encoding
