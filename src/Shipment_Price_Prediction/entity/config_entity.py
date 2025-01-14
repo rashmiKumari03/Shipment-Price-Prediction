@@ -34,9 +34,9 @@ class Data_Ingestion_Config:
 
         # This reads the columns to be dropped, as specified in the schema file.
         # For example, if there are columns that are not needed, this will remove them.
-        self.DROP_COLS = list(self.SCHEMA_CONFIG["drop_columns"])  
-
-
+        self.DROP_COLS = list(self.SCHEMA_CONFIG["drop_columns"]) 
+       
+       
         # Define the main directory where all artifacts (processed data) will be stored
         # This is where the processed data (artifacts) will be saved. 
         # It's like creating a folder to keep everything organized.
