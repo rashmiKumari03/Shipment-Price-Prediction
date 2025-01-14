@@ -89,5 +89,11 @@ one_hot_columns:
   - Product Group
   - Sub Classification
 
+
+creating_target_columns:
+  - Line Item Value
+  - Freight Cost (USD)
+  - Line Item Insurance (USD)
+
 target_column: Shipment Price  # Define the target explicitly
 
