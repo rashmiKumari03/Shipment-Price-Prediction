@@ -138,7 +138,7 @@ class Model_Trainer:
                 logging.info("Updating the model score in yaml file")
                 
                 # Loading the cost model object with preprocessor and model
-                cost_model = Cost_Model(preprocessing_object , best_model)
+                cost_model = Cost_Model(preprocessor_obj , best_model)
                 logging.info("Created cost model object with preprocessor and model")
                 trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
                 
