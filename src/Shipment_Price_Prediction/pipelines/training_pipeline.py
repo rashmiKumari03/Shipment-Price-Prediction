@@ -2,12 +2,13 @@ import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts)
+from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config)
 
 from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingestion
 from src.Shipment_Price_Prediction.components.data_validation import Data_Validation
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
+from src.Shipment_Price_Prediction.components.model_trainer import Model_Trainer
 
 
 # Initializing the Training Pipeline.
@@ -18,6 +19,7 @@ class TrainPipeline:
         
         self.data_validation_config = Data_Validation_Config()
         self.data_transformation_config = Data_Transformation_Config()
+        self.model_trainer_config = Model_Trainer_Config()
         
     
     # The method is used to start the data ingestion
@@ -84,8 +86,22 @@ class TrainPipeline:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
     
+    
         
- 
+    # Starting the model training.. it will take models from model.yaml one by one and train the data with those model and compare to get the best model 
+    def start_model_trainer(self,data_transformation_artifact : Data_Transformation_Artifacts) -> Model_Trainer_Artifacts:
+        try:
+            model_trainer = Model_Trainer(data_transformation_artifact=data_transformation_artifact , model_trainer_config= self.model_trainer_config)
+            model_trainer_artifact = model_trainer.initiate_model_trainer()
+            return model_trainer_artifact
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+        
+    
+   
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
     # This method is used to start the training pipeline
     
@@ -95,6 +111,7 @@ class TrainPipeline:
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact= data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_ingestion_artifact=data_ingestion_artifact)
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
             logging.info("Exited the run_pipeline method of TrainPipeline class")
                 
         except Exception as e:
@@ -102,5 +119,7 @@ class TrainPipeline:
             raise CustomException(str(e),sys)
         
         
+        
+            
     # Lets start the pipeline.. for that we can go to trial_runner_app.py
     
