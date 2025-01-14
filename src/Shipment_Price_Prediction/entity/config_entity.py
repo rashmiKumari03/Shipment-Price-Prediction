@@ -105,9 +105,7 @@ class Data_Transformation_Config :
         
         self.DATA_INGESTION_ARTIFACTS_DIR:str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_INGESTION_ARTIFACTS_DIR)
         self.DATA_TRANSFORMATION_ARTIFACTS_DIR:str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_TRANSFORMATION_ARTIFACTS_DIR)
-        
-        self.TRANSFORMED_TRAIN_DATA_DIR:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TRAIN_DATA_DIR)
-        self.TRANSFORMED_TEST_DATA_DIR:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TEST_DATA_DIR)
+
         
         self.TRANSFORMED_TRAIN_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TRAIN_DATA_FILE_NAME)
         self.TRANSFORMED_TEST_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TEST_DATA_FILE_NAME)
@@ -121,6 +119,9 @@ class Model_Trainer_Config:
     
     def __init__(self):
         self.UTILS = MainUtils()
+        
+        self.SCHEMA_CONFIG = self.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
+        
         self.DATA_TRANSFORMATION_ARTIFACTS_DIR: str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_TRANSFORMATION_ARTIFACTS_DIR)
         self.MODEL_TRAINER_ARTIFACTS_DIR: str = os.path.join(from_root(),ARTIFACTS_DIR,MODEL_TRAINER_ARTIFACTS_DIR)
         self.PREPROCESSOR_OBJECT_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,PREPROCESSOR_OBJECT_FILE_NAME)
