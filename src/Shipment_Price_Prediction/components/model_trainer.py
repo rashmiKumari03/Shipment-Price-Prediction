@@ -49,7 +49,7 @@ class Model_Trainer:
         self.model_trainer_config = model_trainer_config
         
     # This method is used to get the trained models
-    def get_trained_models(self,X_data:DataFrame,y_data:DataFrame)-> List[Tuple[float,object,str]]:
+    def get_trained_models(self,x_data:DataFrame,y_data:DataFrame)-> List[Tuple[float,object,str]]:
         """ 
         Method Name : get_trained_models
         
@@ -61,18 +61,23 @@ class Model_Trainer:
         logging.info("Entered get_trained_models method of Model_Trainer class")
         
         try:
-            # Getting the model lists from model config file
+            
+            
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
             models_list = list(model_config["train_model"].keys())
-            logging.info("Got model list from the config file")
-            
-            
-            # Splitting the data into x_train , x_test , y_train and y_test
-            x_train , x_test , y_train , y_test = (X_data.drop(X_data.columns[len(X_data.columns)-1],axis=1),
-                                                   X_data.iloc[:,-1],
-                                                   y_data.drop(y_data.columns[len(y_data.columns)-1],axis=1),
-                                                   y_data.iloc[:,-1])
-            
+            logging.info("Fetched models from configuration file")
+
+            # Splitting the data into train and test sets
+            x_train, x_test = (
+                x_data.iloc[:, :-1],  # All columns except the last
+                x_data.iloc[:, -1],  # Last column
+            )
+            y_train, y_test = (
+                y_data.iloc[:, :-1],  # All columns except the last
+                y_data.iloc[:, -1],  # Last column
+            )
+           
+                                         
             # Getting the trained model list
             tunned_model_list = [
                 (
