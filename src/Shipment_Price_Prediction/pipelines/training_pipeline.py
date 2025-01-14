@@ -91,8 +91,13 @@ class TrainPipeline:
     # Starting the model training.. it will take models from model.yaml one by one and train the data with those model and compare to get the best model 
     def start_model_trainer(self,data_transformation_artifact : Data_Transformation_Artifacts) -> Model_Trainer_Artifacts:
         try:
-            model_trainer = Model_Trainer(data_transformation_artifact=data_transformation_artifact , model_trainer_config= self.model_trainer_config)
+            logging.info("Entered the start_model_trainer method of TrainPipeline")
+            model_trainer = Model_Trainer(
+                data_transformation_artifact=data_transformation_artifact,
+                model_trainer_config= self.model_trainer_config)
+            
             model_trainer_artifact = model_trainer.initiate_model_trainer()
+            logging.info("Exited the start_model_trainer method of TrainPipeline")
             return model_trainer_artifact
         
         except Exception as e:
