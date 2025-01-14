@@ -2,11 +2,16 @@ import os
 import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
+import numpy as np
 import pandas as pd
+import scipy
+from scipy.sparse import load_npz
+
 from pandas import DataFrame
 from typing import List,Tuple
+from sklearn.model_selection import train_test_split
 
-from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE
+from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE , TEST_SIZE
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts,Model_Trainer_Artifacts)
 
@@ -47,9 +52,10 @@ class Model_Trainer:
     def __init__(self,data_transformation_artifact:Data_Transformation_Artifacts,model_trainer_config:Model_Trainer_Config):
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
+    
         
     # This method is used to get the trained models
-    def get_trained_models(self,x_data:DataFrame,y_data:DataFrame)-> List[Tuple[float,object,str]]:
+    def get_trained_models(self,data:DataFrame,y_data:DataFrame)-> List[Tuple[float,object,str]]:
         """ 
         Method Name : get_trained_models
         
@@ -62,27 +68,27 @@ class Model_Trainer:
         
         try:
             
-            
-            model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
+            model_config = self.model_trainer_config.SCHEMA_CONFIG
+            logging.info("Model_List")
             models_list = list(model_config["train_model"].keys())
+            logging.info(models_list)
             logging.info("Fetched models from configuration file")
 
             # Splitting the data into train and test sets
-            x_train, x_test = (
-                x_data.iloc[:, :-1],  # All columns except the last
-                x_data.iloc[:, -1],  # Last column
-            )
-            y_train, y_test = (
-                y_data.iloc[:, :-1],  # All columns except the last
-                y_data.iloc[:, -1],  # Last column
-            )
-           
+            x_train, x_test, y_train, y_test = train_test_split(
+                data.iloc[:, :-1],  # All columns except the last
+                data.iloc[:, -1],   # Target/Last column
+                test_size= TEST_SIZE
+                )
+            
+            logging.info(f"x_train looks like:{x_train.head()}")
+            logging.info(f"x_test looks like:{x_test.head()}")
+            logging.info(f"y_train looks like:{y_train.head()}")
+            logging.info(f"y_test looks like:{y_test.head()}")
                                          
             # Getting the trained model list
             tunned_model_list = [
-                (
-                    self.model_trainer_config.UTILS.get_tunned_model(model_name,x_train,y_train,x_test,y_test)
-                )
+                self.model_trainer_config.UTILS.get_tunned_model(model_name,x_train,y_train,x_test,y_test)
                 for model_name in models_list
             ]
             logging.info("got trained model list")
@@ -93,8 +99,12 @@ class Model_Trainer:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
+
+        
+        
         
     def initiate_model_trainer(self) -> Model_Trainer_Artifacts:
+    
         
         """
         Model Name  : initiate_model_trainer
@@ -106,81 +116,80 @@ class Model_Trainer:
         """
         logging.info("Entered initiate_model_trainer method of Model_Trainer class")
         try:
-            
             # Creating Model trainer artifacts directory
-            os.makedirs(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR,exist_ok=True)
+            os.makedirs(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR, exist_ok=True)
             logging.info(f"Created artifacts directory for {os.path.basename(self.model_trainer_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)}")
             
-            # Loading the train array data and reading it as DataFrame
+           
             train_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_train_file_path)
-            train_df = pd.DataFrame(train_array)
-            logging.info(f"Loaded train array from Data_Transformation_Artifacts directory and converted into DataFrame")
-            
-            # Loading the test array data and reading it as DataFrame
+            logging.info(f"Data type of training_array is {type(train_array)}")
+            logging.info(f"Training array :\n{train_array}")
+            logging.info(f"Training array size :\n{train_array.shape}")
+                      
             test_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_test_file_path)
-            test_df = pd.DataFrame(test_array)
-            logging.info(f"Loaded test array from Data_Transformation_Artifacts directory and converted into DataFrame")
+            logging.info(f"Data type of testing_array is {type(test_array)}")
+            logging.info(f"Testing array : \n{test_array}")
+            logging.info(f"Testing array size : \n{test_array.shape}")
+            logging.info("-"*120)
             
+            train_df = pd.DataFrame(train_array)
+            test_df = pd.DataFrame(test_array)          
+        
+        
+            logging.info(f"Converted train and test arrays to DataFrames: Train shape {train_df.shape}, Test shape {test_df.shape}")
+
+            
+            # Convert the arrays directly to DataFrame without slicing them
+            #train_df = pd.DataFrame(train_array)  # Convert the entire array to a DataFrame
+            logging.info(f"Loaded train array from Data_Transformation_Artifacts directory and converted into DataFrame with shape {train_df.shape}")
+
+            #test_df = pd.DataFrame(test_array)  # Convert the entire array to a DataFrame
+            logging.info(f"Loaded test array from Data_Transformation_Artifacts directory and converted into DataFrame with shape {test_df.shape}")
+
+    
+
             # Getting the models list and finding the best model with score
-            list_of_trained_models = self.get_trained_models(train_df,test_df)
-            logging.info("Got a list of tuple of model score , model and model name")
-            best_model , best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
-            logging.info("Got best model score , model and model name")
-            
+            list_of_trained_models = self.get_trained_models(train_df, test_df)
+            logging.info("Got a list of tuple of model score, model, and model name")
+
+            # Finding the best model and score
+            best_model, best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
+            logging.info(f"Best model score: {best_model_score}, Model name: {best_model.__class__.__name__}")
+
             # Loading the preprocessor object
             preprocessor_obj_file_path = self.data_transformation_artifact.transformed_object_file_path
             preprocessor_obj = self.model_trainer_config.UTILS.load_object(preprocessor_obj_file_path)
             logging.info("Loaded preprocessing object")
-            
-            # Reading the model config file for getting the best model score
+
+            # Reading the model config file for getting the base model score
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
             base_model_score = float(model_config['base_model_score'])
-            
-            
-            # Updating the model score
-            if best_model_score >= base_model_score: 
+            logging.info(f"Base model score from config: {base_model_score}")
+
+            # Updating the model score if the best model is better than the base model score
+            if best_model_score >= base_model_score:
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
                 logging.info("Updating the model score in yaml file")
-                
+
                 # Loading the cost model object with preprocessor and model
-                cost_model = Cost_Model(preprocessor_obj , best_model)
+                cost_model = Cost_Model(preprocessor_obj, best_model)
                 logging.info("Created cost model object with preprocessor and model")
-                trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
-                
-                # Saving cost model in model artifacts directory
-                model_file_path = self.model_trainer_config.UTILS.save_object(trained_model_path,cost_model)
-                logging.info("Saved the best model object path")
+
+                # Saving the trained model in the model artifacts directory
+                model_file_path = self.model_trainer_config.UTILS.save_object(self.model_trainer_config.TRAINED_MODEL_FILE_PATH, cost_model)
+                logging.info(f"Saved the best model object at {model_file_path}")
             else:
-                logging.info("No best model found with score more than base score")
-                raise "No best model found with score more than base score"
-            
-            
+                logging.info("No best model found with score higher than the base score")
+                raise ValueError("No best model found with score higher than the base score")
+
             # Saving the model trainer artifacts
-            model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path= model_file_path)
-            
+            model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
+            logging.info(f"Model trainer artifacts saved at {model_trainer_artifacts.trained_model_file_path}")
+
             return model_trainer_artifacts
+        
         
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)          
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        except Exception as e:
-            logging.info(CustomException(str(e),sys))
-            raise CustomException(str(e),sys)
-           
         
