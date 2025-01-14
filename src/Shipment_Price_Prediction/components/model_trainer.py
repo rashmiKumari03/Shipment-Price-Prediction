@@ -109,6 +109,56 @@ class Model_Trainer:
             # Loading the train array data and reading it as DataFrame
             train_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_train_file_path)
             train_df = pd.DataFrame(train_array)
+            logging.info(f"Loaded train array from Data_Transformation_Artifacts directory and converted into DataFrame")
+            
+            # Loading the test array data and reading it as DataFrame
+            test_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_test_file_path)
+            test_df = pd.DataFrame(test_array)
+            logging.info(f"Loaded test array from Data_Transformation_Artifacts directory and converted into DataFrame")
+            
+            # Getting the models list and finding the best model with score
+            list_of_trained_models = self.get_trained_models(train_df,test_df)
+            logging.info("Got a list of tuple of model score , model and model name")
+            best_model , best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
+            logging.info("Got best model score , model and model name")
+            
+            # Loading the preprocessor object
+            preprocessor_obj_file_path = self.data_transformation_artifact.transformed_object_file_path
+            preprocessor_obj = self.model_trainer_config.UTILS.load_object(preprocessor_obj_file_path)
+            logging.info("Loaded preprocessing object")
+            
+            # Reading the model config file for getting the best model score
+            model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
+            base_model_score = float(model_config['base_model_score'])
+            
+            
+            # Updating the model score
+            if best_model_score >= base_model_score: 
+                self.model_trainer_config.UTILS.update_model_score(best_model_score)
+                logging.info("Updating the model score in yaml file")
+                
+                # Loading the cost model object with preprocessor and model
+                cost_model = Cost_Model(preprocessing_object , best_model)
+                logging.info("Created cost model object with preprocessor and model")
+                trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
+                
+                # Saving cost model in model artifacts directory
+                model_file_path = self.model_trainer_config.UTILS.save_object(trained_model_path,cost_model)
+                logging.info("Saved the best model object path")
+            else:
+                logging.info("No best model found with score more than base score")
+                raise "No best model found with score more than base score"
+            
+            
+            # Saving the model trainer artifacts
+            model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path= model_file_path)
+            
+            return model_trainer_artifacts
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)          
+            
             
             
             
