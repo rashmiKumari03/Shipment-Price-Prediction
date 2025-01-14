@@ -190,6 +190,34 @@ class Data_Transformation:
         except Exception as e:
             logging.info(CustomException(str(e), sys))
             raise CustomException(str(e), sys)
+        
+        
+    def create_target_column(self, data: DataFrame) -> DataFrame:
+        """
+        Method Name : create_target_column
+        Description : This method constructs the target column 'Shipment Price' by summing up the values of
+                    specific columns listed in the 'creating_target_columns' configuration.
+                    It handles the creation of the 'Shipment Price' in the dataframe.
+        Output      :  Updated dataframe with the new 'Shipment Price' target column.
+        """
+        try:
+            # Fetch the columns specified in the configuration
+            ele_target_cols = self.data_transformation_config.SCHEMA_CONFIG["creating_target_columns"]
+
+            # Ensure the columns exist in the DataFrame before processing
+            missing_columns = [col for col in ele_target_cols if col not in data.columns]
+            if missing_columns:
+                raise ValueError(f"Missing columns in the DataFrame: {missing_columns}")
+
+            # Sum the relevant columns to create the 'Shipment Price' target column
+            data["Shipment Price"] = data[ele_target_cols].sum(axis=1)
+
+            # Return the modified dataframe
+            return data
+
+        except Exception as e:
+            logging.info(f"Error in create_target_column: {str(e)}")
+            raise CustomException(f"Error in create_target_column: {str(e)}", sys)
 
 
     def handle_outliers(self, data: DataFrame) -> DataFrame:
@@ -360,15 +388,24 @@ class Data_Transformation:
             logging.info("Handed missing values in train and test datasets.")
             logging.info(f"Train dataset after missing value imputation:\n {self.train_set.head()}")
             logging.info(f"Test dataset after missing value imputation:\n {self.test_set.head()}")
+            
+            
+            # Step 3: Create the target column 'Shipment Price'
+            logging.info("Creating target column 'Shipment Price' in both train and test datasets...")
+            self.train_set = self.create_target_column(self.train_set)
+            self.test_set = self.create_target_column(self.test_set)
+            logging.info(f"Train dataset with 'Shipment Price' column:\n {self.train_set.head()}")
+            logging.info(f"Test dataset with 'Shipment Price' column:\n {self.test_set.head()}")
 
-            # Step 3: Handle Outliers
+
+            # Step 4: Handle Outliers
             self.train_set = self.handle_outliers(self.train_set)
             self.test_set = self.handle_outliers(self.test_set)
             logging.info("Handled outliers in train and test datasets.")
             logging.info(f"Train dataset after outlier handling:\n {self.train_set.head()}")
             logging.info(f"Test dataset after outlier handling:\n {self.test_set.head()}")
 
-            # Step 4: Apply Feature Transformation Pipeline
+            # Step 5: Apply Feature Transformation Pipeline
             preprocessor = self.get_data_transformer_object()
 
             # Fit and transform the training data
@@ -381,7 +418,7 @@ class Data_Transformation:
             X_test_transformed_arr = preprocessor.transform(self.test_set)
             logging.info(f"Transformed test data (first few rows):\n {pd.DataFrame(X_test_transformed_arr).head()}")
 
-            # Step 5: Saving the processed data as artifacts
+            # Step 6: Saving the processed data as artifacts
             
             # Define the file paths for saving transformed data and preprocessor object
             transformed_train_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_train_data.npz")
@@ -401,7 +438,7 @@ class Data_Transformation:
             joblib.dump(preprocessor, transformed_object_file_path)
             logging.info(f"Preprocessor object saved as a pickle file to {transformed_object_file_path}")
 
-            # Step 6: Creating Data_Transformation_Artifacts object to return processed data paths
+            # Step 7: Creating Data_Transformation_Artifacts object to return processed data paths
             data_transformation_artifacts = Data_Transformation_Artifacts(
                 transformed_train_file_path=transformed_train_file_path,
                 transformed_test_file_path=transformed_test_file_path,
