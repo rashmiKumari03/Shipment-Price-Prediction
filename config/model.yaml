@@ -10,7 +10,9 @@ train_model:
       - 100
       - 200
     booster: ['gbtree']
+
   # AdaBoost Regressor
+  
   AdaBoostRegressor:
     n_estimators:
       - 50
@@ -19,4 +21,4 @@ train_model:
       - 0.01
       - 0.1
 
-base_model_score: '0.1'
+base_model_score: 0.1
