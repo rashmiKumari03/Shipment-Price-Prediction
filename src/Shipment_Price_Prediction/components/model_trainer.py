@@ -4,23 +4,22 @@ from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 import numpy as np
 import pandas as pd
-import scipy
-from scipy.sparse import load_npz
+
 
 from pandas import DataFrame
 from typing import List,Tuple
-from sklearn.model_selection import train_test_split
 
-from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE , TEST_SIZE
+from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE 
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts,Model_Trainer_Artifacts)
 
 class Cost_Model:
+    
     def __init__(self,preprocessing_object: object , trained_model_object: object):
         self.preprocessing_object = preprocessing_object
         self.trained_model_object = trained_model_object
         
-    def predict(self,X)-> float:
+    def predict(self, X)-> float:
         """ 
         Method Name : predict
         
@@ -30,7 +29,7 @@ class Cost_Model:
         """
         logging.info("Entered predict method of the Cost_Model class")
         try:
-            # Using the trained model tp get predcition
+            # Using the trained model to get predcitions
             transformed_feature = self.preprocessing_object.transform(X)
             logging.info("Used the trained model to get predictions")
             
@@ -49,13 +48,16 @@ class Cost_Model:
     
     
 class Model_Trainer:
-    def __init__(self,data_transformation_artifact:Data_Transformation_Artifacts,model_trainer_config:Model_Trainer_Config):
+    
+    def __init__(self,
+                 data_transformation_artifact:Data_Transformation_Artifacts,
+                 model_trainer_config:Model_Trainer_Config):
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
     
         
     # This method is used to get the trained models
-    def get_trained_models(self,data:DataFrame,y_data:DataFrame)-> List[Tuple[float,object,str]]:
+    def get_trained_models(self, x_data : DataFrame , y_data : DataFrame)-> List[Tuple[float,object,str]]:
         """ 
         Method Name : get_trained_models
         
@@ -74,12 +76,12 @@ class Model_Trainer:
             logging.info(models_list)
             logging.info("Fetched models from configuration file")
 
-            # Splitting the data into train and test sets
-            x_train, x_test, y_train, y_test = train_test_split(
-                data.iloc[:, :-1],  # All columns except the last
-                data.iloc[:, -1],   # Target/Last column
-                test_size= TEST_SIZE
-                )
+            # Splitting the data into x_train,y_train , x_test ,y_test
+            x_train,y_train,x_test, y_test = (x_data.drop(x_data.columns[len(x_data.columns) - 1],axis=1),
+                                              x_data.iloc[:,-1],
+                                              y_data.drop(y_data.columns[len(y_data.columns)- 1],axis=1),
+                                              y_data.iloc[:,-1]
+                                              )
             
             logging.info(f"x_train looks like:{x_train.head()}")
             logging.info(f"x_test looks like:{x_test.head()}")
