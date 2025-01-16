@@ -149,11 +149,17 @@ class Model_Trainer:
 
             # Finding the best model and score
             best_model, best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
+            
             logging.info(f"Best model score: {best_model_score}, Model name: {best_model.__class__.__name__}")
+            logging.info("Got best model score and model with model name")
 
             # Loading the preprocessor object
             preprocessor_obj_file_path = self.data_transformation_artifact.transformed_object_file_path
+            logging.info(f"The Preprocessor_obj_file_path is : {preprocessor_obj_file_path}")
+            
             preprocessor_obj = self.model_trainer_config.UTILS.load_object(preprocessor_obj_file_path)
+            logging.info(f"Preprocessor object is: {preprocessor_obj}")
+            
             logging.info("Loaded preprocessing object")
 
             # Reading the model config file for getting the base model score
