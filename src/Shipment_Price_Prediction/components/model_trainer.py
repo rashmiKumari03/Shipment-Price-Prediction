@@ -57,7 +57,7 @@ class Model_Trainer:
     
         
     # This method is used to get the trained models
-    def get_trained_models(self, x_data : DataFrame , y_data : DataFrame)-> List[Tuple[float,object,str]]:
+    def get_trained_models(self, train_data : DataFrame , test_data : DataFrame)-> List[Tuple[float,object,str]]:
         """ 
         Method Name : get_trained_models
         
@@ -76,11 +76,11 @@ class Model_Trainer:
             logging.info(models_list)
             logging.info("Fetched models from configuration file")
 
-            # Splitting the data into x_train,y_train , x_test ,y_test
-            x_train,y_train,x_test, y_test = (x_data.drop(x_data.columns[len(x_data.columns) - 1],axis=1),
-                                              x_data.iloc[:,-1],
-                                              y_data.drop(y_data.columns[len(y_data.columns)- 1],axis=1),
-                                              y_data.iloc[:,-1]
+            # Splitting the data into  x_train , y_train and x_test , y_test
+            x_train,y_train,x_test, y_test = (train_data.drop(train_data.columns[len(train_data.columns) - 1],axis=1),
+                                              train_data.iloc[:,-1],
+                                              test_data.drop(test_data.columns[len(test_data.columns)- 1],axis=1),
+                                              test_data.iloc[:,-1]
                                               )
             
             logging.info(f"x_train looks like:{x_train.head()}")
@@ -141,15 +141,6 @@ class Model_Trainer:
         
         
             logging.info(f"Converted train and test arrays to DataFrames: Train shape {train_df.shape}, Test shape {test_df.shape}")
-
-            
-            # Convert the arrays directly to DataFrame without slicing them
-            #train_df = pd.DataFrame(train_array)  # Convert the entire array to a DataFrame
-            logging.info(f"Loaded train array from Data_Transformation_Artifacts directory and converted into DataFrame with shape {train_df.shape}")
-
-            #test_df = pd.DataFrame(test_array)  # Convert the entire array to a DataFrame
-            logging.info(f"Loaded test array from Data_Transformation_Artifacts directory and converted into DataFrame with shape {test_df.shape}")
-
     
 
             # Getting the models list and finding the best model with score
