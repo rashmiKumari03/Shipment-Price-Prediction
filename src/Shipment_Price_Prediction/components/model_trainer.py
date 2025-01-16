@@ -146,12 +146,13 @@ class Model_Trainer:
             # Getting the models list and finding the best model with score
             list_of_trained_models = self.get_trained_models(train_df, test_df)
             logging.info("Got a list of tuple of model score, model, and model name")
-
-            # Finding the best model and score
-            best_model, best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
             
-            logging.info(f"Best model score: {best_model_score}, Model name: {best_model.__class__.__name__}")
-            logging.info("Got best model score and model with model name")
+            # Finding the best model, its name, and score
+            best_model_name , best_model_score , best_model_object = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
+
+            # Logging the details of the best model
+            logging.info(f"Best model: {best_model_name}, Model object: {best_model_object}, Score: {best_model_score}")
+            logging.info("Successfully identified the best model, its score, and name.")
 
             # Loading the preprocessor object
             preprocessor_obj_file_path = self.data_transformation_artifact.transformed_object_file_path
@@ -169,13 +170,13 @@ class Model_Trainer:
             logging.info(f"Base model score from config: {base_model_score}")
 
             # Updating the model score if the best model is better than the base model score
-            if best_model_score >= base_model_score:
+            if float(best_model_score) >= float(base_model_score):
                 
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
                 logging.info("Updating the model score in yaml file")
 
                 # Loading the cost model object with preprocessor and model
-                cost_model = Cost_Model(preprocessor_obj, best_model)
+                cost_model = Cost_Model(preprocessor_obj, best_model_object)
                 logging.info("Created cost model object with preprocessor and model")
                 
                 trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
