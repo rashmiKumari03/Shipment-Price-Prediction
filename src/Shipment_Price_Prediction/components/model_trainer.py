@@ -104,7 +104,7 @@ class Model_Trainer:
 
         
         
-        
+    # This method is used to initialize model training
     def initiate_model_trainer(self) -> Model_Trainer_Artifacts:
     
         
@@ -122,18 +122,20 @@ class Model_Trainer:
             os.makedirs(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR, exist_ok=True)
             logging.info(f"Created artifacts directory for {os.path.basename(self.model_trainer_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)}")
             
-           
+            # Loading the train array data and reading it as DataFrame
             train_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_train_file_path)
             logging.info(f"Data type of training_array is {type(train_array)}")
             logging.info(f"Training array :\n{train_array}")
             logging.info(f"Training array size :\n{train_array.shape}")
                       
+            # Loading the test array data and reading it as DataFrame
             test_array = self.model_trainer_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.transformed_test_file_path)
             logging.info(f"Data type of testing_array is {type(test_array)}")
             logging.info(f"Testing array : \n{test_array}")
             logging.info(f"Testing array size : \n{test_array.shape}")
             logging.info("-"*120)
             
+            # Coversion of array into Datarame
             train_df = pd.DataFrame(train_array)
             test_df = pd.DataFrame(test_array)          
         
