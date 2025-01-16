@@ -144,11 +144,11 @@ class MainUtils:
     def get_best_model_with_name_and_score(model_list : list) -> Tuple[object,float]:
         logging.info("Entered the get_best_model_with_name_and_score method of MainUtils class")
         try:
-            best_score = max(model_list[0])
-            best_model = max(model_list[0])
-            logging.info("Exited the get_best_model_with_name_and_score method of MainUtils class")
-            
-            return best_score , best_model
+            if not model_list:
+                logging.info("Model list is empty.")
+                logging.info("Exited the get_best_model_with_name_and_score method of MainUtils class")
+            return max(model_list, key=lambda x: x[2])
+      
         except Exception as e:
             raise CustomException(str(e),sys)
 
