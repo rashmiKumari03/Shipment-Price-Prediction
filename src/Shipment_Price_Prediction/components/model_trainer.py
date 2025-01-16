@@ -164,24 +164,30 @@ class Model_Trainer:
 
             # Reading the model config file for getting the base model score
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
-            base_model_score = float(model_config['base_model_score'])
+            
+            base_model_score = float(model_config["base_model_score"])
             logging.info(f"Base model score from config: {base_model_score}")
 
             # Updating the model score if the best model is better than the base model score
             if best_model_score >= base_model_score:
+                
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
                 logging.info("Updating the model score in yaml file")
 
                 # Loading the cost model object with preprocessor and model
                 cost_model = Cost_Model(preprocessor_obj, best_model)
                 logging.info("Created cost model object with preprocessor and model")
+                
+                trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
+                logging.info("Created best model file path")
 
                 # Saving the trained model in the model artifacts directory
-                model_file_path = self.model_trainer_config.UTILS.save_object(self.model_trainer_config.TRAINED_MODEL_FILE_PATH, cost_model)
+                model_file_path = self.model_trainer_config.UTILS.save_object(trained_model_path, cost_model)
                 logging.info(f"Saved the best model object at {model_file_path}")
+                
             else:
-                logging.info("No best model found with score higher than the base score")
-                raise ValueError("No best model found with score higher than the base score")
+                logging.info("No best model found with score higher than the base model score")
+                raise ValueError("No best model found with score higher than the base model score")
 
             # Saving the model trainer artifacts
             model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
