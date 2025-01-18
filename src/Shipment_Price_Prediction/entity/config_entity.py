@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from from_root import from_root
 import os
 
-# from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
+from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
 from src.Shipment_Price_Prediction.constant import * 
@@ -127,3 +127,5 @@ class Model_Trainer_Config:
         self.PREPROCESSOR_OBJECT_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,PREPROCESSOR_OBJECT_FILE_NAME)
         self.TRAINED_MODEL_FILE_PATH:str = os.path.join(self.MODEL_TRAINER_ARTIFACTS_DIR,MODEL_FILE_NAME)
         
+        
+# Import the S3 bucket functionality and write the S3 operations code in the configuration folder for modularity.
