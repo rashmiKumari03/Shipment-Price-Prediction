@@ -129,3 +129,14 @@ class Model_Trainer_Config:
         
         
 # Import the S3 bucket functionality and write the S3 operations code in the configuration folder for modularity.
+
+# Model Evaluation Configuration
+
+class Model_Evaluation_Config:
+    
+    def __init__(self):
+        self.S3_Operation = S3_Operation()
+        self.UTILS = MainUtils()
+        self.BUCKET_NAME : str = BUCKET_NAME
+        self.BEST_MODEL_PATH : str = os.path.join(from_root(), ARTIFACTS_DIR , MODEL_TRAINER_ARTIFACTS_DIR , MODEL_FILE_NAME)
+        
