@@ -191,33 +191,6 @@ class Data_Transformation:
             logging.info(CustomException(str(e), sys))
             raise CustomException(str(e), sys)
         
-        
-    def create_target_column(self, data: DataFrame) -> DataFrame:
-        """
-        Method Name : create_target_column
-        Description : This method constructs the target column 'Shipment Price' by summing up the values of
-                    specific columns listed in the 'creating_target_columns' configuration.
-                    It handles the creation of the 'Shipment Price' in the dataframe.
-        Output      :  Updated dataframe with the new 'Shipment Price' target column.
-        """
-        try:
-            # Fetch the columns specified in the configuration
-            ele_target_cols = self.data_transformation_config.SCHEMA_CONFIG["creating_target_columns"]
-
-            # Ensure the columns exist in the DataFrame before processing
-            missing_columns = [col for col in ele_target_cols if col not in data.columns]
-            if missing_columns:
-                raise ValueError(f"Missing columns in the DataFrame: {missing_columns}")
-
-            # Sum the relevant columns to create the 'Shipment Price' target column
-            data["Shipment Price"] = data[ele_target_cols].sum(axis=1)
-
-            # Return the modified dataframe
-            return data
-
-        except Exception as e:
-            logging.info(f"Error in create_target_column: {str(e)}")
-            raise CustomException(f"Error in create_target_column: {str(e)}", sys)
 
 
     def handle_outliers(self, data: DataFrame) -> DataFrame:
@@ -386,8 +359,7 @@ class Data_Transformation:
             logging.info("Basic Inspection of Train dataset and Test dataset:")
             logging.info(self.basic_inspection())
 
-            # Step 2: Handle Duplicates and Missing Values
-            
+            # Step 2: Handle Duplicates 
             self.train_set = self.handle_duplicate_values(self.train_set)
             self.test_set = self.handle_duplicate_values(self.test_set)
             logging.info("Handed duplicate values in train and test datasets.")
@@ -395,20 +367,13 @@ class Data_Transformation:
             logging.info(f"Duplicate Values in Testset Now : {self.test_set.duplicated().sum()}")
             
             
+            # Step 3: Handling the Missing Values
             self.train_set = self.handle_missing_values(self.train_set)
             self.test_set = self.handle_missing_values(self.test_set)
             logging.info("Handed missing values in train and test datasets.")
             logging.info(f"Train dataset after missing value imputation:\n {self.train_set.head()}")
             logging.info(f"Test dataset after missing value imputation:\n {self.test_set.head()}")
             
-            
-            # Step 3: Create the target column 'Shipment Price'
-            logging.info("Creating target column 'Shipment Price' in both train and test datasets...")
-            self.train_set = self.create_target_column(self.train_set)
-            self.test_set = self.create_target_column(self.test_set)
-            logging.info(f"Train dataset with 'Shipment Price' column:\n {self.train_set.head()}")
-            logging.info(f"Test dataset with 'Shipment Price' column:\n {self.test_set.head()}")
-
 
             # Step 4: Handle Outliers
             self.train_set = self.handle_outliers(self.train_set)
