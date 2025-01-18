@@ -89,3 +89,31 @@ class Model_Trainer_Artifacts:
     trained_model_file_path: str
 
   
+@dataclass
+class Model_Evaluation_Artifact:
+    """
+    This class holds the information related to the evaluation results of the trained model.
+
+    Attributes:
+    - is_model_accepted (bool): A boolean flag indicating whether the trained model meets the performance 
+      criteria and is accepted for further use (e.g., deployment). If True, the model has passed evaluation 
+      and is deemed ready for deployment. If False, the model did not meet the desired standards and further 
+      improvements may be needed.
+      
+    - trained_model_path (str): The file path where the trained model is stored. This is important for tracking
+      which model was evaluated and linking the evaluation results back to the correct version of the model.
+
+    - changed_accuracy (float): The change in accuracy (or any other performance metric) after the evaluation. 
+      This attribute is used to track the performance difference compared to a baseline (e.g., previous model version 
+      or threshold). A positive value indicates an improvement in accuracy, while a negative value indicates a degradation.
+
+    Purpose:
+    After a model is trained, it needs to be evaluated to assess its performance. This class stores the results 
+    of the model evaluation, including whether the model is accepted, the path to the trained model, 
+    and the change in its accuracy. These results are crucial for deciding whether the model should proceed to 
+    the deployment phase or if further training and refinement are required. The evaluation helps determine the model's 
+    readiness to make predictions on unseen data and if it can provide value in real-world applications.
+    """
+    is_model_accepted: bool
+    trained_model_path: str
+    changed_accuracy: float
