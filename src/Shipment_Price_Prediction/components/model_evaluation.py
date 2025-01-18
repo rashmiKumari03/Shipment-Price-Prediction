@@ -56,10 +56,41 @@ class Model_Evaluation:
                 return model
             else:
                 logging.info("Model Not Found !")
+                None
                 
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
+        
+    # This method is used to evaluate the model
+    
+    def evaluate_model(self) -> Evaluate_Model_Response:
+        """ 
+        Method Name : evaluate_model 
+        
+        Description : This method evaluates s3 bucket model and production model
+        
+        Output      : This model give output about the evaluation metric , whether model is accepted or not
+        """
+        logging.info("Entered the evaluate_model method of Model evaluation class")
+        try:
+            # Reading the test data and splitting it into train and test
+            test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
+            
+            # Issue hai yaha test_df me Shipment_Price target col defined nahi hai...then how to do it
+            x,y = test_df.drop(TARGET_COLUMN,axis=1),test_df[TARGET_COLUMN]
+            logging.info("splitted the test data into train and test")
+            
+            # Loading production model for prediction
+            trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
+            y_hat_trained_model = trained_model.predict(x)
+            logging.info("Prediction done with production model")
+            
+            # Checking the r2 score of production model
+            trained_model_r2_score =
+            
+            
+            
 
             
         
