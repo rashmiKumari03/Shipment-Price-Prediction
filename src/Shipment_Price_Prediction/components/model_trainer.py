@@ -188,7 +188,6 @@ class Model_Trainer:
                 
             else:
                 logging.info("No best model found with score higher than the base model score")
-                raise ValueError("No best model found with score higher than the base model score")
 
             # Saving the model trainer artifacts
             model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
