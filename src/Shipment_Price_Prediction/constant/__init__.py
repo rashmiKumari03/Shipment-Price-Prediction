@@ -65,3 +65,8 @@ PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"   # used for predict
 MODEL_TRAINER_ARTIFACTS_DIR = "Model_Trainer_Artifacts"
 MODEL_FILE_NAME = "Shipping_Price_Pred_Model.pkl"
 MODEL_SAVE_FORMAT = ".pkl"
+
+
+# Constants related to S3 Bucket 
+BUCKET_NAME = "shipment-price-predictor-ML"
+S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"
