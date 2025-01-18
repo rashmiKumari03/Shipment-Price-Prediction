@@ -8,6 +8,5 @@ from src.Shipment_Price_Prediction.constant import *
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts)
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Evaluation_Config
 
-# Need to create some constants in constant folder for model evaluation.
-# Writing the configuration regarding S3 Bucket.
-
+# Define constants for model evaluation in the constants folder.
+# Implement the S3 bucket configuration in the configuration folder for better organization.
