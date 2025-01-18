@@ -19,6 +19,7 @@ from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Ingestion
 from src.Shipment_Price_Prediction.constant import TEST_SIZE
 
 # Note : We first have to create Data_Ingestion_Config , Data_Ingestion_Artifacts and TEST_SIZE in their respective path.
+
 """
 Data Ingestion Flow Overview:
 
@@ -43,22 +44,43 @@ Data Ingestion Flow Overview:
       - Output:
         - Stores the raw dataset in feature_store_file_path under Data_Ingestion_Artifact.
 
-   b) Drop_Columns:
+   b) Handle_Duplicates:
       - Input:
-        - Reads the feature store dataset.
-        - Uses a schema file to identify columns to drop.
+        - Reads the raw dataset from the feature store.
+        - Identifies and removes duplicate entries based on predefined criteria.
       - Output:
-        - Saves the cleaned dataset back to the feature store.
+        - Saves the cleaned dataset (with duplicates removed) back to the feature store.
 
-   c) Split_Data_as_train_and_test:
+   c) Handle_Missing_Values:
       - Input:
-        - Reads the cleaned dataset from the feature store.
+        - Reads the dataset with duplicates removed.
+        - Identifies and handles missing values (e.g., by imputation, removal, or flagging).
+      - Output:
+        - Saves the dataset with handled missing values back to the feature store.
+
+   d) Create_Target_Variable:
+      - Input:
+        - Reads the cleaned dataset with handled missing values.
+        - Creates the target variable (e.g., "Shipment Price") based on business logic or data analysis.
+      - Output:
+        - Adds the target variable to the dataset and saves the updated dataset to the feature store.
+
+   e) Drop_Columns:
+      - Input:
+        - Reads the feature store dataset with the target variable.
+        - Uses a schema file to identify columns to drop based on business requirements.
+      - Output:
+        - Saves the final cleaned dataset (with dropped columns) back to the feature store.
+
+   f) Split_Data_as_train_and_test:
+      - Input:
+        - Reads the cleaned and final dataset from the feature store.
         - Splits the data into train and test sets based on train_test_split_ratio.
       - Output:
-        - Stores train_data and test_data as train.csv and test.csv under Data_Ingestion_Artifact.
+        - Stores the train_data and test_data as train.csv and test.csv under Data_Ingestion_Artifact.
 
 4. Final Outputs:
-   - Feature_Store: Contains the complete cleaned dataset.
+   - Feature_Store: Contains the complete cleaned dataset with target variable.
    - Train_Test_Split: Train and test datasets saved as:
      - Data_Ingestion_Artifact/timestamp/ingested/train.csv
      - Data_Ingestion_Artifact/timestamp/ingested/test.csv
@@ -80,10 +102,29 @@ Detailed Flow Diagram:
     └──────────────┬───────────────┘
                    ▼
     ┌──────────────────────────────┐
+    │      Handle_Duplicates       │
+    │  - Remove duplicates         │
+    │  - Save cleaned dataset      │
+    └──────────────┬───────────────┘
+                   ▼
+    ┌──────────────────────────────┐
+    │    Handle_Missing_Values     │
+    │  - Impute or remove missing  │
+    │    values                    │
+    │  - Save cleaned dataset      │
+    └──────────────┬───────────────┘
+                   ▼
+    ┌──────────────────────────────┐
+    │     Create_Target_Variable   │
+    │  - Create the target column  │
+    │  - Save updated dataset      │
+    └──────────────┬───────────────┘
+                   ▼
+    ┌──────────────────────────────┐
     │         Drop_Columns         │
     │  - Load schema file          │
     │  - Drop unwanted columns     │
-    │  - Save cleaned dataset      │
+    │  - Save final cleaned dataset│
     └──────────────┬───────────────┘
                    ▼
     ┌──────────────────────────────┐
@@ -101,8 +142,9 @@ Data_Ingestion_Artifact/    Data_Ingestion_Artifact/
 timestamp/ingested/         timestamp/ingested/
 
 Purpose:
-This workflow ensures modular, reproducible, and efficient data ingestion for machine learning pipelines, with clear separation of raw data, cleaned data, and training/testing datasets.
+This workflow ensures modular, reproducible, and efficient data ingestion for machine learning pipelines, with clear separation of raw data, cleaned data, and training/testing datasets. The flow allows for seamless handling of duplicates, missing values, target variable creation, and data splitting to ensure data quality and readiness for modeling.
 """
+
 
 # Creating data ingestion related constants in constant folder
 
