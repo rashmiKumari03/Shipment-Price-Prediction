@@ -6,8 +6,10 @@ from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 
 from pandas import DataFrame
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from typing import Tuple
+from sklearn.impute import SimpleImputer
 
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
 
@@ -138,6 +140,108 @@ class Data_Ingestion:
         
         except Exception as e :
             raise CustomException(f"Error in fetching data from MongoDB: {str(e)}", sys)
+          
+          
+          
+      
+    # Preprocess a bit and creating the Target column    
+    def handle_duplicate_values(self, data: DataFrame) -> DataFrame:
+        """
+        Method Name : handle_duplicates
+        
+        Description : This method handles duplicate rows in the dataset by checking for exact duplicates and removing them.
+                      It ensures that only unique rows are retained in the dataset.
+        
+        Output      : DataFrame with duplicates removed.
+        """
+        logging.info("Entered handle_duplicates method of Data_Ingestion class")
+        
+        try:
+            # Check for duplicate rows
+            duplicates_count = data.duplicated().sum()
+
+            if duplicates_count > 0:
+                logging.info(f"Found {duplicates_count} duplicate rows. Removing duplicates.")
+                data = data.drop_duplicates()
+                logging.info(f"Duplicates removed. The new number of rows: {data.shape[0]}")
+            else:
+                logging.info("No duplicates found in the dataset.")
+            
+            logging.info("Exited handle_duplicates method of Data_Ingestion class")
+            return data
+
+        except Exception as e:
+            logging.info(CustomException(str(e), sys))
+            raise CustomException(str(e), sys)
+
+          
+    
+          
+
+    def handle_missing_values(self, data: DataFrame) -> DataFrame:
+        """
+        Method Name : handle_missing_values
+        
+        Description : This method handles missing values in the dataset by applying imputation strategies. 
+                      Numerical columns are imputed with the median value, categorical columns are imputed 
+                      with the most frequent value, and datetime columns are processed to extract meaningful features.
+                      No imputation is done for datetime columns as there are no missing values.
+        
+        Output      : DataFrame with missing values imputed and date features transformed into meaningful columns.
+        """
+        logging.info("Entered handle_missing_values method of Data_Ingestion class")
+        try:
+            # Get columns from SCHEMA_CONFIG
+            ele_target_cols = self.data_ingestion_config.SCHEMA_CONFIG["creating_target_columns"]
+            
+            # Impute missing values for only the column we need to create target column
+            # Convert non-numeric values to NaN in numerical columns
+            data[ele_target_cols] = data[ele_target_cols].apply(pd.to_numeric, errors='coerce')
+
+            numerical_imputer = SimpleImputer(strategy='median')
+            data[ele_target_cols] = numerical_imputer.fit_transform(data[ele_target_cols])
+
+            logging.info("Exited handle_missing_values method of Data_Ingestion class")
+            return data
+
+        except Exception as e:
+            logging.info(CustomException(str(e), sys))
+            raise CustomException(str(e), sys)
+
+        
+        
+
+    def create_target_column(self, data: DataFrame) -> DataFrame:
+      """
+      Method Name : create_target_column
+      Description : This method constructs the target column 'Shipment Price' by summing up the values of
+                    specific columns listed in the 'creating_target_columns' configuration.
+                    It handles the creation of the 'Shipment Price' in the dataframe.
+      
+      Output      : Updated dataframe with the new 'Shipment Price' target column.
+      """
+      logging.info("Entered create_target_column method of Data_Ingestion class")
+      
+      try:
+          # Fetch the columns specified in the configuration
+          ele_target_cols = self.data_ingestion_config.SCHEMA_CONFIG["creating_target_columns"]
+
+          # Ensure the columns exist in the DataFrame before processing
+          missing_columns = [col for col in ele_target_cols if col not in data.columns]
+          if missing_columns:
+              raise ValueError(f"Missing columns in the DataFrame: {missing_columns}")
+
+          # Sum the relevant columns to create the 'Shipment Price' target column
+          data["Shipment Price"] = data[ele_target_cols].sum(axis=1)
+
+          logging.info("Exited create_target_column method of Data_Ingestion class")
+          return data
+
+      except Exception as e:
+          logging.info(CustomException(str(e), sys))
+          raise CustomException(str(e), sys)
+
+
         
        
     # This method will split the data
@@ -210,6 +314,23 @@ class Data_Ingestion:
             logging.info("After Dropping the columns we have the dataset as")
             logging.info(cleaned_data.head())
             logging.info("Got the data from mongodb")
+            
+            
+            # Step 2: Handle Duplicates and Missing Values for cleaned_data
+
+            cleaned_data = self.handle_duplicate_values(cleaned_data)
+            logging.info("Handled duplicate values in cleaned dataset.")
+            logging.info(f"Duplicate values in cleaned_data now: {cleaned_data.duplicated().sum()}")
+
+            cleaned_data = self.handle_missing_values(cleaned_data)
+            logging.info("Handled missing values in cleaned dataset.")
+            logging.info(f"Cleaned dataset after missing value imputation:\n {cleaned_data.head()}")
+
+            # Step 3: Create the target column 'Shipment Price' in cleaned_data
+            logging.info("Creating target column 'Shipment Price' in cleaned dataset...")
+            cleaned_data = self.create_target_column(cleaned_data)
+            logging.info(f"Cleaned dataset with 'Shipment Price' column:\n {cleaned_data.head()}")
+
             
             
             # Splitting the data as train set and test set
