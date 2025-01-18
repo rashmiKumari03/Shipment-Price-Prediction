@@ -90,7 +90,7 @@ class Model_Trainer_Artifacts:
 
   
 @dataclass
-class Model_Evaluation_Artifact:
+class Model_Evaluation_Artifacts:
     """
     This class holds the information related to the evaluation results of the trained model.
 
