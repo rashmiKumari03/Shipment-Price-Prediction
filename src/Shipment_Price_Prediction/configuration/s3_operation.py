@@ -1,5 +1,6 @@
 
 import os
+import sys
 import pickle
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -40,8 +41,8 @@ class S3_Operation:
             logging.info("Exited the upload_file method of S3_Operation class")
         
         except Exception as e:
-            logging.info(CustomException(str(r),sys))
+            logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
         
-        
+    
         
