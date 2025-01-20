@@ -76,9 +76,7 @@ class Model_Evaluation:
         try:
             # Reading the test data and splitting it into train and test
             test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
-            
-            # Issue hai yaha test_df me Shipment_Price target col defined nahi hai...then how to do it
-            x,y = test_df.drop(TARGET_COLUMN,axis=1),test_df[TARGET_COLUMN]
+            x , y = test_df.drop(TARGET_COLUMN,axis=1) , test_df[TARGET_COLUMN]
             logging.info("splitted the test data into train and test")
             
             # Loading production model for prediction
@@ -87,7 +85,25 @@ class Model_Evaluation:
             logging.info("Prediction done with production model")
             
             # Checking the r2 score of production model
-            trained_model_r2_score =
+            trained_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(y,y_hat_trained_model)
+            
+            # Loading the s3 model
+            s3_model_r2_score = None
+            s3_model = self.get_s3_model()
+            if s3_model is not None:
+                y_hat_s3_model = s3_model.predict(x)
+                s3_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(y,y_hat_s3_model)
+                
+            # Saving the s3 model r2 score in tml_best_model_score variable.
+            tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
+            
+            # Saving the Evaluate model response
+            result = Evaluate_Model_Response( trained_model_r2_score= trained_model_r2_score,s3_model_r2_score=s3_model_r2_score)
+            is_model_accepted = True
+            difference = trained_model_r2_score - tmp_best_model_score
+            
+            
+            
             
             
             
