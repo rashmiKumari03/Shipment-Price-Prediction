@@ -176,7 +176,6 @@ class Model_Trainer:
             
             """
             WARNING: 
-
             If the best_model_score is lower than the base_model_score, the model will not be saved.
             Ensure that the base_model_score in model.yaml is initialized to a reasonable value (e.g., 0.1)
             before starting the training process. 
