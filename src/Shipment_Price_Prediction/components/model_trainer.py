@@ -168,8 +168,28 @@ class Model_Trainer:
             
             base_model_score = float(model_config["base_model_score"])
             logging.info(f"Base model score from config: {base_model_score}")
+            
+            # Setting a default value for model_file_path before the comparison
+            model_file_path = None
 
             # Updating the model score if the best model is better than the base model score
+            
+            """
+            WARNING: 
+
+            If the best_model_score is lower than the base_model_score, the model will not be saved.
+            Ensure that the base_model_score in model.yaml is initialized to a reasonable value (e.g., 0.1)
+            before starting the training process. 
+
+            If the base_model_score is set too high or not properly configured, it could prevent the best model 
+            from being saved, even if the model performs well. This may result in missing the best model due to 
+            an incorrectly configured score threshold.
+
+            Make sure to double-check the base_model_score value before running the training to avoid potential issues.
+            
+            """
+
+
             if float(best_model_score) >= float(base_model_score):
                 
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
@@ -188,6 +208,12 @@ class Model_Trainer:
                 
             else:
                 logging.info("No best model found with score higher than the base model score")
+                
+            
+            # If no model was saved, you can handle it by setting model_file_path to a default or None
+            if model_file_path is None:
+                logging.error("Model was not saved due to insufficient score.")
+                return None  # or raise a CustomException if needed
 
             # Saving the model trainer artifacts
             model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
