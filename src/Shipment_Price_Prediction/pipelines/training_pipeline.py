@@ -2,13 +2,15 @@ import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts)
+from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config,Model_Evaluation_Config)
 
 from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingestion
 from src.Shipment_Price_Prediction.components.data_validation import Data_Validation
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 from src.Shipment_Price_Prediction.components.model_trainer import Model_Trainer
+from src.Shipment_Price_Prediction.components.model_evaluation import Model_Evaluation
+from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 
 
 # Initializing the Training Pipeline.
@@ -20,6 +22,11 @@ class TrainPipeline:
         self.data_validation_config = Data_Validation_Config()
         self.data_transformation_config = Data_Transformation_Config()
         self.model_trainer_config = Model_Trainer_Config()
+        self.model_evaluation_config = Model_Evaluation_Config()
+        
+        # Also need to initialise S3
+        self.s3_operations = S3_Operation()
+        
         
     
     # The method is used to start the data ingestion
@@ -94,7 +101,8 @@ class TrainPipeline:
             logging.info("Entered the start_model_trainer method of TrainPipeline")
             model_trainer = Model_Trainer(
                 data_transformation_artifact=data_transformation_artifact,
-                model_trainer_config= self.model_trainer_config)
+                model_trainer_config= self.model_trainer_config
+                )
             
             model_trainer_artifact = model_trainer.initiate_model_trainer()
             logging.info("Exited the start_model_trainer method of TrainPipeline")
@@ -103,6 +111,18 @@ class TrainPipeline:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
+        
+        
+    # Starting the model evaluation ...
+    def start_model_evaluation(self,data_ingestion_artifact : Data_Ingestion_Artifacts , model_trainer_artifact : Model_Trainer_Artifacts ) -> Model_Evaluation_Artifacts:
+        try:
+            model_evaluation = Model_Evaluation( model_evaluation_config = self.model_evaluation_config,
+                                                data_ingestion_artifact = data_ingestion_artifact,
+                                                model_trainer_artifact= model_trainer_artifact
+                                                )
+        except Exception
+    
+    
         
         
     
