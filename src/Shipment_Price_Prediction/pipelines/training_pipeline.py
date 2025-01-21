@@ -168,8 +168,12 @@ class TrainPipeline:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
         
-        
-        
-            
-    # Lets start the pipeline.. for that we can go to trial_runner_app.py
     
+    
+# From ingestion to model trainer, the entire pipeline is ready. Let's proceed with running the pipeline. 
+# For this, we can navigate to `trial_runner_app.py`.
+
+# However, before starting, ensure the S3 bucket is configured. This includes logging into AWS, creating the bucket, 
+# and setting up access for storing artifacts.
+
+# Now, let's begin the pipeline by running `trial_runner_app.py`.
