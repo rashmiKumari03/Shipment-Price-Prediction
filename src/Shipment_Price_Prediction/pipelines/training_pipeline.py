@@ -142,6 +142,25 @@ class TrainPipeline:
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
             model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact, 
                                                                     model_trainer_artifact= model_trainer_artifact)
+     
+            """
+            This block handles the evaluation of the trained model. 
+            Since model evaluation does not create any artifacts, we use logging and print statements 
+            to confirm whether the execution is completed successfully.
+
+            The `if-else` statement checks if the model is accepted based on predefined criteria. 
+            If the model is not accepted, an appropriate log and message are generated. 
+            Otherwise, it confirms that the model has been successfully accepted.
+            
+            """
+            
+            if not model_trainer_artifact.is_model_accepted:
+                logging.info("Model evaluation completed: The model was NOT accepted based on the evaluation criteria.")
+                print("Model evaluation completed: The model was NOT accepted.")
+            else:
+                logging.info("Model evaluation completed: The model was successfully accepted.")
+                print("Model evaluation completed: The model was accepted.")
+                
             
             logging.info("Exited the run_pipeline method of TrainPipeline class")
                 
