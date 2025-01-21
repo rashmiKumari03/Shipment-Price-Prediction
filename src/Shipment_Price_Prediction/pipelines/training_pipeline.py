@@ -120,11 +120,14 @@ class TrainPipeline:
                                                 data_ingestion_artifact = data_ingestion_artifact,
                                                 model_trainer_artifact= model_trainer_artifact
                                                 )
-        except Exception
+            model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
+            
+            return model_evaluation_artifact
+            
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
     
-    
-        
-        
     
    
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
@@ -137,6 +140,9 @@ class TrainPipeline:
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact= data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_ingestion_artifact=data_ingestion_artifact)
             model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
+            model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact, 
+                                                                    model_trainer_artifact= model_trainer_artifact)
+            
             logging.info("Exited the run_pipeline method of TrainPipeline class")
                 
         except Exception as e:
