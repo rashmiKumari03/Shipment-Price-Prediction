@@ -103,8 +103,12 @@ class Model_Evaluation:
         try:
             # Reading the test data
             test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
-            x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
+            logging.info("Segregating the test_df data as independent and dependent columns")
+            x = test_df.drop(TARGET_COLUMN, axis=1)
+            y = test_df[TARGET_COLUMN]
             logging.info("Test data successfully split into features and target")
+            logging.info("x is:",x.head())
+            logging.info("y is",y.head())
 
             # Loading the trained model and predicting
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
