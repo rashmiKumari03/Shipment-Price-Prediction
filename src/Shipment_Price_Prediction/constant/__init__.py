@@ -30,7 +30,7 @@ Note: The 'Shipment_Cost' column is derived during feature engineering using the
 
 """
 
-TARGET_COLUMN = "Shipment_Cost"
+TARGET_COLUMN = "Shipment Price"
 
 # Split ratio for dividing the dataset into training and testing sets
 TEST_SIZE = 0.2  # Proportion of data to be used for testing during train-test split
