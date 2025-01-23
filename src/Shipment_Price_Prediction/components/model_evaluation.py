@@ -104,11 +104,12 @@ class Model_Evaluation:
             # Reading the test data
             test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
             logging.info("Segregating the test_df data as independent and dependent columns")
+            
+            # Splitting into features and target
             x = test_df.drop(TARGET_COLUMN, axis=1)
             y = test_df[TARGET_COLUMN]
-            logging.info("Test data successfully split into features and target")
-            logging.info("x is:",x.head())
-            logging.info("y is",y.head())
+            logging.info(f"Test data split into features and target. Features head:\n{x.head().to_string()} Target head:\n{y.head().to_string()}")
+            
 
             # Loading the trained model and predicting
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
