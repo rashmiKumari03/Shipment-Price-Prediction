@@ -36,6 +36,9 @@ dill                   # Serialization library that extends pickle to support mo
 # Configuration
 PyYAML                 # YAML parser and emitter for Python, useful for configuration files.
 
+# MLFlow 
+mlflow
+
 # Miscellaneous
 from-root              # Simplifies imports from the root directory of a project.
 
