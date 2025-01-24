@@ -9,11 +9,10 @@ from pandas import DataFrame
 import xgboost
 
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import r2_score
 from sklearn.utils import all_estimators
 from xgboost import __dict__ as xgb_dict
 from typing import Dict, Tuple, List, Union, Any
-from yaml import safe_load
+from sklearn.metrics import r2_score
 
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -85,7 +84,6 @@ class MainUtils:
             raise CustomException(f"Error tuning model {model_name}: {str(e)}", sys)
         
         
-        
     # Get model score
     @staticmethod
     def get_model_score(test_y : DataFrame , preds : DataFrame) -> float:
@@ -111,6 +109,7 @@ class MainUtils:
             return all_models.get(model_name)()
         except Exception as e:
             raise CustomException(f"Error retrieving base model {model_name}: {str(e)}", sys)
+        
 
     # Get model params using GridSearchCV
     def get_model_params(self, model: object, x_train: DataFrame, y_train: DataFrame) -> Dict:
@@ -162,6 +161,7 @@ class MainUtils:
 
         except Exception as e:
             raise CustomException(str(e),sys)
+    
 
     @staticmethod
     def load_object(file_path:str) -> object:
@@ -172,6 +172,7 @@ class MainUtils:
             logging.info("Exited the load_object method of MainUtils class")
         except Exception as e:
             raise CustomException(str(e),sys)
+        
         
    # Create a zip archive of a specified folder
     @staticmethod
@@ -185,6 +186,8 @@ class MainUtils:
         except Exception as e:
             logging.info(CustomException(str(e), sys))  # Log error and raise custom exception
             raise CustomException(str(e), sys)
+        
+        
 
     # Unzip a specified file into a target folder
     @staticmethod

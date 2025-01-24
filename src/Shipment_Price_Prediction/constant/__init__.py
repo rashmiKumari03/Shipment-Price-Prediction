@@ -71,5 +71,3 @@ MODEL_SAVE_FORMAT = ".pkl"
 BUCKET_NAME = "shipment-price-predictor-ml"   # All must be small always otherwise s3 won't accept it
 S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"
 
-# MLFLOW 
-TRACKING_URL_MLFLOW = "https://dagshub.com/rashmiKumari03/Shipment-Price-Prediction.mlflow"

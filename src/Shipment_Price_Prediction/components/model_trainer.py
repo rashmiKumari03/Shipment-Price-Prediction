@@ -5,15 +5,10 @@ from src.Shipment_Price_Prediction.exception import CustomException
 import numpy as np
 import pandas as pd
 
-import mlflow
-from urllib.parse import urlparse
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
-
 from pandas import DataFrame
 from typing import List,Tuple
 
-from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE , TRACKING_URL_MLFLOW 
+from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts,Model_Trainer_Artifacts)
 
@@ -59,37 +54,6 @@ class Model_Trainer:
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
         
-        
-    def eval_metrics(self, actual, pred):
-        """
-        Method Name : eval_metrics
-        
-        Description :  Evaluate regression metrics.
-        
-            actual: Array of actual values.
-            pred: Array of predicted values.
-            
-        Output:
-            A dictionary with MAE, MSE, and R² scores.
-        """
-        try:
-            rmse = np.sqrt(mean_squared_error(actual, pred))
-            mae = mean_absolute_error(actual, pred)
-            mse = mean_squared_error(actual, pred)
-            r2 = r2_score(actual, pred)
-            
-            # Logging the metrics
-            logging.info(f"Evaluation Metrics:")
-            logging.info(f"Root Mean Squared Error (RMSE): {rmse}")
-            logging.info(f"Mean Absolute Error (MAE): {mae}")
-            logging.info(f"Mean Squared Error (MSE): {mse}")
-            logging.info(f"R-squared (R2): {r2}")
-        
-            return {"rmse": rmse, "mae": mae, "mse": mse, "r2": r2}
-        
-        except Exception as e:
-            logging.info(CustomException(str(e), sys))
-            raise CustomException(str(e), sys)
     
         
     # This method is used to get the trained models
@@ -189,6 +153,7 @@ class Model_Trainer:
             # Logging the details of the best model
             logging.info(f"Best model: {best_model_name}, Model object: {best_model_object}, Score: {best_model_score}")
             logging.info("Successfully identified the best model, its score, and name.")
+            
 
             # Loading the preprocessor object
             preprocessor_obj_file_path = self.data_transformation_artifact.transformed_object_file_path
@@ -249,26 +214,14 @@ class Model_Trainer:
             if model_file_path is None:
                 logging.error("Model was not saved due to insufficient score.")
                 return None  # or raise a CustomException if needed
+            
+        
 
             # Saving the model trainer artifacts
             model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
             logging.info(f"Model trainer artifacts saved at {model_trainer_artifacts.trained_model_file_path}")
-            
-            # MLFlow
-            mlflow.set_registry_uri(TRACKING_URL_MLFLOW)
-            tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-            
-            with mlflow.start_run():
-                predicted_qualities = 
-          
-            
-
+        
             return model_trainer_artifacts
-        
-        
-          
-           
-        
         
         except Exception as e:
             logging.info(CustomException(str(e),sys))
