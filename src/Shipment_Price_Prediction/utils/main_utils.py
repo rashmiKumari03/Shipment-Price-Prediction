@@ -12,7 +12,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils import all_estimators
 from xgboost import __dict__ as xgb_dict
 from typing import Dict, Tuple, List, Union, Any
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score , mean_squared_error, mean_absolute_error
 
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -86,14 +86,26 @@ class MainUtils:
         
     # Get model score
     @staticmethod
-    def get_model_score(test_y : DataFrame , preds : DataFrame) -> float:
+    def get_model_score(test_y : DataFrame , preds : DataFrame) -> dict:
         logging.info("Entered the get_model_score method of MainUtils class")
         try:
-            model_score = r2_score(test_y,preds)
-            logging.info(f"Model score is {model_score}")
-            logging.info("Exited the get_model_score method of MainUtils class")
+            # Calculate metrics
+            r2 = r2_score(test_y, preds)
+            mse = mean_squared_error(test_y, preds)
+            rmse = np.sqrt(mse)
+            mae = mean_absolute_error(test_y, preds)
+
+            metrics = {
+                "R2 Score": r2,
+                "MSE": mse,
+                "RMSE": rmse,
+                "MAE": mae
+            }
+
+            logging.info(f"Model Metrics: {metrics}")
+            logging.info("Exited the get_model_scores method of MainUtils class")
             
-            return model_score
+            return metrics
         except Exception as e:
             raise CustomException(f"Error in getting model score :{str(e)}",sys)
         
