@@ -121,14 +121,28 @@ class Model_Evaluation:
             logging.info("Prediction done with the trained model")
 
             # Checking the R² score of the trained model
-            trained_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_trained_model)
+            trained_model_metrics = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_trained_model)
+            # Logging the metrics in a dynamic manner
+            logging.info("The Metrics are Stored in Dictionary Form:")
+            for metric_name, metric_value in trained_model_metrics.items():
+                logging.info(f"{metric_name}: {metric_value}")
 
+            
+            trained_model_r2_score = trained_model_metrics["R2 Score"]
+            
             # Evaluate the S3 model if it exists
             s3_model_r2_score = None
             s3_model = self.get_s3_model()
-            if s3_model:
+            if s3_model is not None:
                 y_hat_s3_model = s3_model.predict(x)
-                s3_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_s3_model)
+                s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_s3_model)
+                # Logging the metrics in a dynamic manner
+                logging.info("The S3 metrics are Stored in Dictionary Form:")
+                for s3_metric_name, s3_metric_value in s3_model_metrics.items():
+                    logging.info(f"{s3_metric_name}: {s3_metric_value}")
+                    
+
+                s3_model_r2_score = s3_model_metrics["R2 Score"]
 
             # Default to 0 if the S3 model is not available
             tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
