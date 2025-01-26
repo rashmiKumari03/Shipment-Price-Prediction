@@ -64,6 +64,7 @@ class Evaluate_Model_Response:
 
 
 class Model_Evaluation:
+    
     def __init__(self, model_trainer_artifact: Model_Trainer_Artifacts, model_evaluation_config: Model_Evaluation_Config, data_ingestion_artifact: Data_Ingestion_Artifacts):
         self.model_trainer_artifact = model_trainer_artifact
         self.model_evaluation_config = model_evaluation_config
@@ -82,13 +83,16 @@ class Model_Evaluation:
             logging.info(f"Got the status: is model present? => {status}")
 
             # If model is present, load the model
-            if status:
+            if status == True:
                 model = self.model_evaluation_config.S3_Operation.load_model(MODEL_FILE_NAME, BUCKET_NAME)
                 logging.info("Exited the get_s3_model method of Model_Evaluation class")
+                
                 return model
             else:
-                logging.warning("Model Not Found in S3!")
+                logging.info("Model Not Found in S3!")
+                
                 return None
+            
         except Exception as e:
             logging.info(f"Error occurred: {str(e)}")
             raise CustomException(str(e), sys)
