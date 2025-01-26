@@ -76,23 +76,26 @@ class S3_Operation:
     def get_file_object(self, filename: str, bucket_name: str) -> Union[List[object], object]:
         """
         Method Name: get_file_object
-        Description: This method retrieves the file object for the given filename from the S3 bucket.
+        Description: Retrieves the file object(s) matching the given filename from the specified S3 bucket.
         Parameters:
-        - filename: The name of the file to retrieve.
-        - bucket_name: The S3 bucket name.
-        Output: Returns the file object if found.
+        - filename: The name or prefix of the file to retrieve.
+        - bucket_name: The name of the S3 bucket.
+        Output: A single file object if one match is found, or a list of objects if multiple matches are found.
         """
-        logging.info("Entered the get_file_object method of S3_Operation class")
+        logging.info(f"Fetching file object for '{filename}' from bucket '{bucket_name}'")
         try:
             bucket = self.get_bucket(bucket_name)
-            lst_objs = [object for object in bucket.objects.filter(Prefix=filename)]
-            func = lambda x: x[0] if len(x) == 1 else x
-            file_objs = func(lst_objs)
-            logging.info("Exited the get_file_object method of S3_Operation class")
-            return file_objs
+            objects = list(bucket.objects.filter(Prefix=filename))
+            
+            if not objects:
+                logging.warning(f"No files found matching '{filename}' in bucket '{bucket_name}'")
+                return None
+            
+            return objects[0] if len(objects) == 1 else objects
         except Exception as e:
-            logging.error("Error while retrieving file object: %s", str(e))
-            raise CustomException(str(e), sys)
+            logging.error(f"Error retrieving file object: {e}")
+            raise CustomException(e, sys)
+
 
     def read_object(self, object_name: str, decode: bool = True, make_readable: bool = False) -> Union[StringIO, str]:
         """
