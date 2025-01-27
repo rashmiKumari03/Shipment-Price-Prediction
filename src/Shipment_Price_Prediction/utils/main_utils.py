@@ -75,10 +75,12 @@ class MainUtils:
             model.set_params(**model_best_params)
             model.fit(train_x, train_y)
             preds = model.predict(test_x)
-            model_score = self.get_model_score(test_y, preds)
+            model_all_metrics = self.get_model_score(test_y, preds)
+            model_r2_score = model_all_metrics["R2 Score"]
+            
             logging.info("Exited the get_tuned_model method of MainUtils class")
             
-            return model_score, model, model.__class__.__name__
+            return model_r2_score, model, model.__class__.__name__
         
         except Exception as e:
             raise CustomException(f"Error tuning model {model_name}: {str(e)}", sys)
@@ -182,6 +184,8 @@ class MainUtils:
             with open(file_path,"rb") as file_obj:
                 obj = dill.load(file_obj)
             logging.info("Exited the load_object method of MainUtils class")
+            return obj
+        
         except Exception as e:
             raise CustomException(str(e),sys)
         

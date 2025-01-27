@@ -112,11 +112,17 @@ class Model_Evaluation:
             # Splitting into features and target
             x = test_df.drop(TARGET_COLUMN, axis=1)
             y = test_df[TARGET_COLUMN]
-            logging.info(f"Test data split into features and target. Features head:\n{x.head().to_string()} Target head:\n{y.head().to_string()}")
+            logging.info("Test data successfully split into features and target.")
+            logging.info(f"Features (X) - Sample Data:\n{x.head().to_string(index=False)}")
+            logging.info(f"Target (y) - Sample Data:\n{y.head().to_string(index=False)}")
+
             
 
             # Loading the trained model and predicting
+            logging.info(f"trained_model_file_path : {self.model_trainer_artifact.trained_model_file_path}")
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
+            logging.info(f"trained_model is : {trained_model}")
+            
             y_hat_trained_model = trained_model.predict(x)
             logging.info("Prediction done with the trained model")
 
