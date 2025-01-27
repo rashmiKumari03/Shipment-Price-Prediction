@@ -149,6 +149,7 @@ class MainUtils:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "wb") as file_obj:
                 dill.dump(obj, file_obj)
+            logging.info("Exited the save_object method of MainUtils class")
         except Exception as e:
             raise CustomException(f"Error saving object: {str(e)}", sys)
         

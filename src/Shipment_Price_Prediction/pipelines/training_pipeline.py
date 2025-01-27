@@ -116,11 +116,13 @@ class TrainPipeline:
     # Starting the model evaluation ...
     def start_model_evaluation(self,data_ingestion_artifact : Data_Ingestion_Artifacts , model_trainer_artifact : Model_Trainer_Artifacts ) -> Model_Evaluation_Artifacts:
         try:
+            logging.info("Entered the start_model_evaluation method of TrainPipeline class")
             model_evaluation = Model_Evaluation( model_evaluation_config = self.model_evaluation_config,
                                                 data_ingestion_artifact = data_ingestion_artifact,
                                                 model_trainer_artifact= model_trainer_artifact
                                                 )
             model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
+            logging.info("Exited the start_model_evauation method of TrainPipeline class")
             
             return model_evaluation_artifact
             

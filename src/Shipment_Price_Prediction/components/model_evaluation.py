@@ -66,9 +66,13 @@ class Evaluate_Model_Response:
 class Model_Evaluation:
     
     def __init__(self, model_trainer_artifact: Model_Trainer_Artifacts, model_evaluation_config: Model_Evaluation_Config, data_ingestion_artifact: Data_Ingestion_Artifacts):
+        
         self.model_trainer_artifact = model_trainer_artifact
         self.model_evaluation_config = model_evaluation_config
         self.data_ingestion_artifact = data_ingestion_artifact
+        
+        if model_trainer_artifact is None or model_trainer_artifact.trained_model_file_path is None:
+             raise CustomException("Model_Trainer_Artifacts is not properly initialized. Ensure trained_model_file_path is provided.", sys)
 
     def get_s3_model(self) -> object:
         """ 
