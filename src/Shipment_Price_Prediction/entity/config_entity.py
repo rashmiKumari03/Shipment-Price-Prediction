@@ -140,3 +140,24 @@ class Model_Evaluation_Config:
         self.BUCKET_NAME : str = BUCKET_NAME
         self.BEST_MODEL_PATH : str = os.path.join(from_root(), ARTIFACTS_DIR , MODEL_TRAINER_ARTIFACTS_DIR , MODEL_FILE_NAME)
         
+ 
+ 
+# Model_Pusher_Config for saving the best trained model (which is saved locally) , to upload it in the S3 bucket of AWS.       
+@dataclass
+class Model_Pusher_Config:
+    
+    """
+    This class is used to define the configuration for the Model Pusher component, which is responsible
+    for saving the best-trained model locally and uploading it to an S3 bucket for further use.
+    """
+    
+    def __init__(self):
+        
+         # Path to the best-trained model saved locally
+        self.BEST_MODEL_PATH: str = os.path.join(from_root(), ARTIFACTS_DIR, MODEL_TRAINER_ARTIFACTS_DIR, MODEL_FILE_NAME)
+        
+        # Name of the S3 bucket where the model will be uploaded
+        self.BUCKET_NAME: str = BUCKET_NAME
+        
+        # S3 path (key) where the model file will be stored in the specified bucket
+        self.S3_MODEL_KEY_PATH: str = os.path.join(S3_MODEL_NAME)
