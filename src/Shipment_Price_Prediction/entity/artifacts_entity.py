@@ -117,3 +117,32 @@ class Model_Evaluation_Artifacts:
     is_model_accepted: bool
     trained_model_path: str
     changed_accuracy: float
+    
+    
+
+
+@dataclass
+class Model_Pusher_Artifacts:
+    """
+    This class holds the information related to the model deployment process, specifically focusing on 
+    storing and tracking the details of the trained model's location after it is pushed to cloud storage (e.g., S3 bucket).
+
+    Attributes:
+    - bucket_name (str): The name of the cloud storage bucket (e.g., S3 bucket) where the trained model is uploaded.
+      This is essential for identifying the storage location for retrieval during deployment or inference.
+    - s3_model_path (str): The specific path (key) within the bucket where the trained model is stored.
+      This provides the exact location of the model in the cloud, allowing seamless access for further use.
+
+    Purpose:
+    The Model Pusher process is responsible for uploading the trained and evaluated model to a cloud storage service 
+    for deployment. This class helps in storing the details of the bucket name and the S3 path, ensuring the model's 
+    location is well-documented and easily accessible for deployment, sharing, or inference. By maintaining these details, 
+    this class facilitates the efficient management of trained models, allowing integration with automated pipelines or 
+    direct access by downstream services.
+    """
+    bucket_name: str
+    s3_model_path: str
+
+  
+    
+    
