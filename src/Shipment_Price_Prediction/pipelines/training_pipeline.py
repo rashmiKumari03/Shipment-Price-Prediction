@@ -2,8 +2,8 @@ import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config,Model_Evaluation_Config)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts,Model_Pusher_Artifacts)
+from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config,Model_Evaluation_Config,Model_Pusher_Config)
 
 from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingestion
 from src.Shipment_Price_Prediction.components.data_validation import Data_Validation
@@ -11,6 +11,7 @@ from src.Shipment_Price_Prediction.components.data_transformation import Data_Tr
 from src.Shipment_Price_Prediction.components.model_trainer import Model_Trainer
 from src.Shipment_Price_Prediction.components.model_evaluation import Model_Evaluation
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
+from src.Shipment_Price_Prediction.components.model_pusher import Model_Pusher
 
 
 # Initializing the Training Pipeline.
@@ -23,6 +24,7 @@ class TrainPipeline:
         self.data_transformation_config = Data_Transformation_Config()
         self.model_trainer_config = Model_Trainer_Config()
         self.model_evaluation_config = Model_Evaluation_Config()
+        self.model_pusher_config = Model_Pusher_Config()
         
         # Also need to initialise S3
         self.s3_operations = S3_Operation()
@@ -129,8 +131,30 @@ class TrainPipeline:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
-    
-    
+        
+        
+    # Starting the model pusher.
+    def start_model_pusher(self,model_trainer_artifacts:Model_Trainer_Artifacts,s3:S3_Operation,data_transformation_artifacts: Data_Transformation_Artifacts) -> Model_Pusher_Artifacts:
+        logging.info("Entered the start_model_pusher method of TrainPipeline class")
+        try:
+            
+            model_pusher = Model_Pusher(
+                model_pusher_config= self.model_pusher_config,
+                model_trainer_artifacts= model_trainer_artifacts,
+                s3=s3,
+                data_transformation_artifacts= data_transformation_artifacts
+            )
+            
+            model_pusher_artifact = model_pusher.initiate_model_pusher()
+            logging.info("Initiated the model pusher")
+            logging.info("Exited the start_model_pusher method of TrainPipeline class")
+            
+            return model_pusher_artifact
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
    
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
     # This method is used to start the training pipeline
@@ -159,9 +183,20 @@ class TrainPipeline:
             if not model_trainer_artifact.is_model_accepted:
                 logging.info("Model evaluation completed: The model was NOT accepted based on the evaluation criteria.")
                 print("Model evaluation completed: The model was NOT accepted.")
+                return None
+            
             else:
+                
                 logging.info("Model evaluation completed: The model was successfully accepted.")
                 print("Model evaluation completed: The model was accepted.")
+                logging.info("Pushing the Model........")
+                
+                model_pusher_artifact = self.start_model_pusher(
+                    model_trainer_artifacts= model_trainer_artifact,
+                    s3= self.s3_operations,
+                    data_transformation_artifacts= data_transformation_artifact
+                )
+                logging.info("Model Got Pushed Successfully!!!!!.........")
                 
             
             logging.info("Exited the run_pipeline method of TrainPipeline class")
