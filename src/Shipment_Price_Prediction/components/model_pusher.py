@@ -43,6 +43,21 @@ class Model_Pusher:
                                 remove=False
                                 )
             logging.info("Uploaded the best model to S3 Bucket")
-            logging.info("Exited the initiate_model_pusher method of Model_Pusher class")             
+            logging.info("Exited the initiate_model_pusher method of Model_Pusher class")
+            
+            # Saving the model pusher artifacts:
+            model_pusher_artifact = Model_Pusher_Artifacts(
+                bucket_name=self.model_pusher_config.BUCKET_NAME,
+                s3_model_path=self.model_pusher_config.S3_MODEL_KEY_PATH)
+            
+            return model_pusher_artifact
+        
+        except Exception as e:
+            logging.info(CustomException(str(e),sys))
+            raise CustomException(str(e),sys)
+        
+        
+            
+                         
         
     
