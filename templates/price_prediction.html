@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Price Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+
+
+    <style>
+
+        body {
+            background: radial-gradient( rgba(163, 156, 241, 0.9) 30%, rgb(10, 40, 80) 100%);
+       
+        }
+
+        .hero-section h1 {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 5rem; 
+            font-weight: bold; 
+            color: black;
+            text-shadow: 6px 5px 14px rgba(225, 220, 113, 0.85); 
+            letter-spacing: 6px; 
+        }
+        
+
+        .hero-section {
+            position: relative;
+            height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 80px; 
+         
+        }
+        .hero-section video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index:-1;
+        }
+        
+    
+        .form-container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background : lavender;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(5, 20, 50, 0.1);
+        
+        }
+
+
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            font-weight: bold;
+            font-family: 'Roboto Slab', serif; 
+            color: white ;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #ffcc00; 
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        
+        /* Increase scrollbar width */
+        ::-webkit-scrollbar {
+            width: 14px; /* Slightly increased width to accommodate the border */
+        }
+        
+        /* Dark background for the scrollbar track */
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        
+        /* Gradient scrollbar thumb with white border */
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #0ea1db,rgb(134, 199, 242),rgb(21, 5, 109)); 
+            border-radius: 6px;
+            border: 2px solid white; 
+        }
+        
+        /* Darker gradient on hover with white border */
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg,rgb(105, 69, 151),rgb(122, 191, 237),rgb(20, 28, 119));
+            border: 2px solid white; /* Keeps the border on hover */
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(45deg, #0ea1db,rgb(133, 9, 118),rgb(117, 11, 171));
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        button[type="submit"]:hover {
+            background: linear-gradient(45deg,rgb(61, 19, 177), #1bb6f7,rgb(106, 10, 108));
+            transform: scale(1.05);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+
+        
+
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="Home_page.html">SmartShip Pricing</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="Home_page.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="price_prediction.html">Shipment Cost Estimator</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard_page.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="kpi_page.html">KPIs</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
+        <h1>Shipment Cost Estimator</h1>
+    </div>
+
+    <!-- Prediction Form -->
+    <div class="container mt-5 form-container">
+        <h2 class="text-center">Estimate Your Shipment Cost</h2>
+        <form>
+            <!-- Numerical Inputs -->
+            <div class="mb-3">
+                <label class="form-label">Line Item Quantity</label>
+                <input type="number" class="form-control" placeholder="Please enter the line item quantity" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Line Item Value (USD)</label>
+                <input type="number" class="form-control" placeholder="Please enter the line item value in USD" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Pack Price (USD)</label>
+                <input type="number" class="form-control" placeholder="Please enter the pack price in USD" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Unit Price (USD)</label>
+                <input type="number" class="form-control" placeholder="Please enter the unit price in USD" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Weight (Kilograms)</label>
+                <input type="number" class="form-control" placeholder="Please enter the weight in kilograms" required>
+            </div>
+
+            <!-- Categorical Inputs -->
+            <div class="mb-3">
+                <label class="form-label">Country</label>
+                <select class="form-select" required>
+                    <option selected disabled>Select Country</option>
+                    <option>USA</option>
+                    <option>India</option>
+                    <option>Germany</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Shipment Mode</label>
+                <select class="form-select" required>
+                    <option selected disabled>Select Mode</option>
+                    <option>Air</option>
+                    <option>Sea</option>
+                    <option>Land</option>
+                </select>
+            </div>
+
+           <!-- Date Inputs -->
+            <div class="mb-3">
+                <label class="form-label">Scheduled Delivery Date</label>
+                <input type="date" class="form-control" min="2025-01-01" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Delivered to Client Date</label>
+                <input type="date" class="form-control" min="2025-01-01" required>
+            </div>
+
+
+            <!-- Binary Input -->
+            <div class="mb-3">
+                <label class="form-label">First Line Designation</label>
+                <select class="form-select" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Predict Price</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
