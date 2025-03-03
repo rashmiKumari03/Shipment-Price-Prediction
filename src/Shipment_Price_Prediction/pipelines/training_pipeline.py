@@ -13,6 +13,8 @@ from src.Shipment_Price_Prediction.components.model_evaluation import Model_Eval
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 from src.Shipment_Price_Prediction.components.model_pusher import Model_Pusher
 
+import warnings
+
 
 # Initializing the Training Pipeline.
 class TrainPipeline:
@@ -160,6 +162,7 @@ class TrainPipeline:
     # This method is used to start the training pipeline
     
     def run_pipeline(self) -> None:
+        warnings.filterwarnings("ignore")
         logging.info("Entered the run_pipeline method of Training class")
         try:
             data_ingestion_artifact = self.start_data_ingestion()
