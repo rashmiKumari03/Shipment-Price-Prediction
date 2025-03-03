@@ -71,3 +71,8 @@ MODEL_SAVE_FORMAT = ".pkl"
 BUCKET_NAME = "shipment-price-predictor-ml"   # All must be small always otherwise s3 won't accept it
 S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"
 
+
+# Constants for Webpage
+APP_HOST = "127.0.0.1"
+APP_PORT = 8080
+
