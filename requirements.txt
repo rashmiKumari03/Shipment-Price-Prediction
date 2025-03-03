@@ -18,6 +18,8 @@ evidently==0.1.45.dev0          # Tool for monitoring ML models in production, a
 
 # Web Development
 fastapi                # Modern web framework for building APIs quickly with Python type hints.
+
+
 uvicorn                # Fast ASGI server implementation to run FastAPI applications.
 Jinja2                 # Templating engine to render HTML dynamically in web applications.
 python-multipart       # Library to handle multipart form data, useful for file uploads in FastAPI.
