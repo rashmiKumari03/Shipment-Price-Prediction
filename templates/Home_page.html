@@ -73,7 +73,7 @@
         }
 
         .about-section h2 {
-            font-size: 2.2 rem;
+            font-size: 2.2rem;
             font-weight: 600;
             margin-bottom: 25px;
             color:white;
@@ -236,7 +236,7 @@
 
     <div id="home" class="hero-section">
         <video class="hero-video" autoplay muted loop>
-            <source src="C:/Users/Admin/Desktop/ineuron/Ineuron_Internships/Shipment_Price_Prediction/static/shipment_video.mp4" type="video/mp4">
+            <source src="/static/shipment_video.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <div class="hero-content">
@@ -244,26 +244,26 @@
             <h4>Ship Ahead of the Curve: Accurate Costs, Zero Surprises!</h4>
         </div>
     </div>
-
+    
 
     <div id="about" class="about-section">
-        <div class="row ">
+        <div class="row">
             <div class="col-md-6">
-                    <h2>About</h2>
-                    <p>
-                        At SmartShip Pricing, we believe that logistics should never be a guessing game. Our powerful application leverages advanced algorithms to provide precise shipment cost predictions, empowering businesses to streamline their operations. Whether you're a small startup or an established enterprise, our platform is designed to help you make informed, data-driven decisions to optimize your shipping and reduce unexpected costs.
-                    </p>
-                    <p class="feature">Accurate Predictions: Estimate shipment costs with incredible precision.</p>
-                    <p class="feature">Real-Time Insights: Get live updates and visualizations of shipment data.</p>
-                    <p class="feature">KPI Tracking: Monitor key performance indicators to improve logistics performance.</p>
-                    <p class="feature">Business-Optimized: Tailored to suit both small and large-scale operations.</p>
-                </div>
-                <div class="col-md-6">
-                    <img src="C:\Users\Admin\Desktop\ineuron\Ineuron_Internships\Shipment_Price_Prediction\static\img_1.jpeg" class="about-us-image">
-                
+                <h2>About</h2>
+                <p>
+                    At SmartShip Pricing, we believe that logistics should never be a guessing game. Our powerful application leverages advanced algorithms to provide precise shipment cost predictions, empowering businesses to streamline their operations. Whether you're a small startup or an established enterprise, our platform is designed to help you make informed, data-driven decisions to optimize your shipping and reduce unexpected costs.
+                </p>
+                <p class="feature"><strong>Accurate Predictions:</strong> Estimate shipment costs with incredible precision.</p>
+                <p class="feature"><strong>Real-Time Insights:</strong> Get live updates and visualizations of shipment data.</p>
+                <p class="feature"><strong>KPI Tracking:</strong> Monitor key performance indicators to improve logistics performance.</p>
+                <p class="feature"><strong>Business-Optimized:</strong> Tailored to suit both small and large-scale operations.</p>
+            </div>
+            <div class="col-md-6">
+                <img src="/static/img_1.jpeg" class="about-us-image" alt="SmartShip About Us">
             </div>
         </div>
     </div>
+    
 
     <div id="services" class="services-section container">
         <h2 class="text-center mb-4" style="font-size: 38px; font-weight: bold; margin-top: -140px;">Our Core Services</h2>
@@ -272,25 +272,27 @@
                 <div class="service-card">
                     <h3>Price Prediction</h3>
                     <p>Accurately estimate shipment costs with our cutting-edge prediction model.</p>
-                    <a href="price_prediction.html" target="_blank" class="btn btn-primary">Predict Now</a>
+                    <a href="{{ url_for('price_prediction') }}" target="_blank" class="btn btn-primary">Predict Now</a>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="service-card">
                     <h3>Real-Time Dashboard</h3>
                     <p>Visualize shipment data and cost trends with our interactive dashboard.</p>
-                    <a href="dashboard_page.html" target="_blank" class="btn btn-primary">View Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" target="_blank" class="btn btn-primary">View Dashboard</a>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="service-card">
                     <h3>Shipment KPI Tracking</h3>
                     <p>Track essential performance indicators for smarter logistics decisions.</p>
-                    <a href="kpi_page.html" target="_blank" class="btn btn-primary">Track KPIs</a>
+                    <a href="{{ url_for('kpi') }}" target="_blank" class="btn btn-primary">Track KPIs</a>
                 </div>
             </div>
         </div>
     </div>
+    
+       
     
 
     <div id="faq" class="container my-5">
