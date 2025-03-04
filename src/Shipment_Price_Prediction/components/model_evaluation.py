@@ -130,11 +130,12 @@ class Model_Evaluation:
 
             
 
-            # Loading the trained model and predicting
+            # Loading the trained model and prediction
             logging.info(f"trained_model_file_path : {self.model_trainer_artifact.trained_model_file_path}")
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
             logging.info(f"trained_model is : {trained_model}")
             
+            logging.info("Prediction using trained_model(local system) initiated!")
             y_hat_trained_model = trained_model.predict(x)
             logging.info("Prediction done with the trained model")
 
@@ -148,10 +149,17 @@ class Model_Evaluation:
             
             trained_model_r2_score = trained_model_metrics["R2 Score"]
             
+            
+            
+            # ------------------------------------------------------------------------------------------------------------------
             # Evaluate the S3 model if it exists
             s3_model_r2_score = None
             s3_model = self.get_s3_model()
             if s3_model is not None:
+                
+                logging.info("S3 bucket is not empty — a model exists!")
+                logging.info("Initiating prediction using the S3-trained model.")
+
                 y_hat_s3_model = s3_model.predict(x)
                 s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_s3_model)
                 # Logging the metrics in a dynamic manner
