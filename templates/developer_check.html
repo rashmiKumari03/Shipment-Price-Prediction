@@ -1,4 +1,3 @@
-<!-- Basic HTML document setup with language, character set, and responsive viewport -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg,rgb(66, 5, 119),rgb(77, 151, 186));
             color: #fff;
             display: flex;
             justify-content: center;
@@ -106,8 +105,8 @@
             margin: 20px auto;
             width: 50px;
             height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border: 5px solid rgb(216, 163, 237) ;
+            border-top: 5px solid rgb(21, 6, 184);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -170,8 +169,8 @@
         <p>Are you sure you want to start model training?</p>
 
         <form id="confirmForm">
-            <button type="button" class="yes" onclick="confirmAction('yes')">Yes, Start Training</button>
-            <button type="button" class="no" onclick="confirmAction('no')">No, Go Back</button>
+            <button type="button" class="yes" onclick="confirmAction('yes')">Yes, Let's Fire Up Training!</button>
+            <button type="button" class="no" onclick="confirmAction('no')">No, Take Me Back</button>
         </form>
 
         <!-- Spinner and Progress Message -->
@@ -179,8 +178,8 @@
         <p id="progressMessage" class="hidden progress-message">Model Training in progress... Please wait.</p>
 
         <!-- Messages -->
-        <p id="confirmationMessage" class="hidden success">✔ Model Training success! Your model is now battle-ready for predictions.</p>
-        <p id="cancelMessage" class="hidden error">✖ Training wasn't initiated — you decided to keep things on pause<button onclick="goHome()">Go to Home</button></p>
+        <p id="confirmationMessage" class="hidden success">✔ Model Training success! Your model is now battle-ready for predictions<button onclick="goHome()">Head to Homepage</button></p>
+        <p id="cancelMessage" class="hidden error">✖ Training wasn't initiated — you decided to keep things on pause<button onclick="goHome()">Head to Homepage</button></p>
     </div>
 
 
@@ -205,9 +204,6 @@
             const loginButton = document.getElementById('loginButton');
             const tryAgainBtn = document.getElementById('tryAgainBtn');
 
-            console.log(`Username entered: "${username}"`);
-            console.log(`Password entered: "${password}"`);
-
             loginMessage.textContent = "";
             loginMessage.classList.add('hidden');
             tryAgainBtn.classList.add('hidden');
@@ -219,7 +215,7 @@
                 tryAgainBtn.classList.remove('hidden');
                 return;
             }
-
+ 
             try {
                 console.log('Sending POST request...');
                 const response = await fetch("/developer/train-model/login", {
@@ -241,7 +237,7 @@
 
                     console.error('Login failed:', result.message || 'Unknown error');
                     console.log('Login failed. Server response:', result);
-                    loginMessage.textContent = "❌ Invalid credentials. Please try again.";
+                    loginMessage.textContent = "⚠️ Invalid credentials. Please check your username and password and try again.";
                     loginMessage.classList.remove('hidden');
                     tryAgainBtn.classList.remove('hidden');
                     loginButton.style.display = "none";
@@ -288,6 +284,7 @@
                 progressMessage.classList.remove('hidden');
                 confirmationMessage.classList.add('hidden');
                 cancelMessage.classList.add('hidden');
+
         
                 try {
                     const response = await fetch('/developer/train-model/trainingstarted', {
@@ -301,6 +298,7 @@
                             progressMessage.classList.add('hidden');
                             confirmationMessage.classList.remove('hidden');
                         }, 100000); // Simulate training time
+                       
                     } else {
                         alert('Failed to start training. Please try again.');
                         goBackButton();
