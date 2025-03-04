@@ -111,9 +111,17 @@ class Model_Evaluation:
         try:
             # Reading the test data
             test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
+            
+             # Define target column by summing the required columns
+            logging.info("Since in this dataset target column was not defined , so we have defined it and later we do segregation")
+            test_df["Shipment Price"] = (test_df["Line Item Value"] + test_df["Freight Cost (USD)"] + test_df["Line Item Insurance (USD)"])
+            
+            
             logging.info("Segregating the test_df data as independent and dependent columns")
             
+            
             # Splitting into features and target
+            logging.info("Droppping the Target Column")
             x = test_df.drop(TARGET_COLUMN, axis=1)
             y = test_df[TARGET_COLUMN]
             logging.info("Test data successfully split into features and target.")
