@@ -15,6 +15,9 @@ from scipy.stats import skew
 from scipy.stats.mstats import winsorize
 import joblib
 
+from src.Shipment_Price_Prediction.constant import * 
+from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
+
 # Custom imports for logging and exception handling
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -22,6 +25,29 @@ from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformati
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts, Data_Transformation_Artifacts)
 
 # Creating Data_Transformation class
+
+UTILS = MainUtils()
+SCHEMA_CONFIG = UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
+
+
+# Global function for datetime transformation
+def datetime_transformer(X, datetime_columns):
+    try:
+        for col in datetime_columns:
+            if col in X.columns:
+                if not pd.api.types.is_datetime64_any_dtype(X[col]):
+                    X[col] = pd.to_datetime(X[col], errors='coerce')
+                X[f'{col}_year'] = X[col].dt.year
+                X[f'{col}_month'] = X[col].dt.month
+                X[f'{col}_day'] = X[col].dt.day
+            else:
+                logging.warning(f"Column {col} not found in DataFrame.")
+        return X.drop(columns=datetime_columns, errors='ignore')
+    except Exception as e:
+        logging.error(f"Error in datetime transformation: {str(e)}")
+        raise CustomException(str(e), sys)
+    
+
 class Data_Transformation:
     """
     This class handles data transformation tasks such as data type conversion, missing value imputation, 
@@ -298,24 +324,12 @@ class Data_Transformation:
                 ('binary_encoder', BinaryEncoder())
             ])
             logging.info("Binary pipeline created.")
-            
-            
-             
-            # Handle datetime columns: Extract features from datetime columns
-            def datetime_transformer(X):
-                for col in datetime_columns:
-                    if col in X.columns:
-                        if not pd.api.types.is_datetime64_any_dtype(X[col]):
-                            X[col] = pd.to_datetime(X[col], errors='coerce')  # Ensure datetime type
-                        X[f'{col}_year'] = X[col].dt.year
-                        X[f'{col}_month'] = X[col].dt.month
-                        X[f'{col}_day'] = X[col].dt.day
-                    else:
-                        logging.warning(f"Column {col} not found in DataFrame.")
-                return X.drop(columns=datetime_columns, errors='ignore')
+         
 
             # Create pipeline for datetime transformation
-            datetime_pipeline = Pipeline(steps=[('datetime_features', FunctionTransformer(func=datetime_transformer, validate=False))])
+            datetime_pipeline = Pipeline(steps=[
+                ('datetime_features', FunctionTransformer(lambda X: datetime_transformer(X, datetime_columns), validate=False))
+            ])
             logging.info("Datetime pipeline created.")
                 
             
@@ -330,7 +344,9 @@ class Data_Transformation:
             )
 
             logging.info("Data transformer object created successfully.")
+            logging.info(f"Preprocessor will be returned as :{preprocessor}")
             logging.info("Exited get_data_transformer_object method of Data_Transformation class")
+            
             return preprocessor
 
         except Exception as e:
@@ -384,6 +400,7 @@ class Data_Transformation:
 
             # Step 5: Apply Feature Transformation Pipeline
             preprocessor = self.get_data_transformer_object()
+            logging.info(f"While exist the get_data_transformer_object's output is the preprocessor as : {preprocessor}")
 
             # Fit and transform the training data
             logging.info("Fitting and transforming training data using the preprocessor...")
@@ -411,9 +428,11 @@ class Data_Transformation:
             logging.info(f"Saved transformed test data to {transformed_test_file_path}")
         
             # Save the preprocessor (transformer object)
-           
-            joblib.dump(preprocessor, transformed_object_file_path)
+            logging.info(f"In The Data Transformation Class , Preprocessor looks like: {preprocessor}")
             logging.info(f"Preprocessor object saved as a pickle file to {transformed_object_file_path}")
+            joblib.dump(preprocessor,transformed_object_file_path)
+            logging.info(f"Preprocessor saved successfully at {transformed_object_file_path}")
+           
 
             # Step 7: Creating Data_Transformation_Artifacts object to return processed data paths
             data_transformation_artifacts = Data_Transformation_Artifacts(
@@ -423,8 +442,10 @@ class Data_Transformation:
             )
 
             logging.info("Exited initiate_data_transformation method of Data_Transformation class")
+            logging.info(f"data_transformation_artifacts : {data_transformation_artifacts}")
+            
             return data_transformation_artifacts
 
         except Exception as e:
-            logging.error("Error in initiate_data_transformation", exc_info=True)
+            logging.info(CustomException(str(e),sys))
             raise CustomException(str(e), sys)
