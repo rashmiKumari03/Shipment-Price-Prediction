@@ -1,22 +1,30 @@
+# Standard libraries (built-in)
 import os
 import sys
 import shutil
-import dill
+import pickle
+from typing import Dict, Tuple, List, Union, Any
+
+# Third-party libraries
 import yaml
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+import dill
+import joblib
 import xgboost
+from xgboost import __dict__ as xgb_dict
 
+# Scikit-learn modules
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils import all_estimators
-from xgboost import __dict__ as xgb_dict
-from typing import Dict, Tuple, List, Union, Any
-from sklearn.metrics import r2_score , mean_squared_error, mean_absolute_error
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
+# Project-specific modules (custom)
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE
+
 
 class MainUtils:
     
@@ -141,18 +149,19 @@ class MainUtils:
         except Exception as e:
             raise CustomException(f"Error during parameter tuning: {str(e)}", sys)
 
-    # Save object with dill
+  # Save object with dill and return the file path
     @staticmethod
-    def save_object(file_path: str, obj: object) -> None:
+    def save_object(file_path: str, obj: object) -> str:
         logging.info("Entered the save_object method of MainUtils class")
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "wb") as file_obj:
                 dill.dump(obj, file_obj)
-            logging.info("Exited the save_object method of MainUtils class")
+            logging.info(f"Successfully saved object at {file_path}")
+            return file_path
         except Exception as e:
             raise CustomException(f"Error saving object: {str(e)}", sys)
-        
+
         
     @staticmethod
     def get_best_model_with_name_and_score(model_list : list) -> Tuple[object,float]:
@@ -176,22 +185,25 @@ class MainUtils:
 
         except Exception as e:
             raise CustomException(str(e),sys)
-    
+        
 
+  
     @staticmethod
-    def load_object(file_path:str) -> object:
+    def load_object(file_path: str) -> object:
+    
         logging.info("Entered the load_object method of MainUtils class")
         try:
-            with open(file_path,"rb") as file_obj:
-                obj = dill.load(file_obj)
+            obj = joblib.load(file_path)
+            logging.info(f"Successfully loaded object of type: {type(obj).__name__}")
             logging.info("Exited the load_object method of MainUtils class")
             return obj
         
         except Exception as e:
-            raise CustomException(str(e),sys)
-        
-        
-   # Create a zip archive of a specified folder
+            logging.error(f"Unexpected error: {str(e)}")
+            raise CustomException(str(e), sys)
+
+
+    # Create a zip archive of a specified folder
     @staticmethod
     def create_artifacts_zip(file_name: str, folder_name: str) -> None:
         logging.info("Entered the create_artifacts_zip method of MainUtils class")
@@ -204,7 +216,7 @@ class MainUtils:
             logging.info(CustomException(str(e), sys))  # Log error and raise custom exception
             raise CustomException(str(e), sys)
         
-        
+            
 
     # Unzip a specified file into a target folder
     @staticmethod
