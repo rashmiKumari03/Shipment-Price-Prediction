@@ -1,4 +1,11 @@
 train_model:
+  LinearRegression:
+    fit_intercept:
+    - true
+    - false
+    positive:
+    - true
+    - false
   XGBRegressor:
     learning_rate:
     - 0.01
@@ -18,4 +25,4 @@ train_model:
     learning_rate:
     - 0.01
     - 0.1
-base_model_score: '0.8958745031214365'
+base_model_score: '0.9445607846553226'
