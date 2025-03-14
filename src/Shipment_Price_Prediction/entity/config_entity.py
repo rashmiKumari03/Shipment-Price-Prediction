@@ -96,25 +96,30 @@ class Data_Validation_Config:
         
         
 # class Data_Transformation_Config : Configuration class for the data transformation process.
+@dataclass
 class Data_Transformation_Config :
     def __init__(self):
         
         self.UTILS = MainUtils()
-        
         self.SCHEMA_CONFIG = self.UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
         
         self.DATA_INGESTION_ARTIFACTS_DIR:str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_INGESTION_ARTIFACTS_DIR)
         self.DATA_TRANSFORMATION_ARTIFACTS_DIR:str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_TRANSFORMATION_ARTIFACTS_DIR)
 
         
-        self.TRANSFORMED_TRAIN_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TRAIN_DATA_FILE_NAME)
-        self.TRANSFORMED_TEST_FILE_PATH:str = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR,TRANSFORMED_TEST_DATA_FILE_NAME)
+        
+        # Define file paths for transformed data
+        self.X_TRANSFORMED_TRAIN_FILE_PATH = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR, X_TRANSFORMED_TRAIN_DATA_FILE_NAME)
+        self.X_TRANSFORMED_TEST_FILE_PATH = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR, X_TRANSFORMED_TEST_DATA_FILE_NAME)
+        self.Y_TRANSFORMED_TRAIN_FILE_PATH = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR, Y_TRANSFORMED_TRAIN_DATA_FILE_NAME)
+        self.Y_TRANSFORMED_TEST_FILE_PATH = os.path.join(self.DATA_TRANSFORMATION_ARTIFACTS_DIR, Y_TRANSFORMED_TEST_DATA_FILE_NAME)
+
         
         self.PREPROCESSOR_FILE_PATH:str = os.path.join(from_root(),ARTIFACTS_DIR,DATA_TRANSFORMATION_ARTIFACTS_DIR,PREPROCESSOR_OBJECT_FILE_NAME)
         
         
 # class Model_Trainer_Config :  Configuration class for model training, handling paths and settings.
-
+@dataclass
 class Model_Trainer_Config:
     
     def __init__(self):
@@ -129,7 +134,7 @@ class Model_Trainer_Config:
 # Import the S3 bucket functionality and write the S3 operations code in the configuration folder for modularity.
 
 # Model Evaluation Configuration
-
+@dataclass
 class Model_Evaluation_Config:
     
     def __init__(self):
