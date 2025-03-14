@@ -51,7 +51,6 @@ class TrainPipeline:
             raise CustomException(str(e),sys)
         
         
-    
     # IMPORTING : Adding Data_Validation_Artifacts and Data_Validation_Config and from components.data_validation import Data_Validation class....
     # in __int__ call the self.data_validation_config = Data_Validation_Config()
     # Now Initializing the method start_data_validation()
@@ -77,9 +76,6 @@ class TrainPipeline:
         
         
         
-        
-        
-        
     # This method is used to start the data transformation
     def start_data_transformation(self,data_ingestion_artifact : Data_Ingestion_Artifacts) -> Data_Transformation_Artifacts:
         logging.info("Entered the start_data_transformation method of TrainPipeline class")
@@ -97,15 +93,15 @@ class TrainPipeline:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
     
-    
         
     # Starting the model training.. it will take models from model.yaml one by one and train the data with those model and compare to get the best model 
-    def start_model_trainer(self,data_transformation_artifact : Data_Transformation_Artifacts) -> Model_Trainer_Artifacts:
+    def start_model_trainer(self,data_transformation_artifact : Data_Transformation_Artifacts,
+                            model_trainer_config: Model_Trainer_Config) -> Model_Trainer_Artifacts:
         try:
             logging.info("Entered the start_model_trainer method of TrainPipeline")
             model_trainer = Model_Trainer(
                 data_transformation_artifact=data_transformation_artifact,
-                model_trainer_config= self.model_trainer_config
+                model_trainer_config= model_trainer_config
                 )
             
             model_trainer_artifact = model_trainer.initiate_model_trainer()
@@ -115,15 +111,17 @@ class TrainPipeline:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
-        
+    
         
     # Starting the model evaluation ...
-    def start_model_evaluation(self,data_ingestion_artifact : Data_Ingestion_Artifacts , model_trainer_artifact : Model_Trainer_Artifacts ) -> Model_Evaluation_Artifacts:
+    def start_model_evaluation(self,data_transformation_artifact : Data_Transformation_Artifacts ,
+                               model_evaluation_config: Model_Evaluation_Config, 
+                               model_trainer_artifact : Model_Trainer_Artifacts) -> Model_Evaluation_Artifacts:
         try:
             logging.info("Entered the start_model_evaluation method of TrainPipeline class")
-            model_evaluation = Model_Evaluation( model_evaluation_config = self.model_evaluation_config,
-                                                data_ingestion_artifact = data_ingestion_artifact,
-                                                model_trainer_artifact= model_trainer_artifact
+            model_evaluation = Model_Evaluation( model_evaluation_config = model_evaluation_config,
+                                                model_trainer_artifact= model_trainer_artifact,
+                                                data_transformation_artifact= data_transformation_artifact
                                                 )
             model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
             logging.info("Exited the start_model_evauation method of TrainPipeline class")
@@ -133,10 +131,14 @@ class TrainPipeline:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
-        
+    
         
     # Starting the model pusher.
-    def start_model_pusher(self,model_trainer_artifacts:Model_Trainer_Artifacts,s3:S3_Operation,data_transformation_artifacts: Data_Transformation_Artifacts) -> Model_Pusher_Artifacts:
+    def start_model_pusher(self,
+                           model_trainer_artifacts:Model_Trainer_Artifacts,
+                           s3:S3_Operation,
+                           data_transformation_artifact: Data_Transformation_Artifacts
+                           ) -> Model_Pusher_Artifacts:
         logging.info("Entered the start_model_pusher method of TrainPipeline class")
         try:
             
@@ -144,7 +146,7 @@ class TrainPipeline:
                 model_pusher_config= self.model_pusher_config,
                 model_trainer_artifacts= model_trainer_artifacts,
                 s3=s3,
-                data_transformation_artifacts= data_transformation_artifacts
+                data_transformation_artifacts= data_transformation_artifact
             )
             
             model_pusher_artifact = model_pusher.initiate_model_pusher()
@@ -157,7 +159,7 @@ class TrainPipeline:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
         
-   
+        
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
     # This method is used to start the training pipeline
     
@@ -166,11 +168,18 @@ class TrainPipeline:
         logging.info("Entered the run_pipeline method of Training class")
         try:
             data_ingestion_artifact = self.start_data_ingestion()
+            logging.info("-----------------------------------------------------------------------------------------------")
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact= data_ingestion_artifact)
+            logging.info("-----------------------------------------------------------------------------------------------")
             data_transformation_artifact = self.start_data_transformation(data_ingestion_artifact=data_ingestion_artifact)
-            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
-            model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact, 
-                                                                    model_trainer_artifact= model_trainer_artifact)
+            logging.info("-----------------------------------------------------------------------------------------------")
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact, model_trainer_config= self.model_trainer_config)
+            logging.info("-----------------------------------------------------------------------------------------------")
+            model_evaluation_artifact = self.start_model_evaluation(model_trainer_artifact= model_trainer_artifact,
+                                                                    model_evaluation_config = self.model_evaluation_config,
+                                                                    data_transformation_artifact= data_transformation_artifact
+                                                                    )
+            logging.info("-----------------------------------------------------------------------------------------------")
      
             """
             This block handles the evaluation of the trained model. 
