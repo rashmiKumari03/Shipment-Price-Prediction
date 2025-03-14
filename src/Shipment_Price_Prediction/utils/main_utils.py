@@ -82,6 +82,7 @@ class MainUtils:
             model_best_params = self.get_model_params(model, train_x, train_y)
             model.set_params(**model_best_params)
             model.fit(train_x, train_y)
+            
             preds = model.predict(test_x)
             model_all_metrics = self.get_model_score(test_y, preds)
             model_r2_score = model_all_metrics["R2 Score"]
@@ -242,3 +243,5 @@ class MainUtils:
                 yaml.safe_dump(model_config, fp, sort_keys=False)
         except Exception as e:
             raise CustomException(f"Error updating model score: {str(e)}", sys)
+
+    
