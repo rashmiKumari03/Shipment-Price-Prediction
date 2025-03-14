@@ -95,5 +95,11 @@ creating_target_columns:
   - Freight Cost (USD)
   - Line Item Insurance (USD)
 
+
+numeric_features:
+  - Weight (Kilograms)
+  - Freight Cost (USD)
+
+
 target_column: Shipment Price  # Define the target explicitly
 
