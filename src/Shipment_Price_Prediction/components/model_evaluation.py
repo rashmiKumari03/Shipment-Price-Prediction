@@ -6,9 +6,12 @@ from dataclasses import dataclass
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 
+
 from src.Shipment_Price_Prediction.constant import *
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Model_Trainer_Artifacts, Model_Evaluation_Artifacts)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts, Model_Trainer_Artifacts, Model_Evaluation_Artifacts)
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Evaluation_Config
+
+from src.Shipment_Price_Prediction.components.model_trainer import Cost_Model
 
 # Define constants for model evaluation in the constants folder.
 # Implement the S3 bucket configuration in the configuration folder for better organization.
@@ -65,11 +68,14 @@ class Evaluate_Model_Response:
 
 class Model_Evaluation:
     
-    def __init__(self, model_trainer_artifact: Model_Trainer_Artifacts, model_evaluation_config: Model_Evaluation_Config, data_ingestion_artifact: Data_Ingestion_Artifacts):
+    def __init__(self, model_trainer_artifact: Model_Trainer_Artifacts,
+                 model_evaluation_config: Model_Evaluation_Config, 
+                 data_transformation_artifact : Data_Transformation_Artifacts):
         
         self.model_trainer_artifact = model_trainer_artifact
         self.model_evaluation_config = model_evaluation_config
-        self.data_ingestion_artifact = data_ingestion_artifact
+        self.data_transformation_artifact = data_transformation_artifact
+        
         
         if model_trainer_artifact is None or model_trainer_artifact.trained_model_file_path is None:
              raise CustomException("Model_Trainer_Artifacts is not properly initialized. Ensure trained_model_file_path is provided.", sys)
@@ -110,24 +116,15 @@ class Model_Evaluation:
         logging.info("Entered the evaluate_model method of Model Evaluation class")
         try:
             # Reading the test data
-            test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
-            
-             # Define target column by summing the required columns
-            logging.info("Since in this dataset target column was not defined , so we have defined it and later we do segregation")
-            test_df["Shipment Price"] = (test_df["Line Item Value"] + test_df["Freight Cost (USD)"] + test_df["Line Item Insurance (USD)"])
-            
-            
-            logging.info("Segregating the test_df data as independent and dependent columns")
-            
+            logging.info(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.X_transformed_test_file_path))
+            X_test_df = pd.DataFrame(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.X_transformed_test_file_path))
+            logging.info(f"X_Test_df : {pd.DataFrame(X_test_df)}")
+        
             
             # Splitting into features and target
-            logging.info("Droppping the Target Column")
-            x = test_df.drop(TARGET_COLUMN, axis=1)
-            y = test_df[TARGET_COLUMN]
-            logging.info("Test data successfully split into features and target.")
-            logging.info(f"Features (X) - Sample Data:\n{x.head().to_string(index=False)}")
-            logging.info(f"Target (y) - Sample Data:\n{y.head().to_string(index=False)}")
-
+          
+            Y_test = pd.DataFrame(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.y_transformed_test_file_path))
+            logging.info(f"Y_Test has been loaded!")
             
 
             # Loading the trained model and prediction
@@ -136,11 +133,14 @@ class Model_Evaluation:
             logging.info(f"trained_model is : {trained_model}")
             
             logging.info("Prediction using trained_model(local system) initiated!")
-            y_hat_trained_model = trained_model.predict(x)
+            logging.info("This predict method is of Cost_Model Class..........")
+            
+            
+            Y_hat_trained_model = Cost_Model.predict(X_test_df)
             logging.info("Prediction done with the trained model")
 
             # Checking the R² score of the trained model
-            trained_model_metrics = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_trained_model)
+            trained_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y_test, Y_hat_trained_model)
             # Logging the metrics in a dynamic manner
             logging.info("The Metrics are Stored in Dictionary Form:")
             for metric_name, metric_value in trained_model_metrics.items():
@@ -160,8 +160,8 @@ class Model_Evaluation:
                 logging.info("S3 bucket is not empty — a model exists!")
                 logging.info("Initiating prediction using the S3-trained model.")
 
-                y_hat_s3_model = s3_model.predict(x)
-                s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(y, y_hat_s3_model)
+                Y_hat_s3_model = s3_model.predict(X_test_df)
+                s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y, Y_hat_s3_model)
                 # Logging the metrics in a dynamic manner
                 logging.info("The S3 metrics are Stored in Dictionary Form:")
                 for s3_metric_name, s3_metric_value in s3_model_metrics.items():
@@ -192,7 +192,7 @@ class Model_Evaluation:
             )
 
         except Exception as e:
-            logging.info(f"Error occurred during model evaluation: {str(e)}")
+            logging.info(CustomException(str(e),sys))
             raise CustomException(str(e), sys)
 
     def initiate_model_evaluation(self) -> Model_Evaluation_Artifacts:
@@ -217,5 +217,5 @@ class Model_Evaluation:
             return model_evaluation_artifact
 
         except Exception as e:
-            logging.info(f"Error occurred while initiating model evaluation: {str(e)}")
+            logging.info(CustomException(str(e),sys))
             raise CustomException(str(e), sys)
