@@ -126,17 +126,22 @@ class Model_Evaluation:
             Y_test = pd.DataFrame(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.y_transformed_test_file_path))
             logging.info(f"Y_Test has been loaded!")
             
-
             # Loading the trained model and prediction
             logging.info(f"trained_model_file_path : {self.model_trainer_artifact.trained_model_file_path}")
+
+            # Use the load_object method to load the trained model
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
+
             logging.info(f"trained_model is : {trained_model}")
             
-            logging.info("Prediction using trained_model(local system) initiated!")
+            # Create an instance of Cost_Model
+            cost_model_instance = Cost_Model(preprocessing_object=self.data_transformation_artifact.transformed_object_file_path, trained_model_object=trained_model)
+
+            logging.info("Prediction using trained_model initiated!")
             logging.info("This predict method is of Cost_Model Class..........")
-            
-            
-            Y_hat_trained_model = Cost_Model.predict(X_test_df)
+
+            # Use the instance to call predict
+            Y_hat_trained_model = cost_model_instance.predict(X_test_df)  # Pass the transformed test data
             logging.info("Prediction done with the trained model")
 
             # Checking the R² score of the trained model
