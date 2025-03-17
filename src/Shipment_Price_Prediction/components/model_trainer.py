@@ -24,25 +24,23 @@ class Cost_Model:
         self.SCHEMA_CONFIG = UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
         self.numeric_columns = self.SCHEMA_CONFIG.get('numeric_features',[])
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray: 
+    def predict(self, X_transformed: pd.DataFrame) -> np.ndarray: 
         """
         Predict shipment costs based on input features.
         """
         logging.info("Entered the 'predict' method of the Cost_Model class.")
         try:
             
-            logging.info(f"Data shape after conversion: {X.shape}")
-            logging.info(f"Sample data after conversion:\n{X.head()}")
-            
-            # Feature transformation
-            transformed_data = self.preprocessing_object.transform(X)
-            logging.info(f"Transformed data sample:\n{transformed_data[:5]}")
+            logging.info(f"Data shape after conversion: {X_transformed.shape}")
+            logging.info(f"Sample data after conversion:\n{X_transformed[:5]}")
 
             # Predictions
-            predictions = self.model.predict(transformed_data)
-            logging.info("Predictions generated successfully.")
+            predictions = self.model.predict(X_transformed)
+            logging.info("Predictions generated successfully.....from Cost_Model Class")
+            logging.info(f"The Prediction is : {predictions}")
 
             return predictions
+            
 
         except Exception as e:
             logging.error(f"Error during prediction: {str(e)}")
