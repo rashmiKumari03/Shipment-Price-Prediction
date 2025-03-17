@@ -166,7 +166,7 @@ class Model_Evaluation:
                 logging.info("Initiating prediction using the S3-trained model.")
 
                 Y_hat_s3_model = s3_model.predict(X_test_df)
-                s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y, Y_hat_s3_model)
+                s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y_test, Y_hat_s3_model)
                 # Logging the metrics in a dynamic manner
                 logging.info("The S3 metrics are Stored in Dictionary Form:")
                 for s3_metric_name, s3_metric_value in s3_model_metrics.items():
