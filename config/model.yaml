@@ -6,6 +6,21 @@ train_model:
     positive:
     - true
     - false
+  Lasso:
+    alpha:
+    - 0.01
+    - 0.1
+    - 1.0
+    max_iter:
+    - 1000
+  Ridge:
+    alpha:
+    - 0.01
+    - 0.1
+    - 1.0
+    solver:
+    - auto
+    - lsqr
   XGBRegressor:
     learning_rate:
     - 0.01
@@ -25,4 +40,4 @@ train_model:
     learning_rate:
     - 0.01
     - 0.1
-base_model_score: '0.9445607846553226'
+base_model_score: '0.905278941070417'
