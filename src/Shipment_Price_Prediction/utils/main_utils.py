@@ -4,6 +4,7 @@ import sys
 import shutil
 import pickle
 from typing import Dict, Tuple, List, Union, Any
+from sklearn.model_selection import cross_val_score
 
 # Third-party libraries
 import yaml
@@ -75,24 +76,39 @@ class MainUtils:
             raise CustomException(f"Error loading numpy array: {str(e)}", sys)
 
     # Get tuned model
+    
     def get_tunned_model(self, model_name: str, train_x: DataFrame, train_y: DataFrame, test_x: DataFrame, test_y: DataFrame) -> Tuple[float, object, str]:
         logging.info("Entered the get_tunned_model method of MainUtils class")
         try:
+            # Get the base model
             model = self.get_base_model(model_name)
+            
+            # Get the best parameters using GridSearchCV
             model_best_params = self.get_model_params(model, train_x, train_y)
             model.set_params(**model_best_params)
+            
+            # Fit the model using cross-validation
+            cv_scores = cross_val_score(model, train_x, train_y, cv=5)  # 5-fold cross-validation
+            logging.info(f"Cross-validation scores: {cv_scores}")
+            logging.info(f"Mean CV score: {np.mean(cv_scores)}")
+
+            # Fit the model on the entire training set
             model.fit(train_x, train_y)
             
+            # Make predictions on the test set
             preds = model.predict(test_x)
+            
+            # Calculate model metrics
             model_all_metrics = self.get_model_score(test_y, preds)
             model_r2_score = model_all_metrics["R2 Score"]
             
-            logging.info("Exited the get_tuned_model method of MainUtils class")
+            logging.info("Exited the get_tunned_model method of MainUtils class")
             
             return model_r2_score, model, model.__class__.__name__
         
         except Exception as e:
             raise CustomException(f"Error tuning model {model_name}: {str(e)}", sys)
+
         
         
     # Get model score
