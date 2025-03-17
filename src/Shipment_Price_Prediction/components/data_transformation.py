@@ -29,6 +29,14 @@ from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestio
 UTILS = MainUtils()
 SCHEMA_CONFIG = UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
 
+datetime_columns = SCHEMA_CONFIG["datetime_columns"]
+
+# Define the transformation functions at the module level
+def convert_to_numeric(X):
+    return X.apply(pd.to_numeric, errors='coerce')
+
+def datetime_transform_wrapper(X):
+    return datetime_transformer(pd.DataFrame(X), datetime_columns)
 
 # Global function for datetime transformation
 def datetime_transformer(X, datetime_columns):
@@ -299,7 +307,7 @@ class Data_Transformation:
 
             numeric_imputer = SimpleImputer(strategy="median")
             numerical_pipeline = Pipeline(steps=[
-                ('convert', FunctionTransformer(lambda X: X.apply(pd.to_numeric, errors='coerce'), validate=False)),  # Convert columns to numeric
+                ('convert', FunctionTransformer(convert_to_numeric, validate=False)),  # Convert columns to numeric
                 ('imputer', numeric_imputer),
                 ('scaler', StandardScaler())  # Standardize numerical data
             ])
@@ -335,11 +343,11 @@ class Data_Transformation:
             # Create pipeline for datetime transformation
             
             datetime_pipeline = Pipeline(steps=[
-                ('datetime_transform', FunctionTransformer(lambda X: datetime_transformer(pd.DataFrame(X), datetime_columns), validate=False)),
+                ('datetime_transform', FunctionTransformer(datetime_transform_wrapper, validate=False)),
                 ('scaler', StandardScaler())
             ])
             logging.info("Datetime pipeline with scaling created.")
-                
+        
             
             # Combine all transformations into a ColumnTransformer
             # Define preprocessor
