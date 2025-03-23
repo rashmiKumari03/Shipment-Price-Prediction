@@ -67,10 +67,9 @@ class Data_Transformation_Artifacts:
     consistency between training and inference.
     """
     transformed_object_file_path: str
-    X_transformed_train_file_path: str
-    X_transformed_test_file_path: str
-    y_transformed_train_file_path : str
-    y_transformed_test_file_path  : str
+    train_file_path: str
+    test_file_path: str
+  
      
     
 
