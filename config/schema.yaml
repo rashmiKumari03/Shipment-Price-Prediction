@@ -96,7 +96,7 @@ creating_target_columns:
   - Line Item Insurance (USD)
 
 
-numeric_features:
+non_numeric_to_handle_columns:
   - Weight (Kilograms)
   - Freight Cost (USD)
 
