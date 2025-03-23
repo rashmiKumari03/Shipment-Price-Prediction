@@ -35,6 +35,7 @@ TARGET_COLUMN = "Shipment Price"
 # Split ratio for dividing the dataset into training and testing sets
 TEST_SIZE = 0.2  # Proportion of data to be used for testing during train-test split
 
+
 ARTIFACTS_DIR = os.path.join(from_root(),"artifacts",TIMESTAMP)
 
 
@@ -56,10 +57,8 @@ DATA_DRIFT_FILE_NAME = "Data_Drift_Report.yaml"
 
 # Data Transformation related Constants:
 DATA_TRANSFORMATION_ARTIFACTS_DIR = "Data_Transformation_Artifacts"
-X_TRANSFORMED_TRAIN_DATA_FILE_NAME = "X_transformed_train_data.npz"
-X_TRANSFORMED_TEST_DATA_FILE_NAME = "X_transformed_test_data.npz"
-Y_TRANSFORMED_TRAIN_DATA_FILE_NAME = "y_transformed_train_data.npz"
-Y_TRANSFORMED_TEST_DATA_FILE_NAME = "y_transformed_test_data.npz"
+TRAIN_DATA_FILE_NAME = "train_data.npz"
+TEST_DATA_FILE_NAME = "test_data.npz"
 
 
 PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"   # used for predicting new data
