@@ -31,10 +31,6 @@ SCHEMA_CONFIG = UTILS.read_yaml_file(filename=SCHEMA_FILE_PATH)
 
 datetime_columns = SCHEMA_CONFIG["datetime_columns"]
 
-# Define the transformation functions at the module level
-def convert_to_numeric(X):
-    return X.apply(pd.to_numeric, errors='coerce')
-
 def datetime_transform_wrapper(X):
     return datetime_transformer(pd.DataFrame(X), datetime_columns)
 
@@ -155,6 +151,12 @@ class Data_Transformation:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e),sys)
+        
+    def convert_non_numeric(self, data: DataFrame) -> DataFrame:
+        numeric_cols = self.data_transformation_config.SCHEMA_CONFIG["non_numeric_to_handle_columns"]
+        logging.info(f"The numeric_cols are : {numeric_cols}")
+        data[numeric_cols] = data[numeric_cols].apply(pd.to_numeric, errors='coerce')
+        return data
         
 
     
@@ -301,13 +303,24 @@ class Data_Transformation:
             binary_columns = self.data_transformation_config.SCHEMA_CONFIG["binary_columns"]
             datetime_columns = self.data_transformation_config.SCHEMA_CONFIG["datetime_columns"]
             
-          
+            
+            # Create a pipeline for handling non-numeric values
+            non_numeric_pipeline = Pipeline(steps=[
+                ('convert', FunctionTransformer(self.convert_non_numeric, validate=False))
+            ])
+            
+            # Create a pipeline for handling outliers
+            outlier_pipeline = Pipeline(steps=[
+                ('winsorize', FunctionTransformer(self.handle_outliers, validate=False))
+            ])
+
 
             # Handle numerical columns: Impute and scale
 
             numeric_imputer = SimpleImputer(strategy="median")
             numerical_pipeline = Pipeline(steps=[
-                ('convert', FunctionTransformer(convert_to_numeric, validate=False)),  # Convert columns to numeric
+                ('non_numeric', non_numeric_pipeline),
+                ('outlier',outlier_pipeline),
                 ('imputer', numeric_imputer),
                 ('scaler', StandardScaler())  # Standardize numerical data
             ])
@@ -393,139 +406,53 @@ class Data_Transformation:
             logging.info("Basic Inspection of Train dataset and Test dataset:")
             logging.info(self.basic_inspection())
 
-            # Step 2: Handle Duplicates 
+            # Step Handle Duplicates 
             self.train_set = self.handle_duplicate_values(self.train_set)
             self.test_set = self.handle_duplicate_values(self.test_set)
             logging.info("Handed duplicate values in train and test datasets.")
             logging.info(f"Duplicate Values in Trainset Now : {self.train_set.duplicated().sum()}")
             logging.info(f"Duplicate Values in Testset Now : {self.test_set.duplicated().sum()}")
             
-            
-            # Step 3: Handling the Missing Values
-            self.train_set = self.handle_missing_values(self.train_set)
-            self.test_set = self.handle_missing_values(self.test_set)
-            logging.info("Handed missing values in train and test datasets.")
-            logging.info(f"Train dataset after missing value imputation:\n {self.train_set.head()}")
-            logging.info(f"Test dataset after missing value imputation:\n {self.test_set.head()}")
-            
 
-            # Step 4: Handle Outliers
-            self.train_set = self.handle_outliers(self.train_set)
-            self.test_set = self.handle_outliers(self.test_set)
-            logging.info("Handled outliers in train and test datasets.")
-            logging.info(f"Train dataset after outlier handling:\n {self.train_set.head()}")
-            logging.info(f"Test dataset after outlier handling:\n {self.test_set.head()}")
-
-            # Step 5: Apply Feature Transformation Pipeline
+            # Step Apply Feature Transformation Pipeline
             preprocessor = self.get_data_transformer_object()
-            logging.info(f"While exist the get_data_transformer_object's output is the preprocessor as : {preprocessor}")
-            
-            # We need to: Separate features and target before calling fit_transform or transform.
-            #            Ensure only the feature columns are passed to the preprocessor.
-            
+
             logging.info("Starting data transformation...")
 
-            # Separate features (X) and target (y) for train and test sets
-            
             target_column = SCHEMA_CONFIG['target_column']
-
-            # Separate features (X) and target (y) for train and test sets
             X_train = self.train_set.drop(columns=target_column)
             y_train = self.train_set[target_column]
-
             X_test = self.test_set.drop(columns=[target_column])
             y_test = self.test_set[target_column]
 
-
-            # Fit and transform the training data (features only)
             logging.info("Fitting and transforming training data using the preprocessor...")
             X_train_transformed_arr = preprocessor.fit_transform(X_train)
-            logging.info(f"X_Transformed training data (first few rows):\n {pd.DataFrame(X_train_transformed_arr).head()}")
-            
 
-            # Transform the test data (features only)
-            logging.info("X_Transforming test data using the preprocessor...")
+            logging.info("Transforming test data using the preprocessor...")
             X_test_transformed_arr = preprocessor.transform(X_test)
-            logging.info(f"Transformed test data (first few rows):\n {pd.DataFrame(X_test_transformed_arr).head()}")
-            
-            # Apply log1p transformation to scale target variables and reduce the effect of large values
-            # log1p(y) = log(1 + y) ensures we handle zeros safely without errors
-            y_train_transformed = np.log1p(y_train)
-            y_test_transformed = np.log1p(y_test)
 
-            # Convert the transformed target variables into 1D arrays
-            # Many models expect target variables to be in a 1D format, so ravel() flattens them
-            y_train = y_train_transformed.values.ravel()
-            y_test = y_test_transformed.values.ravel()
+            y_train = np.log1p(y_train)
+            y_test = np.log1p(y_test)
 
-            # Log the shapes and sample values of the transformed target arrays to check everything looks correct
-            logging.info(f"y_train transformed and converted to 1D. Shape: {y_train.shape}, First 5 values: {y_train[:5]}")
-            logging.info(f"y_test transformed and converted to 1D. Shape: {y_test.shape}, First 5 values: {y_test[:5]}")
+            train_arr = np.c_[X_train_transformed_arr, y_train]
+            test_arr = np.c_[X_test_transformed_arr, y_test]
 
+            train_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "train_data.npz")
+            test_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "test_data.npz")
+            transformed_object_file_path = os.path.join(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, "transformed_object.pkl")
 
-            #  # Step 6: Save transformed data
-            X_transformed_train_file_path = os.path.join(
-                self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, 
-                "X_transformed_train_data.npz"
-            )
-            X_transformed_test_file_path = os.path.join(
-                self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, 
-                "X_transformed_test_data.npz"
-            )
-            transformed_object_file_path = os.path.join(
-                self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, 
-                "transformed_object.pkl"
-            )
-            
-            y_transformed_train_file_path = os.path.join(
-                self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR,
-                "y_transformed_train_data.npz"
-            )
-            
-            y_transformed_test_file_path = os.path.join(
-                self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR,
-                "y_transformed_test_data.npz"
-            )
-            
-    
-
-            # Save the transformed arrays
-            self.data_transformation_config.UTILS.save_numpy_array_data(X_transformed_train_file_path, X_train_transformed_arr)
-            logging.info(f"Saved transformed training data to {X_transformed_train_file_path}")
-
-            self.data_transformation_config.UTILS.save_numpy_array_data(X_transformed_test_file_path, X_test_transformed_arr)
-            logging.info(f"Saved transformed test data to {X_transformed_test_file_path}")
-            
-            self.data_transformation_config.UTILS.save_numpy_array_data(y_transformed_train_file_path,y_train)
-            logging.info(f"Saved transformed y_train data to {y_transformed_train_file_path}")
-            
-            self.data_transformation_config.UTILS.save_numpy_array_data(y_transformed_test_file_path,y_test)
-            logging.info(f"Saved transformed y_test data to {y_transformed_test_file_path}")
-            
-
-            # Save the preprocessor object
+            UTILS.save_numpy_array_data(train_file_path, train_arr)
+            UTILS.save_numpy_array_data(test_file_path, test_arr)
             joblib.dump(preprocessor, transformed_object_file_path)
-            logging.info(f"Preprocessor saved successfully at {transformed_object_file_path}")
 
-            #  # Step 7: Creating Data_Transformation_Artifacts object to Return transformation artifacts
             data_transformation_artifacts = Data_Transformation_Artifacts(
                 transformed_object_file_path=transformed_object_file_path,
-                X_transformed_train_file_path=X_transformed_train_file_path,
-                X_transformed_test_file_path=X_transformed_test_file_path,
-                y_transformed_train_file_path = y_transformed_train_file_path,
-                y_transformed_test_file_path = y_transformed_test_file_path
-        
+                train_file_path=train_file_path,
+                test_file_path=test_file_path
             )
 
             logging.info("Data transformation completed successfully.")
-            logging.info("Exited initiate_data_transformation method of Data_Transformation class")
-            
             return data_transformation_artifacts
-        
-    
         except Exception as e:
             logging.error(f"Error in initiate_data_transformation: {str(e)}")
             raise CustomException(str(e), sys)
-        
-
- 
