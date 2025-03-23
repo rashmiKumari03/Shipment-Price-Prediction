@@ -16,7 +16,7 @@ from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Ingestion_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Ingestion_Artifacts
 
-from src.Shipment_Price_Prediction.constant import TEST_SIZE
+from src.Shipment_Price_Prediction.constant import TEST_SIZE 
 
 # Note : We first have to create Data_Ingestion_Config , Data_Ingestion_Artifacts and TEST_SIZE in their respective path.
 
@@ -304,7 +304,7 @@ class Data_Ingestion:
             
             
             # Splitting the data into train and test
-            train_set , test_set =  train_test_split(df , test_size = TEST_SIZE)
+            train_set , test_set =  train_test_split(df , test_size = TEST_SIZE )
             logging.info("Performed train test split on the dataframe")
             
             # Creating train directory under data ingestion artifact directory
