@@ -194,7 +194,7 @@ class Model_Evaluation:
                 logging.info("S3 bucket is not empty — a model exists!")
                 logging.info("Initiating prediction using the S3-trained model.")
 
-                Y_hat_s3_model = s3_model.predict(X_test)
+                Y_hat_s3_model = s3_model.prediction(X_test)
                 s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y_test, Y_hat_s3_model)
                 # Logging the metrics in a dynamic manner
                 logging.info("The S3 metrics are Stored in Dictionary Form:")

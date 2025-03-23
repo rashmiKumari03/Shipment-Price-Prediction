@@ -24,7 +24,7 @@ class Cost_Model:
         """
         Predict shipment costs based on input features.
         """
-        logging.info("Entered the 'predict' method of the Cost_Model class.")
+        logging.info("Entered the 'prediction' method of the Cost_Model class.")
         try:
             logging.info(f"X looks like : \n {X.head()}")
             # Preprocess the input data
