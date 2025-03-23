@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 from dataclasses import dataclass
 
 from src.Shipment_Price_Prediction.logger import logging
@@ -8,7 +9,7 @@ from src.Shipment_Price_Prediction.exception import CustomException
 
 
 from src.Shipment_Price_Prediction.constant import *
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts, Model_Trainer_Artifacts, Model_Evaluation_Artifacts)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Transformation_Artifacts,Model_Trainer_Artifacts, Model_Evaluation_Artifacts)
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Evaluation_Config
 
 from src.Shipment_Price_Prediction.components.model_trainer import Cost_Model
@@ -55,6 +56,17 @@ What We Need to Decide:
 
 2. Should the S3 Model Always Exist?
    - If the S3 model doesn't exist, the code currently defaults to using the newly trained model without comparison.
+   
+   
+   
+Model Evaluation Class: The Model_Evaluation class is responsible for evaluating the performance of a newly trained model against a previously deployed model (stored in S3).
+
+Key Methods:
+
+- get_s3_model: Fetches the model from the S3 bucket if it exists.
+- evaluate_model: Compares the newly trained model with the S3 model by calculating their R² scores and determining if the new model is better.
+- initiate_model_evaluation: Initiates the evaluation process and returns the evaluation artifacts.
+
 """
 
 # This class elements were logged.
@@ -70,10 +82,12 @@ class Model_Evaluation:
     
     def __init__(self, model_trainer_artifact: Model_Trainer_Artifacts,
                  model_evaluation_config: Model_Evaluation_Config, 
-                 data_transformation_artifact : Data_Transformation_Artifacts):
+                 data_ingestion_artifact : Data_Ingestion_Artifacts,
+                 data_transformation_artifact: Data_Transformation_Artifacts):
         
         self.model_trainer_artifact = model_trainer_artifact
         self.model_evaluation_config = model_evaluation_config
+        self.data_ingestion_artifact = data_ingestion_artifact
         self.data_transformation_artifact = data_transformation_artifact
         
         
@@ -116,34 +130,49 @@ class Model_Evaluation:
         logging.info("Entered the evaluate_model method of Model Evaluation class")
         try:
             # Reading the test data
-            logging.info(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.X_transformed_test_file_path))
-            X_test_df = pd.DataFrame(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.X_transformed_test_file_path))
-            logging.info(f"X_Test_df : {pd.DataFrame(X_test_df)}")
+            logging.info("Readind the Test dataset from Ingestion")
+            test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
+            logging.info(f"Test_df : {test_df.head()}")
         
             
-            # Splitting into features and target
-          
-            Y_test = pd.DataFrame(self.model_evaluation_config.UTILS.load_numpy_array_data(self.data_transformation_artifact.y_transformed_test_file_path))
-            logging.info(f"Y_Test has been loaded!")
+            # Splitting into input features and target features
+            X_test = test_df.drop(columns=[TARGET_COLUMN],axis=1)
+            Y_test = test_df[TARGET_COLUMN]
+            logging.info(f"X_test Looks like : {X_test.head()}")
+            logging.info(f"Y_test Looks like : {Y_test.head()}")
+            logging.info(f"X_test and Y_test has been loaded!")
             
+            
+    
             # Loading the trained model and prediction
             logging.info(f"trained_model_file_path : {self.model_trainer_artifact.trained_model_file_path}")
 
-            # Use the load_object method to load the trained model
+            # Use the load_object method to load the trained model, this is the cost_model which was stored in the trainer part.
             trained_model = self.model_evaluation_config.UTILS.load_object(self.model_trainer_artifact.trained_model_file_path)
 
             logging.info(f"trained_model is : {trained_model}")
             
-            # Create an instance of Cost_Model
-            cost_model_instance = Cost_Model(preprocessing_object=self.data_transformation_artifact.transformed_object_file_path, trained_model_object=trained_model)
-
-            logging.info("Prediction using trained_model initiated!")
-            logging.info("This predict method is of Cost_Model Class..........")
+            logging.info("Prediction using preprocessor_obj and trained_model initiated!")
+            
+            Y_test = np.log1p(Y_test)
+            logging.info(f"Y_test looks like : {Y_test}")
 
             # Use the instance to call predict
-            Y_hat_trained_model = cost_model_instance.predict(X_test_df)  # Pass the transformed test data
+            Y_hat_trained_model = trained_model.prediction(X_test)
+            logging.info(f"Y_hat_trained_model looks like : {Y_hat_trained_model}")
+            
             logging.info("Prediction done with the trained model")
+            
+            
+            # Convert predictions and actual values to DataFrames for consistency
+            Y_test_df = pd.DataFrame(Y_test, columns=['Actual'])
+            Y_hat_trained_model_df = pd.DataFrame(Y_hat_trained_model, columns=['Predicted'])
 
+            # Log the predictions
+            logging.info(f"Y_test:\n{Y_test_df.head()}")
+            logging.info(f"Y_hat_trained_model:\n{Y_hat_trained_model_df.head()}")
+
+    
             # Checking the R² score of the trained model
             trained_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y_test, Y_hat_trained_model)
             # Logging the metrics in a dynamic manner
@@ -165,7 +194,7 @@ class Model_Evaluation:
                 logging.info("S3 bucket is not empty — a model exists!")
                 logging.info("Initiating prediction using the S3-trained model.")
 
-                Y_hat_s3_model = s3_model.predict(X_test_df)
+                Y_hat_s3_model = s3_model.predict(X_test)
                 s3_model_metrics = self.model_evaluation_config.UTILS.get_model_score(Y_test, Y_hat_s3_model)
                 # Logging the metrics in a dynamic manner
                 logging.info("The S3 metrics are Stored in Dictionary Form:")
