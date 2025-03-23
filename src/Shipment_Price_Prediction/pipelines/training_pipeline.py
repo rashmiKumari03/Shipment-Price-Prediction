@@ -138,8 +138,7 @@ class TrainPipeline:
     # Starting the model pusher.
     def start_model_pusher(self,
                            model_trainer_artifacts:Model_Trainer_Artifacts,
-                           s3:S3_Operation,
-                           data_transformation_artifact: Data_Transformation_Artifacts
+                           s3:S3_Operation
                            ) -> Model_Pusher_Artifacts:
         logging.info("Entered the start_model_pusher method of TrainPipeline class")
         try:
@@ -147,8 +146,7 @@ class TrainPipeline:
             model_pusher = Model_Pusher(
                 model_pusher_config= self.model_pusher_config,
                 model_trainer_artifacts= model_trainer_artifacts,
-                s3=s3,
-                data_transformation_artifacts= data_transformation_artifact
+                s3=s3
             )
             
             model_pusher_artifact = model_pusher.initiate_model_pusher()
@@ -194,7 +192,7 @@ class TrainPipeline:
             
             """
             
-            if not model_trainer_artifact.is_model_accepted:
+            if not model_evaluation_artifact.is_model_accepted:
                 logging.info("Model evaluation completed: The model was NOT accepted based on the evaluation criteria.")
                 print("Model evaluation completed: The model was NOT accepted.")
                 return None
@@ -207,8 +205,7 @@ class TrainPipeline:
                 
                 model_pusher_artifact = self.start_model_pusher(
                     model_trainer_artifacts= model_trainer_artifact,
-                    s3= self.s3_operations,
-                    data_transformation_artifacts= data_transformation_artifact
+                    s3= self.s3_operations
                 )
                 logging.info("Model Got Pushed Successfully!!!!!.........")
                 

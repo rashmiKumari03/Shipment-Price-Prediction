@@ -4,11 +4,13 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 from typing import List, Tuple
+from from_root.root import from_root
+
 
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
-from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE, SCHEMA_FILE_PATH
+from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE, SCHEMA_FILE_PATH 
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
@@ -137,7 +139,7 @@ class Model_Trainer:
 
             trained_models = self.get_trained_models(train_arr, test_arr)
             
-            best_model_name, best_model_score, best_model_object = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(trained_models)
+            best_model_name,best_model_object, best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(trained_models)
             
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
             base_model_score = float(model_config["base_model_score"])
@@ -148,7 +150,10 @@ class Model_Trainer:
                 preprocessor_obj = self.model_trainer_config.UTILS.load_object(self.data_transformation_artifact.transformed_object_file_path)
                 logging.info("Here i am Saving the cost_model using save_object!!!!")
                 cost_model = Cost_Model(preprocessor_obj, best_model_object)
+                logging.info("Created a Cost_Model with preprocessor and model")
                 logging.info(f"cost_model looks like : {cost_model} and type of cost_model is {type(cost_model)}")
+                
+                
                 model_file_path = self.model_trainer_config.UTILS.save_object(self.model_trainer_config.TRAINED_MODEL_FILE_PATH, cost_model)
                 logging.info(f"model_file_path looks like : {model_file_path}")
                 model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
@@ -158,22 +163,56 @@ class Model_Trainer:
                 return model_trainer_artifacts
             
             else:
-                # Save base model again if no better model is found
-                logging.warning(f"No model exceeded the base model score of {base_model_score}. Best model score: {best_model_score}.")
+                artifacts_path = os.path.join(from_root(), "artifacts")
+                logging.info("Fetching list of subfolders inside the artifact directory.")
+
+                # Get all folder names sorted by creation time
+                dir_list = sorted(
+                    (folder_name for folder_name in os.listdir(artifacts_path) 
+                    if os.path.isdir(os.path.join(artifacts_path, folder_name))),
+                    key=lambda x: os.path.getmtime(os.path.join(artifacts_path, x))
+                )
+
+                # Log the folder names
+                for folder_name in dir_list:
+                    logging.info(f"Found folder: {folder_name}")
+
+                # Return the second-to-last folder name if it exists
+                if len(dir_list) >= 2:
+                    second_last_folder = dir_list[-2]
+                    logging.info(f"Loading model from the second-to-last artifact directory: {second_last_folder}")
+                else:
+                    logging.warning("Fewer than two artifact folders found. Exiting the method.")
+                    return None  
                 
-                # Load the existing base model
-                base_model_object = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
+                # Define the path to the Model_Trainer_Artifacts folder
+                model_artifacts_path = os.path.join(artifacts_path, second_last_folder, 'Model_Trainer_Artifacts')
+                 
+                # List all files inside Model_Trainer_Artifacts
+                files_in_artifacts = os.listdir(model_artifacts_path)
+                logging.info(f"Files inside Model_Trainer_Artifacts:\n {files_in_artifacts}")
                 
-                # Define the new path to save the model in Model_Trainer_Artifacts
-                model_file_path = os.path.join(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR, "Retained_Model.pkl")
-                
-                # Save the base model directly without wrapping it
-                self.model_trainer_config.UTILS.save_object(model_file_path, base_model_object)
-                logging.info(f"Base model re-saved at {model_file_path}.")
-                
-                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
+                # Convert list to string
+                files_in_artifacts = ''.join(files_in_artifacts )
+                                
+                # Read the required file (assuming you want to load a specific file, e.g., MODEL_FILE_NAME)
+                model_file_path = os.path.join(model_artifacts_path, files_in_artifacts)
+
+                # Error handling for the model file loading
+                try:
+                    base_model_object = self.model_trainer_config.UTILS.load_object(model_file_path)
+                except Exception as e:
+                    logging.error(f"Error loading model from {model_file_path}: {e}")
+                    return None  # Handle as appropriate, e.g., raise an exception
+
+                # Save the base model directly without additional wrapping
+                output_model_file_path = os.path.join(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR, "Retained_Model.pkl")
+                self.model_trainer_config.UTILS.save_object(output_model_file_path, base_model_object)
+                logging.info(f"Base model re-saved at {output_model_file_path}.")
+
+                # Create and return the model trainer artifacts
+                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=output_model_file_path)
                 return model_trainer_artifacts
-            
         except Exception as e:
             logging.error(f"Error in initiate_model_trainer: {str(e)}")
             raise CustomException(str(e), sys)

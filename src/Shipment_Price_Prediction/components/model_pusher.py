@@ -14,13 +14,11 @@ class Model_Pusher:
     def __init__(self, 
                  model_pusher_config : Model_Pusher_Config ,
                  model_trainer_artifacts : Model_Trainer_Artifacts , 
-                 data_transformation_artifacts: Data_Transformation_Artifacts,
                  s3: S3_Operation
                  ):
         
         self.model_pusher_config = model_pusher_config
         self.model_trainer_artifacts = model_trainer_artifacts
-        self.data_transformation_artifacts = data_transformation_artifacts
         self.s3 = s3
         
         

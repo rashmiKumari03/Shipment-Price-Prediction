@@ -187,7 +187,7 @@ class MainUtils:
             if model_list:
                 logging.info("Model list is empty.")
                 # Find the best model based on the score
-                best_model_tuple = max(model_list, key=lambda x: x[2])  # x[2] is the score
+                best_model_tuple = max(model_list, key=lambda x: x[2]) 
 
                 best_model_score = best_model_tuple[0]
                 best_model_object = best_model_tuple[1]
@@ -198,7 +198,7 @@ class MainUtils:
                 )
                 logging.info("Exited the get_best_model_with_name_and_score method of MainUtils class")
                 
-                return best_model_name , best_model_score , best_model_object
+                return best_model_name , best_model_object ,  best_model_score 
 
         except Exception as e:
             raise CustomException(str(e),sys)
