@@ -43,7 +43,7 @@ class MainUtils:
             except Exception as e:
                 raise CustomException(f"Error reading YAML file: {str(e)}", sys)
             
-# Write JSON-like dictionary to a YAML file
+    # Write JSON-like dictionary to a YAML file
     def write_json_to_yaml_file(self, json_file: dict, yaml_file_path: str) -> yaml:
         logging.info("Entered the write_json_to_yaml_file method of MainUtils class")
         try:
@@ -181,7 +181,7 @@ class MainUtils:
 
         
     @staticmethod
-    def get_best_model_with_name_and_score(model_list : list) -> Tuple[object,float]:
+    def get_best_model_with_name_and_score(model_list : list) -> Tuple[str,object,float]:
         logging.info("Entered the get_best_model_with_name_and_score method of MainUtils class")
         try:
             if model_list:

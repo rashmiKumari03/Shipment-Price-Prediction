@@ -114,13 +114,15 @@ class TrainPipeline:
     
         
     # Starting the model evaluation ...
-    def start_model_evaluation(self,data_transformation_artifact : Data_Transformation_Artifacts ,
+    def start_model_evaluation(self,data_ingestion_artifact : Data_Ingestion_Artifacts,
+                               data_transformation_artifact : Data_Transformation_Artifacts ,
                                model_evaluation_config: Model_Evaluation_Config, 
                                model_trainer_artifact : Model_Trainer_Artifacts) -> Model_Evaluation_Artifacts:
         try:
             logging.info("Entered the start_model_evaluation method of TrainPipeline class")
             model_evaluation = Model_Evaluation( model_evaluation_config = model_evaluation_config,
                                                 model_trainer_artifact= model_trainer_artifact,
+                                                data_ingestion_artifact= data_ingestion_artifact,
                                                 data_transformation_artifact= data_transformation_artifact
                                                 )
             model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
@@ -177,8 +179,8 @@ class TrainPipeline:
             logging.info("-----------------------------------------------------------------------------------------------")
             model_evaluation_artifact = self.start_model_evaluation(model_trainer_artifact= model_trainer_artifact,
                                                                     model_evaluation_config = self.model_evaluation_config,
-                                                                    data_transformation_artifact= data_transformation_artifact
-                                                                    )
+                                                                    data_ingestion_artifact = data_ingestion_artifact,
+                                                                    data_transformation_artifact= data_transformation_artifact)
             logging.info("-----------------------------------------------------------------------------------------------")
      
             """
