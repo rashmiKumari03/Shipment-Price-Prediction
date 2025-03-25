@@ -149,72 +149,688 @@
         <h1>Shipment Cost Estimator</h1>
     </div>
 
+    <!-- 
+    Numerical Inputs (8 columns):
+    - Line Item Quantity
+    - Line Item Value (USD)
+    - Pack Price (USD)
+    - Unit Price (USD)
+    - Weight (Kilograms)
+    - Freight Cost (USD)
+    - Line Item Insurance (USD)
+    - Unit of Measure (Per Pack)
+
+    Categorical Inputs (14 columns):
+    - Country (with autocomplete)
+    - Managed By
+    - Fulfill Via
+    - Vendor INCO Term
+    - Shipment Mode
+    - Product Group
+    - Sub Classification
+    - Vendor (with autocomplete)
+    - Molecule/Test Type (with autocomplete)
+    - Brand (with autocomplete)
+    - Dosage (with autocomplete)
+    - Dosage Form (with autocomplete)
+    - Manufacturing Site (with autocomplete)
+
+    Date Inputs (3 columns):
+    - Scheduled Delivery Date
+    - Delivered to Client Date
+    - Delivery Recorded Date
+
+    Binary Input (1 column):
+    - First Line Designation
+
+    Total Count of Columns:
+    - Total Numerical Inputs: 8
+    - Total Categorical Inputs: 14
+    - Total Date Inputs: 3
+    - Total Binary Inputs: 1
+    - Total Columns: 26
+    -->
+
     <!-- Prediction Form -->
-    <div class="container mt-5 form-container">
-        <h2 class="text-center">Estimate Your Shipment Cost</h2>
+    <!-- Shipment Cost Estimation Form -->
+<div class="container mt-5 form-container">
+    <h2 class="text-center">Estimate Your Shipment Cost</h2>
+    
+    <form action="/predict" method="post" autocomplete="off">
+        <!-- Numerical Inputs (Total: 8) -->
+        <div class="mb-3">
+            <label class="form-label">Line Item Quantity</label>
+            <input type="number" name="line_item_quantity" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Line Item Value (USD)</label>
+            <input type="number" name="line_item_value" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Pack Price (USD)</label>
+            <input type="number" name="pack_price" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Unit Price (USD)</label>
+            <input type="number" name="unit_price" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Weight (Kilograms)</label>
+            <input type="number" name="weight" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Freight Cost (USD)</label>
+            <input type="number" name="freight_cost" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Line Item Insurance (USD)</label>
+            <input type="number" name="line_item_insurance" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Unit of Measure (Per Pack)</label>
+            <input type="number" name="unit_of_measure" class="form-control" required>
+        </div>
+
+        <!-- Categorical Inputs (Total: 14) -->
+
+        <div class="mb-3">
+            <label class="form-label">Country</label>
+            <select name="country" class="form-control" id="country" required>
+                <option value="" disabled selected>Select the Country</option>
+                <option>Afghanistan</option>
+                <option>Angola</option>
+                <option>Benin</option>
+                <option>Belize</option>
+                <option>Botswana</option>
+                <option>Burkina Faso</option>
+                <option>Burundi</option>
+                <option>Cameroon</option>
+                <option>Congo, DRC</option>
+                <option>Côte d'Ivoire</option>
+                <option>Dominican Republic</option>
+                <option>Ethiopia</option>
+                <option>Ghana</option>
+                <option>Guatemala</option>
+                <option>Guinea</option>
+                <option>Guyana</option>
+                <option>Haiti</option>
+                <option>Kazakhstan</option>
+                <option>Kenya</option>
+                <option>Kyrgyzstan</option>
+                <option>Lebanon</option>
+                <option>Lesotho</option>
+                <option>Liberia</option>
+                <option>Libya</option>
+                <option>Malawi</option>
+                <option>Mali</option>
+                <option>Mozambique</option>
+                <option>Namibia</option>
+                <option>Nigeria</option>
+                <option>Pakistan</option>
+                <option>Rwanda</option>
+                <option>Senegal</option>
+                <option>Sierra Leone</option>
+                <option>South Africa</option>
+                <option>South Sudan</option>
+                <option>Sudan</option>
+                <option>Swaziland</option>
+                <option>Tanzania</option>
+                <option>Togo</option>
+                <option>Uganda</option>
+                <option>Vietnam</option>
+                <option>Zambia</option>
+                <option>Zimbabwe</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Managed By</label>
+            <select name="managed_by" class="form-select" required>
+                <option selected disabled>Select Manager</option>
+                <option>Ethiopia Field Office</option>
+                <option>Haiti Field Office</option>
+                <option>PMO - US</option>
+                <option>South Africa Field Office</option>
+            </select>
+        </div>
         
-        <form action="/predict" method="post" autocomplete="off">
-            <!-- Numerical Inputs -->
-            <div class="mb-3">
-                <label class="form-label">Line Item Quantity</label>
-                <input type="number" class="form-control" placeholder="Please enter the line item quantity" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Line Item Value (USD)</label>
-                <input type="number" class="form-control" placeholder="Please enter the line item value in USD" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Pack Price (USD)</label>
-                <input type="number" class="form-control" placeholder="Please enter the pack price in USD" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Unit Price (USD)</label>
-                <input type="number" class="form-control" placeholder="Please enter the unit price in USD" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Weight (Kilograms)</label>
-                <input type="number" class="form-control" placeholder="Please enter the weight in kilograms" required>
-            </div>
 
-            <!-- Categorical Inputs -->
-            <div class="mb-3">
-                <label class="form-label">Country</label>
-                <select class="form-select" required>
-                    <option selected disabled>Select Country</option>
-                    <option>USA</option>
-                    <option>India</option>
-                    <option>Germany</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Shipment Mode</label>
-                <select class="form-select" required>
-                    <option selected disabled>Select Mode</option>
-                    <option>Air</option>
-                    <option>Sea</option>
-                    <option>Land</option>
-                </select>
-            </div>
-
-           <!-- Date Inputs -->
-            <div class="mb-3">
-                <label class="form-label">Scheduled Delivery Date</label>
-                <input type="date" class="form-control" min="2025-01-01" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Delivered to Client Date</label>
-                <input type="date" class="form-control" min="2025-01-01" required>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Fulfill Via</label>
+            <select name="fulfill_via" class="form-select" required>
+                <option selected disabled>Select Fulfillment Method</option>
+                <option>Direct Drop</option>
+                <option>From RDC</option>
+            </select>
+        </div>
 
 
-            <!-- Binary Input -->
-            <div class="mb-3">
-                <label class="form-label">First Line Designation</label>
-                <select class="form-select" required>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Vendor INCO Term</label>
+            <select name="vendor_inco_term" class="form-select" required>
+                <option selected disabled>Select INCO Term</option>
+                <option>CIF</option>
+                <option>CIP</option>
+                <option>DAP</option>
+                <option>DDP</option>
+                <option>DDU</option>
+                <option>EXW</option>
+                <option>FCA</option>
+                <option>N/A - From RDC</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Shipment Mode</label>
+            <select name="shipment_mode" class="form-select" required>
+                <option selected disabled>Select Mode</option>
+                <option>Air</option>
+                <option>Air Charter</option>
+                <option>Ocean</option>
+                <option>Truck</option>
+            </select>
+        </div>
+        
+    
+        <div class="mb-3">
+            <label class="form-label">Product Group</label>
+            <select name="product_group" class="form-select" required>
+                <option selected disabled>Select Product Group</option>
+                <option>ACT</option>
+                <option>ANTM</option>
+                <option>ARV</option>
+                <option>HRDT</option>
+                <option>MRDT</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Sub Classification</label>
+            <select name="sub_classification" class="form-select" required>
+                <option selected disabled>Select Sub Classification</option>
+                <option>ACT</option>
+                <option>Adult</option>
+                <option>HIV test</option>
+                <option>HIV test - Ancillary</option>
+                <option>Malaria</option>
+                <option>Pediatric</option>
+            </select>
+        </div>
+         
+
+        <div class="mb-3">
+            <label class="form-label">Vendor</label>
+            <select name="vendor" class="form-select" id="vendor" required>
+                <option selected disabled>Select the Vendor</option>
+                <option>ABBOTT LABORATORIES (PUERTO RICO)</option>
+                <option>ABBOTT LOGISTICS B.V.</option>
+                <option>ABBOTT GmbH & Co. KG</option>
+                <option>ABBVIE LOGISTICS (FORMERLY ABBOTT LOGISTICS BV)</option>
+                <option>ABBVIE, SRL (FORMALLY ABBOTT LABORATORIES INTERNATIONAL CO.)</option>
+                <option>ACCESS BIO, INC.</option>
+                <option>ACCOUN NIGERIA LIMITED</option>
+                <option>ACOUNS NIGERIA LTD</option>
+                <option>ACTION MEDEOR E.V.</option>
+                <option>AHN (PTY) LTD (AKA UCB (S.A.)</option>
+                <option>AMSTELFARMA B.V.</option>
+                <option>Aurobindo Pharma Limited</option>
+                <option>AUROBINDO PHARAM (SOUTH AFRICA)</option>
+                <option>B&C GROUP S.A.</option>
+                <option>BIO-RAD LABORATORIES (FRANCE)</option>
+                <option>BIO-RAD LABORATORIES PTY LTD. (SOUTH AFRICA)</option>
+                <option>BIOLYTICAL LABORATORIES INC.</option>
+                <option>BRISTOL-MYERS SQUIBB</option>
+                <option>BUNDI INTERNATIONAL DIAGNOSTICS LTD</option>
+                <option>CENTRAL PHARMACEUTICAL COMPANY NO. 1</option>
+                <option>CHEMBIO DIAGNOSTIC SYSTEMS, INC.</option>
+                <option>CIPLA LIMITED</option>
+                <option>EMCURE PHARMACEUTICALS LTD</option>
+                <option>ETHNOR DEL ISTMO S.A.</option>
+                <option>EY Laboratories</option>
+                <option>GILEAD SCIENCES IRELAND, INC.</option>
+                <option>GLAXOSMITHKLINE EXPORT LIMITED</option>
+                <option>HETERO LABS LIMITED</option>
+                <option>Hoffmann-La Roche ltd Basel</option>
+                <option>HUMAN GMBH</option>
+                <option>IDA FOUNDATION</option>
+                <option>IDIS LIMITED</option>
+                <option>IMRES B.V.</option>
+                <option>INTERNATIONAL HEALTHCARE DISTRIBUTORS</option>
+                <option>INVERNESS MEDICAL INNOVATIONS HONG KONG LTD</option>
+                <option>INVERNESS MEDICAL INNOVATIONS SOUTH AFRICA (PTY) LTD</option>
+                <option>JANSSEN SCIENCES IRELAND UC (FORMERLY JANSSEN R&D IRELAND)</option>
+                <option>JSI R&T INSTITUTE, INC.</option>
+                <option>KAS MEDICS LIMITED</option>
+                <option>LAWRENCE LABORATORIES (SUBSIDIARY OF BRISTOL MYERS SQUIBB)</option>
+                <option>MEDMIRA EAST AFRICA LTD.</option>
+                <option>MERCK SHARP & DOHME IDEA GMBH (FORMALLY MERCK SHARP & DOHME B.V.)</option>
+                <option>MICRO LABS LIMITED</option>
+                <option>MISSIONPHARMA A/S</option>
+                <option>MSD LATIN AMERICA SERVICES, S. DE R.L. DE C.V.</option>
+                <option>NOVARTIS PHARMA SERVICES AG</option>
+                <option>OMEGA DIAGNOSTICS LTD</option>
+                <option>Orasure Technologies Inc.</option>
+                <option>Orgenics, Ltd</option>
+                <option>PHARMACY DIRECT</option>
+                <option>PLURIPHARM S.A.</option>
+                <option>Premier Medical Corporation Ltd.</option>
+                <option>PUETRO RICO PHARMACEUTICAL, INC.</option>
+                <option>RAININ INSTRUMENT, LLC.</option>
+                <option>RANBAXY Fine Chemicals LTD.</option>
+                <option>REINBOLD EXPORT IMPORT</option>
+                <option>SCMS from RDC</option>
+                <option>SETEMA LIMITED PLC</option>
+                <option>SHANGHAI KEHUA BIOENGINEERING CO.,LTD.  (KHB)</option>
+                <option>S. BUYS WHOLESALER</option>
+                <option>Standard Diagnostics, Inc.</option>
+                <option>STRIDES ARCOLAB LIMITED</option>
+                <option>SUN PHARMACEUTICAL INDUSTRIES LTD (RANBAXY LABORATORIES LIMITED)</option>
+                <option>SUB-SAHARAN BIOMEDICAL P.L.C.</option>
+                <option>SYSMEX AMERICA INC</option>
+                <option>SWORDS LABORATORIES</option>
+                <option>THE MEDICAL EXPORT GROUP BV</option>
+                <option>TURE PHARMACEUTICALS & MEDICAL SUPPLIES P.L.C.</option>
+                <option>Trinity Biotech, Plc</option>
+                <option>WAGENIA</option>
+                <option>ZEPHYR BIOMEDICALS</option>
+            </select>
+        </div>
+        
+      
+            
+        <div class="mb-3">
+            <label class="form-label">Molecule/Test Type</label>
+            <select name="molecule" class="form-select" id="molecule" required>
+                <option selected disabled>Select the Molecule/Test</option>
+
+                <option>Abacavir</option>
+                <option>Abacavir/Lamivudine</option>
+                <option>Abacavir/Lamivudine/Zidovudine</option>
+                <option>Artemether/Lumefantrine</option>
+                <option>Artesunate+Amodiaquine</option>
+                <option>Atazanavir</option>
+                <option>Atazanavir/Ritonavir</option>
+                <option>Chase Buffer, Determine, 100 Tests, 2.5ml x 1 Vial</option>
+                <option>Chloroquine base (as phosphate)</option>
+                <option>Darunavir</option>
+                <option>Didanosine</option>
+                <option>Didanosine EC</option>
+                <option>Efavirenz</option>
+                <option>Efavirenz/Emtricitabine/Tenofovir Disoproxil Fumarate</option>
+                <option>Efavirenz/Lamivudine/Tenofovir Disoproxil Fumarate</option>
+                <option>Emtricitabine/Tenofovir Disoproxil Fumarate</option>
+                <option>Etravirine</option>
+                <option>HIV 1, Uni-Gold Recombigen HIV Control, Vial 2 x 0.5 ml</option>
+                <option>HIV 1/2, Bioline 3.0 Diluent, 25 Tests</option>
+                <option>HIV 1/2, Bioline 3.0 Kit</option>
+                <option>HIV 1/2, Bioline 3.0 Kit (no accessories)</option>
+                <option>HIV 1/2, Bioline 3.0 Kit, Lancets, Capillary pipets, Alcohol swabs included</option>
+                <option>HIV 1/2, Bundi Rapid HIV Kit</option>
+                <option>HIV 1/2, Capillus HIV Kit</option>
+                <option>HIV 1/2, Clearview Complete Kit</option>
+                <option>HIV 1/2, Colloidal Gold, Diagnostic Kit, Antibody</option>
+                <option>HIV 1/2, Colloidal Gold, Diagnostic Kit Set</option>
+                <option>HIV 1/2, Determine Complete HIV Kit</option>
+                <option>HIV 1/2, Determine HIV Kit, without Lancets</option>
+                <option>HIV 1/2, Determine Kit without Lancets, Buffer or Capillary Tubes, 100 Tests</option>
+                <option>HIV 1/2, DoubleCheck Gold Kit</option>
+                <option>HIV 1/2, DoubleCheck II Kit</option>
+                <option>HIV 1/2, Genie III Kit</option>
+                <option>HIV 1/2, HEXAGON Rapid HIV Kit</option>
+                <option>HIV 1/2, ImmunoComb II BiSpot EIA Kit</option>
+                <option>HIV 1/2, ImmunoComb TriSpot Ag - Ab Kit</option>
+                <option>HIV 1/2, InstantChek HIV 1+2 Kit</option>
+                <option>HIV 1/2, INSTI HIV 1/2 Antibody Kit</option>
+                <option>HIV 1/2, INSTI HIV Antibody Individual POC, 1 Test</option>
+                <option>HIV 1/2, Lancet, Safety, for HIV Test kits, 100 Pcs</option>
+                <option>HIV 1/2, OraQuick Advance HIV Rapid Antibody Kit</option>
+                <option>HIV 1/2, OraQuick Rapid Antibody Kit</option>
+                <option>HIV 1/2, Reveal G3 Rapid HIV-1 Antibody Test</option>
+                <option>HIV 1/2, Stat-Pak Buffer Only</option>
+                <option>HIV 1/2, Stat-Pak Dipstick Assay Kit</option>
+                <option>HIV 1/2, Stat-Pak HIV, Kit</option>
+                <option>HIV 1/2, Uni-Gold HIV Kit</option>
+                <option>HIV 1/2, Visitect Kit</option>
+                <option>HIV 2, New LAV Blot 2 HIV Kit</option>
+                <option>HIV, Bioline HIV 1/2 3.0 Kit</option>
+                <option>HIV, Capillary Tubes, for Determine, EDTA, 50uL,100 Pcs</option>
+                <option>HIV, Genie II HIV-1/HIV-2 Kit</option>
+                <option>HIV, Multispot HIV-1/HIV-2 Rapid Test Kit</option>
+                <option>HIV, OraQuick Controls Kit, 3 Vials</option>
+                <option>HIV, Pepti-LAV 1|2 (HIV-1|2 Ab differenciation, Immuno-Blot)</option>
+                <option>Indinavir</option>
+                <option>Lamivudine</option>
+                <option>Lamivudine/Nevirapine/Stavudine</option>
+                <option>Lamivudine/Nevirapine/Zidovudine</option>
+                <option>Lamivudine/Stavudine</option>
+                <option>Lamivudine/Tenofovir Disoproxil Fumarate</option>
+                <option>Lamivudine/Zidovudine</option>
+                <option>Lamivudine/Zidovudine+Abacavir</option>
+                <option>Lamivudine/Zidovudine+Efavirenz</option>
+                <option>Lamivudine/Zidovudine+Nevirapine</option>
+                <option>Lopinavir/Ritonavir</option>
+                <option>Malaria Antigen P.f , HRP2, Kit</option>
+                <option>Malaria Antigen P.f Kit, 30 x 1 Test</option>
+                <option>Malaria, Antigen P.f., HRP2 CareStart Kit</option>
+                <option>Malaria Paramax-3 Kit</option>
+                <option>Mefloquine (as hydrochloride)</option>
+                <option>Nelfinavir</option>
+                <option>Nelfinavir (as mesilate)</option>
+                <option>Nevirapine</option>
+                <option>Primaquine base (as diphosphate)</option>
+                <option>Quinine</option>
+                <option>Quinine (as dihydrochloride)</option>
+                <option>Quinine (as sulfate)</option>
+                <option>Raltegravir</option>
+                <option>Ritonavir</option>
+                <option>Saquinavir</option>
+                <option>Stavudine</option>
+                <option>Sulfadoxine/Pyrimethamine</option>
+                <option>Tenofovir Disoproxil Fumarate</option>
+                <option>Zidovudine</option>
+            </select>
+        </div>
+            
+            
+        <div class="mb-3">
+            <label class="form-label">Brand</label>
+            <select name="brand" class="form-select" id="brand" required>
+                <option selected disabled>Select the Brand</option>
+                <option>Aluvia</option>
+                <option>Atripla</option>
+                <option>Bioline</option>
+                <option>Bundi</option>
+                <option>Capillus</option>
+                <option>CareStart</option>
+                <option>Clearview</option>
+                <option>Colloidal Gold</option>
+                <option>Coartem</option>
+                <option>Combivir</option>
+                <option>Crixivan</option>
+                <option>Determine</option>
+                <option>DoubleCheck</option>
+                <option>Epivir</option>
+                <option>First Response</option>
+                <option>Generic</option>
+                <option>Genie</option>
+                <option>Hexagon</option>
+                <option>ImmunoComb</option>
+                <option>INSTi</option>
+                <option>Intelence</option>
+                <option>InstantCHEK</option>
+                <option>Invirase</option>
+                <option>Isentress</option>
+                <option>Kaletra</option>
+                <option>LAV</option>
+                <option>Multispot</option>
+                <option>Norvir</option>
+                <option>OraQuick</option>
+                <option>Paramax</option>
+                <option>Pepti-LAV</option>
+                <option>Prezista</option>
+                <option>Retrovir</option>
+                <option>Reveal</option>
+                <option>Reyataz</option>
+                <option>Stat-Pak</option>
+                <option>Stocrin/Sustiva</option>
+                <option>Trizivir</option>
+                <option>Truvada</option>
+                <option>Uni-Gold</option>
+                <option>Videx</option>
+                <option>Videx EC</option>
+                <option>Viracept</option>
+                <option>Viread</option>
+                <option>Viramune</option>
+                <option>Visitect</option>
+                <option>Zerit</option>
+                <option>Ziagen</option>
+            </select>
+        </div>
+        
+
+        <div class="mb-3">
+            <label class="form-label">Dosage</label> 
+            <select name="dosage" class="form-select" id="dosage" required>
+                <option selected disabled>Select the Dosage</option>
+                <option>1mg/ml</option>
+                <option>2g</option>
+                <option>10mg/ml</option>
+                <option>15mg</option>
+                <option>20mg</option>
+                <option>20mg/ml</option>
+                <option>20/120mg</option>
+                <option>25mg</option>
+                <option>30mg</option>
+                <option>30mg/ml</option>
+                <option>30/6mg</option>
+                <option>30/50/6mg</option>
+                <option>30/50/60mg</option>
+                <option>30/60mg</option>
+                <option>40mg</option>
+                <option>50mg</option>
+                <option>50mg/g</option>
+                <option>50+153mg</option>
+                <option>60mg</option>
+                <option>60/12mg</option>
+                <option>60/30mg</option>
+                <option>60/100/12mg</option>
+                <option>80mg/ml</option>
+                <option>80/20mg/ml</option>
+                <option>100mg</option>
+                <option>100/25mg</option>
+                <option>125mg</option>
+                <option>133.3/33.3mg</option>
+                <option>150mg</option>
+                <option>150/30mg</option>
+                <option>150/200/30mg</option>
+                <option>150/200/40mg</option>
+                <option>150/300mg</option>
+                <option>150/300+200mg</option>
+                <option>150/300+300mg</option>
+                <option>150/300/200mg</option>
+                <option>150/300mg+600mg</option>
+                <option>200mg</option>
+                <option>200/50mg</option>
+                <option>200/300mg</option>
+                <option>250mg</option>
+                <option>300mg</option>
+                <option>300/100mg</option>
+                <option>300/150/300mg</option>
+                <option>300/200mg</option>
+                <option>300/300mg</option>
+                <option>400mg</option>
+                <option>500mg</option>
+                <option>500/25mg</option>
+                <option>600mg</option>
+                <option>600mg/2ml</option>
+                <option>600/200/300mg</option>
+                <option>600/300mg</option>
+                <option>600/300/300mg</option>
+            </select>
+        </div>
+        
+
+
+        <div class="mb-3">
+            <label class="form-label">Dosage Form</label>
+            <select name="dosage_form" class="form-select" id="dosage_form" required>
+                <option selected disabled>Select the Dosage Form</option>
+                <option>Capsule</option>
+                <option>Chewable/dispersible tablet</option>
+                <option>Chewable/dispersible tablet - FDC</option>
+                <option>Delayed-release capsules</option>
+                <option>Delayed-release capsules - blister</option>
+                <option>Injection</option>
+                <option>Oral powder</option>
+                <option>Oral solution</option>
+                <option>Oral suspension</option>
+                <option>Powder for oral solution</option>
+                <option>Tablet</option>
+                <option>Tablet - blister</option>
+                <option>Tablet - FDC</option>
+                <option>Tablet - FDC + blister</option>
+                <option>Tablet - FDC + co-blister</option>
+                <option>Test kit</option>
+                <option>Test kit - Ancillary</option>
+            </select>
+        </div>
+        
+        
+        <div class="mb-3">
+            <label class="form-label">Unit of Measure (Per Pack)</label>
+            <select name="unit_of_measure" class="form-select" id="unit_of_measure" required>
+                <option selected disabled>Select the Unit of Measure (Per Pack)</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>5</option>
+                <option>12</option>
+                <option>18</option>
+                <option>20</option>
+                <option>24</option>
+                <option>25</option>
+                <option>30</option>
+                <option>36</option>
+                <option>40</option>
+                <option>48</option>
+                <option>50</option>
+                <option>60</option>
+                <option>84</option>
+                <option>100</option>
+                <option>120</option>
+                <option>160</option>
+                <option>180</option>
+                <option>200</option>
+                <option>240</option>
+                <option>270</option>
+                <option>300</option>
+                <option>336</option>
+                <option>540</option>
+                <option>720</option>
+                <option>1000</option>
+            </select>
+        </div>
+        
+        
+        <div class="mb-3">
+            <label class="form-label">Manufacturing Site</label>
+            <select name="manufacturing_site" class="form-select" id="manufacturing_site" required>
+                <option selected disabled>Select the manufacturing Site</option>
+                <option>ABBSP</option>
+                <option>ABBVIE (Abbott) France</option>
+                <option>ABBVIE (Abbott) Japan Co. Ltd.</option>
+                <option>ABBVIE (Abbott) Logis. UK</option>
+                <option>ABBVIE (Abbott) St. P'burg USA</option>
+                <option>ABBVIE GmbH & Co.KG Wiesbaden</option>
+                <option>ABBVIE Labs North Chicago US</option>
+                <option>ABBVIE Ludwigshafen Germany</option>
+                <option>Access BIO, L.C.</option>
+                <option>Alere Medical Co., Ltd.</option>
+                <option>Aspen-OSD, Port Elizabeth, SA</option>
+                <option>Aurobindo Unit III, India</option>
+                <option>Aurobindo Unit VII, IN</option>
+                <option>BI, Ingelheim, Germany</option>
+                <option>Bio-Rad Laboratories</option>
+                <option>bioLytical Laboratories</option>
+                <option>Boehringer Ing., Koropi, GR</option>
+                <option>Boehringer Ingelheim Roxane US</option>
+                <option>BMS Evansville, US</option>
+                <option>BMS Meymac, France</option>
+                <option>Bristol-Myers Squibb Anagni IT</option>
+                <option>BUNDI INTERNATIONAL DIAGNOSTICS LTD</option>
+                <option>Chembio Diagnostics Sys. Inc.</option>
+                <option>Cipla Ltd A-42 MIDC Mahar. IN</option>
+                <option>Cipla, Goa, India</option>
+                <option>Cipla, Kurkumbh, India</option>
+                <option>Cipla, Patalganga, India</option>
+                <option>Emcure, Pune, India</option>
+                <option>EY Laboratories, USA</option>
+                <option>Gilead(Nycomed) Oranienburg DE</option>
+                <option>Gland Pharma Ltd Pally Factory</option>
+                <option>Gland Pharma, Hyderabad, IN</option>
+                <option>GSK Aranda</option>
+                <option>GSK Barnard Castle UK</option>
+                <option>GSK Cape Town Factory (South Africa)</option>
+                <option>GSK Crawley</option>
+                <option>GSK Mississauga (Canada)</option>
+                <option>GSK Ware (UK)</option>
+                <option>GSK, U1, Poznan, Poland</option>
+                <option>Guilin OSD site, No 17, China</option>
+                <option>Hetero Unit III Hyderabad IN</option>
+                <option>Hetero, Jadcherla, unit 5, IN</option>
+                <option>Human Diagnostic</option>
+                <option>INVERNESS ANY</option>
+                <option>INVERNESS ORGENICS LINE</option>
+                <option>Inverness Japan</option>
+                <option>Inverness USA</option>
+                <option>Ipca Dadra/Nagar Haveli IN</option>
+                <option>Janssen Ortho LLC, Puerto Rico</option>
+                <option>Janssen-Cilag, Latina, IT</option>
+                <option>KHB Test Kit Facility, Shanghai China</option>
+                <option>Macleods Daman Plant INDIA</option>
+                <option>MedMira Inc.</option>
+                <option>Medochemie Factory A, CY</option>
+                <option>Meditab (for Cipla) Daman IN</option>
+                <option>Medopharm Malur Factory, INDIA</option>
+                <option>Mepro Pharm Wadhwan Unit II</option>
+                <option>Micro Labs Ltd. (Brown & Burk), India</option>
+                <option>Micro Labs, Hosur, India</option>
+                <option>Micro labs, Verna, Goa, India</option>
+                <option>MSD Elkton USA</option>
+                <option>MSD Haarlem, NL</option>
+                <option>MSD Manati, Puerto Rico, (USA)</option>
+                <option>MSD Midrand, J'burg, SA</option>
+                <option>MSD Patheon, Canada</option>
+                <option>MSD South Granville Australia</option>
+                <option>Not Applicable</option>
+                <option>Novartis Pharma AG, Switzerland</option>
+                <option>Novartis Pharma Suffern, USA</option>
+                <option>OMEGA Diagnostics, UK</option>
+                <option>Orasure Technologies, Inc</option>
+                <option>Orasure Technologies, Inc USA</option>
+                <option>Pacific Biotech, Thailand</option>
+                <option>Premier Med. Corp Ltd. India</option>
+                <option>Premier Medical Corporation</option>
+                <option>Ranbaxy Fine Chemicals LTD</option>
+                <option>Ranbaxy per Shasun Pharma</option>
+                <option>Ranbaxy per Shasun Pharma Ltd</option>
+                <option>Ranbaxy, Paonta Shahib, India</option>
+                <option>Remedica, Limassol, Cyprus</option>
+                <option>Roche Basel</option>
+                <option>Roche Madrid</option>
+                <option>Standard Diagnostics, Korea</option>
+                <option>Strides, Bangalore, India.</option>
+                <option>Trinity Biotech, Plc</option>
+                <option>Weifa A.S., Oslo, Norway</option>
+            </select>
+        </div>
+        
+
+        <!-- Date Inputs (Total: 3) -->
+        <div class="mb-3">
+            <label class="form-label">Scheduled Delivery Date</label>
+            <input type="date" name="scheduled_delivery_date" class="form-control" min="2025-03-01" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Delivered to Client Date</label>
+            <input type="date" name="delivered_to_client_date" class="form-control" min="2025-03-01" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Delivery Recorded Date</label>
+            <input type="date" name="delivery_recorded_date" class="form-control" min="2025-03-01" required>
+        </div>
+
+        
+        <!-- Binary Input (Total: 1) -->
+        <div class="mb-3">
+            <label class="form-label">First Line Designation</label>
+            <select name="first_line_designation" class="form-select" required>
+                <option selected disabled>Select Designation</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+
 
             <button type="submit" class="btn btn-success w-100">Predict Price</button>
         </form>
@@ -228,3 +844,5 @@
 
 </body>
 </html>
+
+
