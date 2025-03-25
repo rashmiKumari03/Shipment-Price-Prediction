@@ -44,37 +44,79 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # Class to parse and store form data submitted by users
-logging.info("Defining DataForm class to handle form submissions...")
+logging.info("Defining the DataForm class to manage user form submissions...")
 class DataForm:
     def __init__(self, request: Request):
         self.request: Request = request
+        
+        # Identification and Basic Information
+        self.country: Optional[str] = None
+        self.vendor: Optional[str] = None
+        self.molecule_test_type: Optional[str] = None
+        self.brand: Optional[str] = None
+        self.dosage: Optional[str] = None
+        self.dosage_form: Optional[str] = None
+        self.manufacturing_site: Optional[str] = None
+        
+        # Shipping Information
         self.line_item_quantity: Optional[int] = None
+        self.fulfill_via: Optional[str] = None
+        self.vendor_inco_term: Optional[str] = None
+        self.shipment_mode: Optional[str] = None
+        self.scheduled_delivery_date: Optional[str] = None
+        self.delivered_to_client_date: Optional[str] = None
+        self.delivery_recorded_date: Optional[str] = None
+        
+        # Financial Information
         self.line_item_value: Optional[float] = None
         self.pack_price: Optional[float] = None
         self.unit_price: Optional[float] = None
         self.weight: Optional[float] = None
-        self.country: Optional[str] = None
-        self.shipment_mode: Optional[str] = None
-        self.scheduled_delivery_date: Optional[str] = None
-        self.delivered_to_client_date: Optional[str] = None
+        self.freight_cost: Optional[float] = None
+        self.line_item_insurance: Optional[float] = None
+        self.unit_of_measure: Optional[float] = None
+        
+        # Additional Information
         self.first_line_designation: Optional[int] = None
+        self.product_group: Optional[str] = None
+        self.sub_classification: Optional[str] = None
 
     async def get_shipping_data(self):
         logging.info("Extracting shipping data from form...")
         form = await self.request.form()
+        
+        # Identification and Basic Information
+        self.country = form.get("country", "")
+        self.vendor = form.get("vendor", "")
+        self.molecule_test_type = form.get("molecule_test_type", "")
+        self.brand = form.get("brand", "")
+        self.dosage = form.get("dosage", "")
+        self.dosage_form = form.get("dosage_form", "")
+        self.manufacturing_site = form.get("manufacturing_site", "")
+        
+        # Shipping Information
         self.line_item_quantity = int(form.get("line_item_quantity", 0))
+        self.fulfill_via = form.get("fulfill_via", "")
+        self.vendor_inco_term = form.get("vendor_inco_term", "")
+        self.shipment_mode = form.get("shipment_mode", "")
+        self.scheduled_delivery_date = form.get("scheduled_delivery_date", "")
+        self.delivered_to_client_date = form.get("delivered_to_client_date", "")
+        self.delivery_recorded_date = form.get("delivery_recorded_date", "")
+        
+        # Financial Information
         self.line_item_value = float(form.get("line_item_value", 0.0))
         self.pack_price = float(form.get("pack_price", 0.0))
         self.unit_price = float(form.get("unit_price", 0.0))
         self.weight = float(form.get("weight", 0.0))
-        self.country = form.get("country", "")
-        self.shipment_mode = form.get("shipment_mode", "")
-        self.scheduled_delivery_date = form.get("scheduled_delivery_date", "")
-        self.delivered_to_client_date = form.get("delivered_to_client_date", "")
-        self.first_line_designation = int(form.get("first_line_designation", 0))
+        self.freight_cost = float(form.get("freight_cost", 0.0))
+        self.line_item_insurance = float(form.get("line_item_insurance", 0.0))
+        self.unit_of_measure = float(form.get("unit_of_measure", 0.0))
         
+        # Additional Information
+        self.first_line_designation = int(form.get("first_line_designation", 0))
+        self.product_group = form.get("product_group", "")
+        self.sub_classification = form.get("sub_classification", "")
         
 
         
@@ -235,7 +277,7 @@ async def predictRouteClient(request: Request):
         form = DataForm(request)
         await form.get_shipping_data()
         logging.info("Collected shipping data from form.")
-
+        # Create an instance of ShippingData with the extracted form data
         shipping_data = ShippingData(
             line_item_quantity=form.line_item_quantity,
             line_item_value=form.line_item_value,
@@ -246,8 +288,23 @@ async def predictRouteClient(request: Request):
             shipment_mode=form.shipment_mode,
             scheduled_delivery_date=form.scheduled_delivery_date,
             delivered_to_client_date=form.delivered_to_client_date,
-            first_line_designation=form.first_line_designation
+            delivery_recorded_date=form.delivery_recorded_date,
+            first_line_designation=form.first_line_designation,
+            fulfill_via=form.fulfill_via,
+            vendor_inco_term=form.vendor_inco_term,
+            product_group=form.product_group,
+            sub_classification=form.sub_classification,
+            vendor=form.vendor,
+            molecule_test_type=form.molecule_test_type,
+            brand=form.brand,
+            dosage=form.dosage,
+            dosage_form=form.dosage_form,
+            manufacturing_site=form.manufacturing_site,
+            freight_cost=form.freight_cost,
+            line_item_insurance=form.line_item_insurance,
+            unit_of_measure=form.unit_of_measure
         )
+        
         logging.info("Converted form data to ShippingData object.")
 
         cost_df = shipping_data.get_input_data_frame()
