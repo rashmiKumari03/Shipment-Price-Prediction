@@ -21,6 +21,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils import all_estimators
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
+from typing import Optional
+
 # Project-specific modules (custom)
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -261,3 +263,18 @@ class MainUtils:
             raise CustomException(f"Error updating model score: {str(e)}", sys)
 
     
+    @staticmethod
+    def safe_int(value: str) -> Optional[int]:
+        """Converts a string to int safely, avoiding ValueErrors."""
+        try:
+            return int(value) if value.strip() else None
+        except ValueError:
+            return None
+
+    @staticmethod
+    def safe_float(value: str) -> Optional[float]:
+        """Converts a string to float safely, avoiding ValueErrors."""
+        try:
+            return float(value) if value.strip() else None
+        except ValueError:
+            return None
