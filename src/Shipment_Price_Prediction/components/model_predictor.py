@@ -148,7 +148,7 @@ class CostPredictor:
             logging.info("Loaded the best model from S3 bucket")
             
             # Check the columns of X
-            logging.info("Columns in X:", X.columns.tolist())
+            logging.info(f"Columns in X: {X.columns.tolist()}")
             result = best_model.prediction(X)
             final_cost_result = np.expm1(result)
             logging.info("Successfully made predictions")
