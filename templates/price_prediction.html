@@ -200,35 +200,31 @@
         <!-- Numerical Inputs (Total: 8) -->
         <div class="mb-3">
             <label class="form-label">Line Item Quantity</label>
-            <input type="number" name="line_item_quantity" class="form-control" required>
+            <input type="number" name="line_item_quantity" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Line Item Value (USD)</label>
-            <input type="number" name="line_item_value" class="form-control" required>
+            <input type="number" name="line_item_value" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Pack Price (USD)</label>
-            <input type="number" name="pack_price" class="form-control" required>
+            <input type="number" name="pack_price" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Unit Price (USD)</label>
-            <input type="number" name="unit_price" class="form-control" required>
+            <input type="number" name="unit_price" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Weight (Kilograms)</label>
-            <input type="number" name="weight" class="form-control" required>
+            <input type="number" name="weight" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Freight Cost (USD)</label>
-            <input type="number" name="freight_cost" class="form-control" required>
+            <input type="number" name="freight_cost" class="form-control" required  step="0.01">
         </div>
         <div class="mb-3">
             <label class="form-label">Line Item Insurance (USD)</label>
-            <input type="number" name="line_item_insurance" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Unit of Measure (Per Pack)</label>
-            <input type="number" name="unit_of_measure" class="form-control" required>
+            <input type="number" name="line_item_insurance" class="form-control" required  step="0.01"> 
         </div>
 
         <!-- Categorical Inputs (Total: 14) -->
@@ -809,15 +805,15 @@
         <!-- Date Inputs (Total: 3) -->
         <div class="mb-3">
             <label class="form-label">Scheduled Delivery Date</label>
-            <input type="date" name="scheduled_delivery_date" class="form-control" min="2025-03-01" required>
+            <input type="date" name="scheduled_delivery_date" class="form-control" min="2006-01-01" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Delivered to Client Date</label>
-            <input type="date" name="delivered_to_client_date" class="form-control" min="2025-03-01" required>
+            <input type="date" name="delivered_to_client_date" class="form-control" min="2006-01-01" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Delivery Recorded Date</label>
-            <input type="date" name="delivery_recorded_date" class="form-control" min="2025-03-01" required>
+            <input type="date" name="delivery_recorded_date" class="form-control" min="2006-01-01" required>
         </div>
 
         
