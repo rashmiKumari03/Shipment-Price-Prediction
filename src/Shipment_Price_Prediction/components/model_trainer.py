@@ -28,6 +28,9 @@ class Cost_Model:
         """
         logging.info("Entered the 'prediction' method of the Cost_Model class.")
         try:
+            
+            pd.set_option('display.max_rows', None)     # Show all rows
+            print(X.head())
             logging.info(f"X looks like : \n {X.head()}")
             # Preprocess the input data
             
