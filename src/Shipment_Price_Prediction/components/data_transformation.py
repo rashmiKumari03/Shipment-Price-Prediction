@@ -249,6 +249,7 @@ class Data_Transformation:
             numerical_cols = self.data_transformation_config.SCHEMA_CONFIG["numerical_columns"]
             for col in numerical_cols:
                 # Calculate skewness
+                data[col] = pd.to_numeric(data[col], errors='coerce')  # This will convert non-numeric values to NaN
                 skewness = skew(data[col].dropna())
                 logging.info(f"Skewness of {col}: {skewness}")
 
