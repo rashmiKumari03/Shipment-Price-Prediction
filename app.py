@@ -7,6 +7,7 @@ from fastapi.responses import Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import sys
+import numpy as np
 import uvicorn
 import os 
 
@@ -49,6 +50,8 @@ logging.info("Defining the DataForm class to manage user form submissions...")
 class DataForm:
     def __init__(self, request: Request):
         self.request: Request = request
+        self.UTILS = MainUtils()
+        
         
         # Identification and Basic Information
         self.country: Optional[str] = None
@@ -58,7 +61,8 @@ class DataForm:
         self.dosage: Optional[str] = None
         self.dosage_form: Optional[str] = None
         self.manufacturing_site: Optional[str] = None
-        
+        self.managed_by: Optional[str] = None  
+
         # Shipping Information
         self.line_item_quantity: Optional[int] = None
         self.fulfill_via: Optional[str] = None
@@ -67,7 +71,7 @@ class DataForm:
         self.scheduled_delivery_date: Optional[str] = None
         self.delivered_to_client_date: Optional[str] = None
         self.delivery_recorded_date: Optional[str] = None
-        
+
         # Financial Information
         self.line_item_value: Optional[float] = None
         self.pack_price: Optional[float] = None
@@ -75,8 +79,8 @@ class DataForm:
         self.weight: Optional[float] = None
         self.freight_cost: Optional[float] = None
         self.line_item_insurance: Optional[float] = None
-        self.unit_of_measure: Optional[float] = None
-        
+        self.unit_of_measure: Optional[str] = None  #  `str` because it can be a unit like "kg"
+
         # Additional Information
         self.first_line_designation: Optional[int] = None
         self.product_group: Optional[str] = None
@@ -87,38 +91,38 @@ class DataForm:
         form = await self.request.form()
         
         # Identification and Basic Information
-        self.country = form.get("country", "")
-        self.vendor = form.get("vendor", "")
-        self.molecule_test_type = form.get("molecule_test_type", "")
-        self.brand = form.get("brand", "")
-        self.dosage = form.get("dosage", "")
-        self.dosage_form = form.get("dosage_form", "")
-        self.manufacturing_site = form.get("manufacturing_site", "")
-        
-        # Shipping Information
-        self.line_item_quantity = int(form.get("line_item_quantity", 0))
-        self.fulfill_via = form.get("fulfill_via", "")
-        self.vendor_inco_term = form.get("vendor_inco_term", "")
-        self.shipment_mode = form.get("shipment_mode", "")
-        self.scheduled_delivery_date = form.get("scheduled_delivery_date", "")
-        self.delivered_to_client_date = form.get("delivered_to_client_date", "")
-        self.delivery_recorded_date = form.get("delivery_recorded_date", "")
-        
-        # Financial Information
-        self.line_item_value = float(form.get("line_item_value", 0.0))
-        self.pack_price = float(form.get("pack_price", 0.0))
-        self.unit_price = float(form.get("unit_price", 0.0))
-        self.weight = float(form.get("weight", 0.0))
-        self.freight_cost = float(form.get("freight_cost", 0.0))
-        self.line_item_insurance = float(form.get("line_item_insurance", 0.0))
-        self.unit_of_measure = float(form.get("unit_of_measure", 0.0))
-        
-        # Additional Information
-        self.first_line_designation = int(form.get("first_line_designation", 0))
-        self.product_group = form.get("product_group", "")
-        self.sub_classification = form.get("sub_classification", "")
-        
+        self.country = form.get("country", "").strip()
+        self.vendor = form.get("vendor", "").strip()
+        self.molecule_test_type = form.get("molecule_test_type", "").strip()
+        self.brand = form.get("brand", "").strip()
+        self.dosage = form.get("dosage", "").strip()
+        self.dosage_form = form.get("dosage_form", "").strip()
+        self.manufacturing_site = form.get("manufacturing_site", "").strip()
+        self.managed_by = form.get("managed_by", "").strip() 
 
+        # Shipping Information
+        self.line_item_quantity = self.UTILS.safe_int(form.get("line_item_quantity", "0"))
+        self.fulfill_via = form.get("fulfill_via", "").strip()
+        self.vendor_inco_term = form.get("vendor_inco_term", "").strip()
+        self.shipment_mode = form.get("shipment_mode", "").strip()
+        self.scheduled_delivery_date = form.get("scheduled_delivery_date", "").strip()
+        self.delivered_to_client_date = form.get("delivered_to_client_date", "").strip()
+        self.delivery_recorded_date = form.get("delivery_recorded_date", "").strip()
+
+        # Financial Information
+        self.line_item_value = self.UTILS.safe_float(form.get("line_item_value", "0.0"))
+        self.pack_price = self.UTILS.safe_float(form.get("pack_price", "0.0"))
+        self.unit_price = self.UTILS.safe_float(form.get("unit_price", "0.0"))
+        self.weight = self.UTILS.safe_float(form.get("weight", "0.0"))
+        self.freight_cost = self.UTILS.safe_float(form.get("freight_cost", "0.0"))
+        self.line_item_insurance = self.UTILS.safe_float(form.get("line_item_insurance", "0.0"))
+        self.unit_of_measure = form.get("unit_of_measure", "").strip()  # Keeping as `str` for flexibility
+
+        # Additional Information
+        self.first_line_designation = self.UTILS.safe_int(form.get("first_line_designation", "0"))
+        self.product_group = form.get("product_group", "").strip()
+        self.sub_classification = form.get("sub_classification", "").strip()
+        
         
 # -------------------- ROUTES -------------------- #
    
@@ -295,6 +299,7 @@ async def predictRouteClient(request: Request):
             product_group=form.product_group,
             sub_classification=form.sub_classification,
             vendor=form.vendor,
+            managed_by= form.managed_by,
             molecule_test_type=form.molecule_test_type,
             brand=form.brand,
             dosage=form.dosage,
@@ -311,8 +316,16 @@ async def predictRouteClient(request: Request):
         logging.info("Generated input dataframe for cost prediction.")
 
         cost_predictor = CostPredictor()
-        cost_value = round(cost_predictor.predict(X=cost_df)[0], 2)
-        logging.info(f"Predicted cost: {cost_value}")
+        
+        predicted_log_cost = cost_predictor.predict(X=cost_df)
+
+        if isinstance(predicted_log_cost, (list, np.ndarray)):
+            predicted_log_cost = predicted_log_cost[0]
+
+        cost_value = round(np.expm1(float(predicted_log_cost)), 2)  
+
+        logging.info(f"Predicted cost is: {cost_value}")
+
         
         return templates.TemplateResponse("price_prediction.html", {"request": request, "context": f"Predicted Cost: {cost_value}"})
     
