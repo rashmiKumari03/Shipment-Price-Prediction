@@ -55,7 +55,7 @@ class S3_Operation:
                     under a specific key (like a file path). It validates the existence of the model.
         Output: Returns True if the model is found, False otherwise.
         
-        Why it’s needed: 
+        Why it's needed: 
         - In production systems, models and datasets are often stored on S3. 
         - Before attempting to download or update a model, it's crucial to verify its existence to avoid errors.
         """
