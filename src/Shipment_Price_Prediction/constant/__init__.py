@@ -66,13 +66,13 @@ PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"   # used for predict
 
 # Model Trainer related Constants:
 MODEL_TRAINER_ARTIFACTS_DIR = "Model_Trainer_Artifacts"
-MODEL_FILE_NAME = "Shipping_Price_Pred_Model.pkl"
+MODEL_FILE_NAME = "Shipping_Price_Prediction_Model.pkl"
 MODEL_SAVE_FORMAT = ".pkl"
 
 
 # Constants related to S3 Bucket 
 BUCKET_NAME = "shipment-price-predictor-ml"   # All must be small always otherwise s3 won't accept it
-S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"
+S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"  # Both Names Model_filename and S3_Modelname must be same to fetch it from s3 later.
 
 
 # Constants for Webpage
