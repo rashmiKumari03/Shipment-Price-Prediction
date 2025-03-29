@@ -51,9 +51,17 @@ class DataForm:
     def __init__(self, request: Request):
         self.request: Request = request
         self.UTILS = MainUtils()
-        
-        
-        # Identification and Basic Information
+
+        # Numerical Variables
+        self.line_item_quantity: Optional[int] = None
+        self.line_item_value: Optional[float] = None
+        self.pack_price: Optional[float] = None
+        self.unit_price: Optional[float] = None
+        self.weight: Optional[float] = None
+        self.freight_cost: Optional[float] = None
+        self.line_item_insurance: Optional[float] = None
+
+        # Categorical Variables
         self.country: Optional[str] = None
         self.vendor: Optional[str] = None
         self.molecule_test_type: Optional[str] = None
@@ -62,35 +70,35 @@ class DataForm:
         self.dosage_form: Optional[str] = None
         self.manufacturing_site: Optional[str] = None
         self.managed_by: Optional[str] = None  
-
-        # Shipping Information
-        self.line_item_quantity: Optional[int] = None
         self.fulfill_via: Optional[str] = None
         self.vendor_inco_term: Optional[str] = None
         self.shipment_mode: Optional[str] = None
+        self.unit_of_measure: Optional[str] = None
+        self.product_group: Optional[str] = None
+        self.sub_classification: Optional[str] = None
+
+        # Datetime Variables
         self.scheduled_delivery_date: Optional[str] = None
         self.delivered_to_client_date: Optional[str] = None
         self.delivery_recorded_date: Optional[str] = None
 
-        # Financial Information
-        self.line_item_value: Optional[float] = None
-        self.pack_price: Optional[float] = None
-        self.unit_price: Optional[float] = None
-        self.weight: Optional[float] = None
-        self.freight_cost: Optional[float] = None
-        self.line_item_insurance: Optional[float] = None
-        self.unit_of_measure: Optional[str] = None  #  `str` because it can be a unit like "kg"
-
-        # Additional Information
+        # Binary Variables
         self.first_line_designation: Optional[int] = None
-        self.product_group: Optional[str] = None
-        self.sub_classification: Optional[str] = None
 
     async def get_shipping_data(self):
         logging.info("Extracting shipping data from form...")
         form = await self.request.form()
-        
-        # Identification and Basic Information
+
+        # Numerical Variables
+        self.line_item_quantity = self.UTILS.safe_int(form.get("line_item_quantity", "0"))
+        self.line_item_value = self.UTILS.safe_float(form.get("line_item_value", "0.0"))
+        self.pack_price = self.UTILS.safe_float(form.get("pack_price", "0.0"))
+        self.unit_price = self.UTILS.safe_float(form.get("unit_price", "0.0"))
+        self.weight = self.UTILS.safe_float(form.get("weight", "0.0"))
+        self.freight_cost = self.UTILS.safe_float(form.get("freight_cost", "0.0"))
+        self.line_item_insurance = self.UTILS.safe_float(form.get("line_item_insurance", "0.0"))
+
+        # Categorical Variables
         self.country = form.get("country", "").strip()
         self.vendor = form.get("vendor", "").strip()
         self.molecule_test_type = form.get("molecule_test_type", "").strip()
@@ -98,30 +106,22 @@ class DataForm:
         self.dosage = form.get("dosage", "").strip()
         self.dosage_form = form.get("dosage_form", "").strip()
         self.manufacturing_site = form.get("manufacturing_site", "").strip()
-        self.managed_by = form.get("managed_by", "").strip() 
-
-        # Shipping Information
-        self.line_item_quantity = self.UTILS.safe_int(form.get("line_item_quantity", "0"))
+        self.managed_by = form.get("managed_by", "").strip()
         self.fulfill_via = form.get("fulfill_via", "").strip()
         self.vendor_inco_term = form.get("vendor_inco_term", "").strip()
         self.shipment_mode = form.get("shipment_mode", "").strip()
+        self.unit_of_measure = form.get("unit_of_measure", "").strip()
+        self.product_group = form.get("product_group", "").strip()
+        self.sub_classification = form.get("sub_classification", "").strip()
+
+        # Datetime Variables
         self.scheduled_delivery_date = form.get("scheduled_delivery_date", "").strip()
         self.delivered_to_client_date = form.get("delivered_to_client_date", "").strip()
         self.delivery_recorded_date = form.get("delivery_recorded_date", "").strip()
 
-        # Financial Information
-        self.line_item_value = self.UTILS.safe_float(form.get("line_item_value", "0.0"))
-        self.pack_price = self.UTILS.safe_float(form.get("pack_price", "0.0"))
-        self.unit_price = self.UTILS.safe_float(form.get("unit_price", "0.0"))
-        self.weight = self.UTILS.safe_float(form.get("weight", "0.0"))
-        self.freight_cost = self.UTILS.safe_float(form.get("freight_cost", "0.0"))
-        self.line_item_insurance = self.UTILS.safe_float(form.get("line_item_insurance", "0.0"))
-        self.unit_of_measure = form.get("unit_of_measure", "").strip()  # Keeping as `str` for flexibility
-
-        # Additional Information
+        # Binary Variables
         self.first_line_designation = self.UTILS.safe_int(form.get("first_line_designation", "0"))
-        self.product_group = form.get("product_group", "").strip()
-        self.sub_classification = form.get("sub_classification", "").strip()
+
         
         
 # -------------------- ROUTES -------------------- #
@@ -283,31 +283,38 @@ async def predictRouteClient(request: Request):
         logging.info("Collected shipping data from form.")
         # Create an instance of ShippingData with the extracted form data
         shipping_data = ShippingData(
+            # Numerical Variables
             line_item_quantity=form.line_item_quantity,
             line_item_value=form.line_item_value,
             pack_price=form.pack_price,
             unit_price=form.unit_price,
             weight=form.weight,
+            freight_cost=form.freight_cost,
+            line_item_insurance=form.line_item_insurance,
+
+            # Categorical Variables
             country=form.country,
-            shipment_mode=form.shipment_mode,
-            scheduled_delivery_date=form.scheduled_delivery_date,
-            delivered_to_client_date=form.delivered_to_client_date,
-            delivery_recorded_date=form.delivery_recorded_date,
-            first_line_designation=form.first_line_designation,
-            fulfill_via=form.fulfill_via,
-            vendor_inco_term=form.vendor_inco_term,
-            product_group=form.product_group,
-            sub_classification=form.sub_classification,
             vendor=form.vendor,
-            managed_by= form.managed_by,
             molecule_test_type=form.molecule_test_type,
             brand=form.brand,
             dosage=form.dosage,
             dosage_form=form.dosage_form,
             manufacturing_site=form.manufacturing_site,
-            freight_cost=form.freight_cost,
-            line_item_insurance=form.line_item_insurance,
-            unit_of_measure=form.unit_of_measure
+            managed_by=form.managed_by,
+            fulfill_via=form.fulfill_via,
+            vendor_inco_term=form.vendor_inco_term,
+            shipment_mode=form.shipment_mode,
+            unit_of_measure=form.unit_of_measure,
+            product_group=form.product_group,
+            sub_classification=form.sub_classification,
+
+            # Datetime Variables
+            scheduled_delivery_date=form.scheduled_delivery_date,
+            delivered_to_client_date=form.delivered_to_client_date,
+            delivery_recorded_date=form.delivery_recorded_date,
+
+            # Binary Variables
+            first_line_designation=form.first_line_designation
         )
         
         logging.info("Converted form data to ShippingData object.")
@@ -326,8 +333,45 @@ async def predictRouteClient(request: Request):
 
         logging.info(f"Predicted cost is: {cost_value}")
 
-        
-        return templates.TemplateResponse("price_prediction.html", {"request": request, "context": f"Predicted Cost: {cost_value}"})
+        # Render the prediction result page with the context
+        return templates.TemplateResponse("prediction_result.html", {
+            "request": request,
+
+            # Numerical Variables
+            "cost_value": cost_value,
+            "line_item_quantity": form.line_item_quantity,
+            "line_item_value": form.line_item_value,
+            "pack_price": form.pack_price,
+            "unit_price": form.unit_price,
+            "weight": form.weight,
+            "freight_cost": form.freight_cost,
+            "line_item_insurance": form.line_item_insurance,
+
+            # Categorical Variables
+            "country": form.country,
+            "vendor": form.vendor,
+            "molecule_test_type": form.molecule_test_type,
+            "brand": form.brand,
+            "dosage": form.dosage,
+            "dosage_form": form.dosage_form,
+            "manufacturing_site": form.manufacturing_site,
+            "managed_by": form.managed_by,
+            "fulfill_via": form.fulfill_via,
+            "vendor_inco_term": form.vendor_inco_term,
+            "shipment_mode": form.shipment_mode,
+            "unit_of_measure": form.unit_of_measure,
+            "product_group": form.product_group,
+            "sub_classification": form.sub_classification,
+
+            # Datetime Variables
+            "scheduled_delivery_date": form.scheduled_delivery_date,
+            "delivered_to_client_date": form.delivered_to_client_date,
+            "delivery_recorded_date": form.delivery_recorded_date,
+
+            # Binary Variables
+            "first_line_designation": form.first_line_designation
+        })
+
     
     except Exception as e:
         logging.error(f"Error during cost prediction: {str(e)}")
