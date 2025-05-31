@@ -14,7 +14,8 @@ import os
 
 # Import custom modules for model prediction, training, and logging
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
-from src.Shipment_Price_Prediction.components.model_predictor import CostPredictor, ShippingData
+
+from src.Shipment_Price_Prediction.pipelines.prediction_pipeline import CostPredictor, ShippingData
 from src.Shipment_Price_Prediction.constant import APP_HOST, APP_PORT
 from src.Shipment_Price_Prediction.pipelines.training_pipeline import TrainPipeline
 from src.Shipment_Price_Prediction.logger import logging
