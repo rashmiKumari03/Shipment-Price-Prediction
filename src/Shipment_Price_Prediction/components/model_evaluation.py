@@ -109,6 +109,8 @@ class Model_Evaluation:
             # If model is present, load the model
             if status == True:
                 model = self.model_evaluation_config.S3_Operation.load_model(MODEL_FILE_NAME, BUCKET_NAME)
+                logging.info(f"S3 model loaded: {model}")
+                logging.info(f"S3 model object id: {id(model)}")
                 logging.info("Exited the get_s3_model method of Model_Evaluation class")
                 
                 return model
@@ -212,7 +214,7 @@ class Model_Evaluation:
             difference = trained_model_r2_score - tmp_best_model_score
 
             logging.info(f"Trained model R2 score: {trained_model_r2_score}")
-            logging.info(f"S3 model R2 score: {s3_model_r2_score}")
+            logging.info(f"Present S3 model R2 score: {tmp_best_model_score}")
             logging.info(f"Model difference: {difference}")
 
             logging.info("Exited the evaluate_model method of Model Evaluation Class")
