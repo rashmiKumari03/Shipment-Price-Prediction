@@ -218,3 +218,81 @@ class Model_Trainer:
         except Exception as e:
             logging.error(f"Error in initiate_model_trainer: {str(e)}")
             raise CustomException(str(e), sys)
+
+
+
+
+"""
+Note : MODEL SELECTION, SAVING, AND S3 PUSH LOGIC
+
+We follow a two-stage strategy to evaluate, name, and save machine learning models
+based on their R2 performance. This ensures only the best-performing model is retained
+locally and optionally pushed to S3 for production use.
+
+===============================================================================
+STAGE 1: LOCAL COMPARISON — best_trained_model vs base_model
+
+Why:
+To check whether the newly trained model performs better than the baseline (base model).
+
+When:
+Immediately after local training is completed.
+
+How:
+- Evaluate both models on the same unseen test dataset (X_test) using R2 score.
+
+Condition:
+if best_trained_model_r2_score >= base_model_r2_score:
+    → Accept the trained model.
+    → Save it as "Shipment_Price_Model.pkl" (this becomes our selected local model).
+else:
+    → Reject the trained model.
+    → Retain the base model.
+    → Save it as "Retained_Model.pkl" (this becomes our selected local model).
+
+Important:
+- Only one model moves forward to the next stage — the better one.
+- "Retained_Model.pkl" is only created here if base model wins.
+
+===============================================================================
+STAGE 2: REMOTE COMPARISON — selected local model vs S3 model
+
+Why:
+To decide whether the selected local model (from Stage 1) is better than
+the current production model stored in S3.
+
+When:
+Before pushing any model to S3.
+
+How:
+- Load the existing model from S3 and evaluate its R2 score (s3_model_r2_score).
+- Handle cases where no S3 model exists by using:
+      tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
+
+Condition:
+if trained_model_r2_score > tmp_best_model_score:
+    → Push the selected local model to S3.
+    → Save it in S3 using the filename "Shipment_Price_Model.pkl".
+else:
+    → Do not push to S3.
+    → No new file is saved locally at this stage.
+    → "Retained_Model.pkl" is not created here again.
+
+Important:
+- Whether the selected local model was trained or retained, it is always
+  pushed to S3 with the name "Shipment_Price_Model.pkl" if it performs better.
+
+===============================================================================
+NAMING RULES SUMMARY
+
+✔ "Shipment_Price_Model.pkl":
+    - Used when a model (trained or retained) is better than the base.
+    - Also always used for the model pushed to S3 for consistent naming.
+
+✔ "Retained_Model.pkl":
+    - Used only in Stage 1 when base_model is better than trained model.
+    - Never created again in Stage 2.
+
+===============================================================================
+
+"""
