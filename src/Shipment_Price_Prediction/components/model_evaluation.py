@@ -184,7 +184,7 @@ class Model_Evaluation:
 
             
             trained_model_r2_score = trained_model_metrics["R2 Score"]
-            
+        
             
             
             # ------------------------------------------------------------------------------------------------------------------
@@ -205,17 +205,54 @@ class Model_Evaluation:
                     
 
                 s3_model_r2_score = s3_model_metrics["R2 Score"]
+                
+
+            logging.info("Now will do the comparison")
 
             # Default to 0 if the S3 model is not available
             tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
 
             # Logging the results
+            # trained_model_r2_score = 0.99999998  # Manually set a high R2 score to test if the code correctly pushes better models to S3
+
             is_model_accepted = trained_model_r2_score > tmp_best_model_score
             difference = trained_model_r2_score - tmp_best_model_score
-
+            
+            """
+            Note:
+            ---------
+            - Always compare both R2 score and model ID
+            - Same R2 does not guarantee same model
+            """     
+            # Step 1: Log the R2 score and ID of the newly trained model
+            logging.info(f"[Step 1] Newly trained model evaluated on unseen test data (X_test).")
             logging.info(f"Trained model R2 score: {trained_model_r2_score}")
+            logging.info(f"Trained model ID (memory reference): {id(trained_model_r2_score)}")
+
+            # Step 2: Log the R2 score and ID of the current best model stored in S3
+            logging.info(f"[Step 2] Comparing with existing best model retrieved from S3.")
             logging.info(f"Present S3 model R2 score: {tmp_best_model_score}")
-            logging.info(f"Model difference: {difference}")
+            logging.info(f"S3 model ID (memory reference): {id(tmp_best_model_score)}")
+
+            # Step 3: Log whether the models have the same R2 score
+            logging.info(f"[Step 3] Are both models performing equally?")
+            logging.info(f"Are both R2 scores same? {trained_model_r2_score == tmp_best_model_score}")
+
+            # Step 4: Log the actual difference in R2 scores
+            difference = trained_model_r2_score - tmp_best_model_score
+            logging.info(f"[Step 4] Performance difference between new and S3 model:")
+            logging.info(f"R2 score difference (new - existing): {difference:.6f}")
+
+            # Step 5: Log the decision based on R2 score comparison
+            if trained_model_r2_score > tmp_best_model_score:
+                logging.info(f"New model accepted: It outperforms the existing model.")
+                logging.info(f"Action: Saving and uploading the new model to S3.")
+            else:
+                logging.info(f"New model rejected: It does not improve over the existing model.")
+                logging.info(f"Action: Keeping the existing S3 model unchanged.")
+
+        
+
 
             logging.info("Exited the evaluate_model method of Model Evaluation Class")
             
@@ -255,3 +292,34 @@ class Model_Evaluation:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e), sys)
+
+
+
+"""
+---------------------- Model Evaluation FAQ (Clarification Note) ----------------------
+
+Q1: Why do we use `random_state` in `train_test_split`?
+A1: Setting `random_state=42` ensures that the data is split into training and test sets the same way every time. 
+    This guarantees that the evaluation is always done on a consistent `X_test` and `y_test`, allowing for fair 
+    comparison between models.
+
+Q2: Does using the same `random_state` ensure identical R² scores for trained and S3 models?
+A2: No, it only ensures the test dataset (`X_test`) remains the same. R² scores can still differ because:
+    - Training might involve internal randomness (e.g., XGBoost’s boosting process).
+    - Models might have been trained in different sessions or with different hyperparameters.
+    - Even the same model architecture (e.g., XGBoost) can produce slightly different results if training conditions 
+      or pipelines differ.
+
+Q3: Why can the S3 model's R² score differ from what it was at the time of deployment?
+A3: The S3 model is re-evaluated on the current `X_test` at runtime. If anything (like feature processing or data 
+    distribution) has changed slightly, or if randomness was involved during training, the new R² can differ slightly 
+    from the original logged score.
+
+Q4: When is the newly trained model considered "better" than the S3 model?
+A4: If the newly trained model has a higher R² score than the S3 model when both are evaluated on the current `X_test`, 
+    it is accepted as better. The difference in R² is logged and used to decide whether to push the new model.
+
+----------------------------------------------------------------------------------------
+"""
+
+
