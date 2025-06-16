@@ -267,7 +267,7 @@ async def training_started(request: Request):
         logging.info("Initializing model training pipeline.")
         train_pipeline = TrainPipeline()
         train_pipeline.run_pipeline()
-        logging.info("Model training started successfully.")
+        logging.info("Model training completed successfully and ready to use.")
         return templates.TemplateResponse("developer_check.html", {"request": request, "message": "Model training started successfully!"})
     
     except Exception as e:
