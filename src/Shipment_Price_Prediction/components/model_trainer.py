@@ -145,154 +145,51 @@ class Model_Trainer:
             
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
             base_model_score = float(model_config["base_model_score"])
-
+            
+            
             if best_model_score >= base_model_score:
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
-                
+
                 preprocessor_obj = self.model_trainer_config.UTILS.load_object(self.data_transformation_artifact.transformed_object_file_path)
-                logging.info("Here i am Saving the cost_model using save_object!!!!")
+                logging.info("Saving the Cost_Model using save_object")
+
                 cost_model = Cost_Model(preprocessor_obj, best_model_object)
-                logging.info("Created a Cost_Model with preprocessor and model")
-                logging.info(f"cost_model looks like : {cost_model} and type of cost_model is {type(cost_model)}")
-                
-                
+                logging.info(f"Created a Cost_Model: {cost_model} of type {type(cost_model)}")
+
                 model_file_path = self.model_trainer_config.UTILS.save_object(self.model_trainer_config.TRAINED_MODEL_FILE_PATH, cost_model)
-                logging.info(f"model_file_path looks like : {model_file_path}")
-                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
                 logging.info(f"Model saved at {model_file_path}")
-                logging.info(f"Model Trainer Artifacts : {model_trainer_artifacts}")
+
+                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
+                logging.info(f"Model Trainer Artifacts: {model_trainer_artifacts}")
 
                 return model_trainer_artifacts
-            
+
             else:
-                artifacts_path = os.path.join(from_root(), "artifacts")
-                logging.info("Fetching list of subfolders inside the artifact directory.")
-
-                # Get all folder names sorted by creation time
-                dir_list = sorted(
-                    (folder_name for folder_name in os.listdir(artifacts_path) 
-                    if os.path.isdir(os.path.join(artifacts_path, folder_name))),
-                    key=lambda x: os.path.getmtime(os.path.join(artifacts_path, x))
-                )
-
-                # Log the folder names
-                for folder_name in dir_list:
-                    logging.info(f"Found folder: {folder_name}")
-
-                # Return the second-to-last folder name if it exists
-                if len(dir_list) >= 2:
-                    second_last_folder = dir_list[-2]
-                    logging.info(f"Loading model from the second-to-last artifact directory: {second_last_folder}")
-                else:
-                    logging.warning("Fewer than two artifact folders found. Exiting the method.")
-                    return None  
                 
-                # Define the path to the Model_Trainer_Artifacts folder
-                model_artifacts_path = os.path.join(artifacts_path, second_last_folder, 'Model_Trainer_Artifacts')
-                 
-                # List all files inside Model_Trainer_Artifacts
-                files_in_artifacts = os.listdir(model_artifacts_path)
-                logging.info(f"Files inside Model_Trainer_Artifacts:\n {files_in_artifacts}")
-                
-                # Convert list to string
-                files_in_artifacts = ''.join(files_in_artifacts )
-                                
-                # Read the required file (assuming you want to load a specific file, e.g., MODEL_FILE_NAME)
-                model_file_path = os.path.join(model_artifacts_path, files_in_artifacts)
+                logging.info("No better model found. Re-saving previous best model to maintain pipeline continuity.")
 
-                # Error handling for the model file loading
-                try:
-                    base_model_object = self.model_trainer_config.UTILS.load_object(model_file_path)
-                except Exception as e:
-                    logging.error(f"Error loading model from {model_file_path}: {e}")
-                    return None  # Handle as appropriate, e.g., raise an exception
+                # Load previous best model from existing trained model path
+                existing_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
+                logging.info(f"Exiting Model Path : {existing_model_path}")
 
-                # Save the base model directly without additional wrapping
-                output_model_file_path = os.path.join(self.model_trainer_config.MODEL_TRAINER_ARTIFACTS_DIR, "Retained_Model.pkl")
-                self.model_trainer_config.UTILS.save_object(output_model_file_path, base_model_object)
-                logging.info(f"Base model re-saved at {output_model_file_path}.")
+                if not os.path.exists(existing_model_path):
+                    raise Exception("No previously trained model found at expected path.")
 
-                # Create and return the model trainer artifacts
-                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=output_model_file_path)
+                # Load and re-save to same path (ensures availability for evaluation)
+                logging.info("Load and re-save to same path (ensures availability for evaluation)")
+                base_model_object = self.model_trainer_config.UTILS.load_object(existing_model_path)
+                self.model_trainer_config.UTILS.save_object(existing_model_path, base_model_object)
+
+                logging.info(f"Base model re-saved at {existing_model_path} to ensure evaluation won't break.")
+
+                model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=existing_model_path)
+                logging.info(f"Returning Model Trainer Artifacts: {model_trainer_artifacts}")
                 return model_trainer_artifacts
+
+                
+            
+                
+            
         except Exception as e:
             logging.error(f"Error in initiate_model_trainer: {str(e)}")
             raise CustomException(str(e), sys)
-
-
-
-
-"""
-Note : MODEL SELECTION, SAVING, AND S3 PUSH LOGIC
-
-We follow a two-stage strategy to evaluate, name, and save machine learning models
-based on their R2 performance. This ensures only the best-performing model is retained
-locally and optionally pushed to S3 for production use.
-
-===============================================================================
-STAGE 1: LOCAL COMPARISON — best_trained_model vs base_model
-
-Why:
-To check whether the newly trained model performs better than the baseline (base model).
-
-When:
-Immediately after local training is completed.
-
-How:
-- Evaluate both models on the same unseen test dataset (X_test) using R2 score.
-
-Condition:
-if best_trained_model_r2_score >= base_model_r2_score:
-    → Accept the trained model.
-    → Save it as "Shipment_Price_Model.pkl" (this becomes our selected local model).
-else:
-    → Reject the trained model.
-    → Retain the base model.
-    → Save it as "Retained_Model.pkl" (this becomes our selected local model).
-
-Important:
-- Only one model moves forward to the next stage — the better one.
-- "Retained_Model.pkl" is only created here if base model wins.
-
-===============================================================================
-STAGE 2: REMOTE COMPARISON — selected local model vs S3 model
-
-Why:
-To decide whether the selected local model (from Stage 1) is better than
-the current production model stored in S3.
-
-When:
-Before pushing any model to S3.
-
-How:
-- Load the existing model from S3 and evaluate its R2 score (s3_model_r2_score).
-- Handle cases where no S3 model exists by using:
-      tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
-
-Condition:
-if trained_model_r2_score > tmp_best_model_score:
-    → Push the selected local model to S3.
-    → Save it in S3 using the filename "Shipment_Price_Model.pkl".
-else:
-    → Do not push to S3.
-    → No new file is saved locally at this stage.
-    → "Retained_Model.pkl" is not created here again.
-
-Important:
-- Whether the selected local model was trained or retained, it is always
-  pushed to S3 with the name "Shipment_Price_Model.pkl" if it performs better.
-
-===============================================================================
-NAMING RULES SUMMARY
-
-✔ "Shipment_Price_Model.pkl":
-    - Used when a model (trained or retained) is better than the base.
-    - Also always used for the model pushed to S3 for consistent naming.
-
-✔ "Retained_Model.pkl":
-    - Used only in Stage 1 when base_model is better than trained model.
-    - Never created again in Stage 2.
-
-===============================================================================
-
-"""

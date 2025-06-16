@@ -36,7 +36,7 @@ TARGET_COLUMN = "Shipment Price"
 TEST_SIZE = 0.2  # Proportion of data to be used for testing during train-test split
 
 
-ARTIFACTS_DIR = os.path.join(from_root(),"artifacts",TIMESTAMP)
+ARTIFACTS_DIR = os.path.join(from_root(),"Artifacts")
 
 
 # Data Ingestion related COnstant.

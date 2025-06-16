@@ -305,7 +305,7 @@ A1: Setting `random_state=42` ensures that the data is split into training and t
 
 Q2: Does using the same `random_state` ensure identical R² scores for trained and S3 models?
 A2: No, it only ensures the test dataset (`X_test`) remains the same. R² scores can still differ because:
-    - Training might involve internal randomness (e.g., XGBoost’s boosting process).
+    - Training might involve internal randomness (e.g., XGBoost's boosting process).
     - Models might have been trained in different sessions or with different hyperparameters.
     - Even the same model architecture (e.g., XGBoost) can produce slightly different results if training conditions 
       or pipelines differ.
