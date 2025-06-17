@@ -41,6 +41,9 @@ PyYAML                 # YAML parser and emitter for Python, useful for configur
 # MLFlow 
 mlflow
 
+# Data Version Control
+dvc
+
 # Miscellaneous
 from-root              # Simplifies imports from the root directory of a project.
 
