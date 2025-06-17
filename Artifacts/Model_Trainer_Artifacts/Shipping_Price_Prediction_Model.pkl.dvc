@@ -1,0 +1,5 @@
+outs:
+- md5: 8341fd0c8481eb0e44f58fe6deb4b2c5
+  size: 6102433
+  hash: md5
+  path: Shipping_Price_Prediction_Model.pkl
