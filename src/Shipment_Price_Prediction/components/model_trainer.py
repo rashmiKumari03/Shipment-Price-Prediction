@@ -91,7 +91,6 @@ class Model_Trainer:
             Usually, splitting occurs when both the independent and dependent data are in the same training set. 
             However, in this case, since my independent and dependent data are already saved in separate files in .npz format, 
             I will load them directly."
-            
             '''
             
             logging.info(f"Training data: {train_data.shape}, Test data: {test_data.shape}")
