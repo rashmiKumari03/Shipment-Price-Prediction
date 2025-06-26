@@ -1,5 +1,5 @@
 outs:
-- md5: 3fb7fe13ead1439881bd0728a4fec2ff
-  size: 4990977
+- md5: a3d37567f69010c2e8d73504386be966
+  size: 4669335
   hash: md5
   path: transformed_object.pkl

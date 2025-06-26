@@ -1,0 +1,88 @@
+# ================================================================
+# File: ml_pipeline_dvc.yaml
+# Purpose: Define and track the ML pipeline stages using DVC
+#
+# What is this file for?
+# -----------------------
+# - This file declares the stages of your Machine Learning pipeline.
+# - Each stage specifies:
+#     * The command to run
+#     * The input dependencies (deps)
+#     * The output files or artifacts (outs), if any
+#
+# What are we tracking?
+# -----------------------
+# 1. We have already tracked:
+#     - The raw and processed data (CSV, NPZ files)
+#     - The trained model files (.pkl, etc.)
+# 2. Now with this file:
+#     - We are tracking the entire ML pipeline, step-by-step.
+#     - DVC will manage the execution flow and caching.
+#
+# Why is this important?
+# -----------------------
+# - Ensures reproducibility: the same inputs always yield the same outputs.
+# - Avoids redundant work: only changed parts of the pipeline are re-executed.
+# - Enables collaborative and production-ready ML development.
+# ================================================================
+
+stages:
+
+  data_ingestion:
+    cmd:  python -m src.Shipment_Price_Prediction.components.data_ingestion
+    deps:
+      - src/Shipment_Price_Prediction/components/data_ingestion.py
+      - src/Shipment_Price_Prediction/configuration/mongo_operation.py
+
+    # DO NOT add 'outs:' here because you already tracked test/train.csv via `dvc add`
+
+  data_validation:
+    cmd: python -m src.Shipment_Price_Prediction.components.data_validation
+    deps:
+      - src/Shipment_Price_Prediction/components/data_validation.py
+      - Artifacts/Data_Ingestion_Artifacts/Train/train.csv
+      - Artifacts/Data_Ingestion_Artifacts/Test/test.csv
+    # DO NOT add these in outs if already `dvc added`
+    # outs:
+    #  - Artifacts/Data_Validation_Artifacts/Data_Drift_Report.yaml
+
+  data_transformation:
+    cmd: python -m src.Shipment_Price_Prediction.components.data_transformation
+    deps:
+      - src/Shipment_Price_Prediction/components/data_transformation.py
+      - Artifacts/Data_Ingestion_Artifacts/Train/train.csv
+      - Artifacts/Data_Ingestion_Artifacts/Test/test.csv
+
+
+    # DO NOT add these in outs if already `dvc added`
+    # outs:
+    #   - Artifacts/Data_Transformation_Artifacts/train_data.npz
+    #   - Artifacts/Data_Transformation_Artifacts/test_data.npz
+    #   - Artifacts/Data_Transformation_Artifacts/transformed_object.pkl
+
+  model_trainer:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_trainer
+    deps:
+      - src/Shipment_Price_Prediction/components/model_trainer.py
+      - Artifacts/Data_Transformation_Artifacts/train_data.npz
+      - Artifacts/Data_Transformation_Artifacts/transformed_object.pkl
+    # DO NOT add if already dvc added
+    # outs:
+    #   - Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+
+  model_evaluation:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_evaluation
+    deps:
+      - src/Shipment_Price_Prediction/components/model_evaluation.py
+      - Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+      - Artifacts/Data_Transformation_Artifacts/test_data.npz
+
+  model_pusher:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_pusher
+    deps:
+      - src/Shipment_Price_Prediction/components/model_pusher.py
+      - src/Shipment_Price_Prediction/configuration/s3_operation.py
+      - Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+
+
+# Now Just Run : dvc repro

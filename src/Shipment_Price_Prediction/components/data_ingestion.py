@@ -26,7 +26,6 @@ Data Ingestion Flow Overview:
 1. Data_Ingestion_Config:
    - Inputs:
      - data_ingestion_dir: Directory for storing ingestion artifacts.
-     - feature_store_file_path: Path to store the feature store data.
      - training_file_path: Path for training data file.
      - testing_file_path: Path for testing data file.
      - train_test_split_ratio: Ratio for splitting data into train and test sets.
@@ -351,7 +350,7 @@ class Data_Ingestion:
             # Getting data from MongoDB
             raw_data = self.get_data_from_mongodb()
             
-            #Dropping the unneccessary columns and handle missing values
+            #Dropping the unneccessary columns 
             cleaned_data = raw_data.drop(columns=self.data_ingestion_config.DROP_COLS , errors='ignore')
             logging.info("After Dropping the columns we have the dataset as")
             logging.info(cleaned_data.head())

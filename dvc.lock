@@ -1,0 +1,90 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python -m src.Shipment_Price_Prediction.components.data_ingestion
+    deps:
+    - path: src/Shipment_Price_Prediction/components/data_ingestion.py
+      hash: md5
+      md5: b3d2858bda5c3114756803c1d43ef32d
+      size: 18334
+    - path: src/Shipment_Price_Prediction/configuration/mongo_operation.py
+      hash: md5
+      md5: f7ba168d667bc822ad3ca6b99c65b6de
+      size: 5441
+  data_validation:
+    cmd: python -m src.Shipment_Price_Prediction.components.data_validation
+    deps:
+    - path: Artifacts/Data_Ingestion_Artifacts/Test/test.csv
+      hash: md5
+      md5: 352bf0dbe5cf6955cadc3bc4e6016a4e
+      size: 515484
+    - path: Artifacts/Data_Ingestion_Artifacts/Train/train.csv
+      hash: md5
+      md5: c7eebaeeea05ddd2dba843e44be27faa
+      size: 2065748
+    - path: src/Shipment_Price_Prediction/components/data_validation.py
+      hash: md5
+      md5: 5bd1165f533a27b01beec85375327bc8
+      size: 14855
+  data_transformation:
+    cmd: python -m src.Shipment_Price_Prediction.components.data_transformation
+    deps:
+    - path: Artifacts/Data_Ingestion_Artifacts/Test/test.csv
+      hash: md5
+      md5: 352bf0dbe5cf6955cadc3bc4e6016a4e
+      size: 515484
+    - path: Artifacts/Data_Ingestion_Artifacts/Train/train.csv
+      hash: md5
+      md5: c7eebaeeea05ddd2dba843e44be27faa
+      size: 2065748
+    - path: src/Shipment_Price_Prediction/components/data_transformation.py
+      hash: md5
+      md5: 76ab5d084d7d2203e6201a0643884b90
+      size: 22850
+  model_trainer:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_trainer
+    deps:
+    - path: Artifacts/Data_Transformation_Artifacts/train_data.npz
+      hash: md5
+      md5: d40bb3ca9512bb16440dc1a8b4d52ed3
+      size: 29179808
+    - path: Artifacts/Data_Transformation_Artifacts/transformed_object.pkl
+      hash: md5
+      md5: a3d37567f69010c2e8d73504386be966
+      size: 4669335
+    - path: src/Shipment_Price_Prediction/components/model_trainer.py
+      hash: md5
+      md5: d0c54c0c55946a2644349c3e521c0525
+      size: 9080
+  model_evaluation:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_evaluation
+    deps:
+    - path: Artifacts/Data_Transformation_Artifacts/test_data.npz
+      hash: md5
+      md5: bfe989f606b351c3a78dcb28a71ee350
+      size: 7295936
+    - path: 
+        Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+      hash: md5
+      md5: 37808852f2675be02c317e9ee017a47d
+      size: 6102409
+    - path: src/Shipment_Price_Prediction/components/model_evaluation.py
+      hash: md5
+      md5: 366538e7f5367ef05b903282927f241e
+      size: 15956
+  model_pusher:
+    cmd: python -m src.Shipment_Price_Prediction.components.model_pusher
+    deps:
+    - path: 
+        Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+      hash: md5
+      md5: 37808852f2675be02c317e9ee017a47d
+      size: 6102409
+    - path: src/Shipment_Price_Prediction/components/model_pusher.py
+      hash: md5
+      md5: 97ceac2d7437d6486bed02414fffdfd7
+      size: 2457
+    - path: src/Shipment_Price_Prediction/configuration/s3_operation.py
+      hash: md5
+      md5: 66aad42993610763ecb1c00791f0f12b
+      size: 8584
