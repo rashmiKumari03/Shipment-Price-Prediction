@@ -301,4 +301,7 @@ This tool will solve critical problems for logistics companies, helping them sta
 The Shipment Price Prediction model can revolutionize the way logistics companies handle shipment pricing by using machine learning to make predictions based on real-time data. This dynamic pricing model will help optimize operational costs, improve customer satisfaction, and enhance business profitability. The modular code architecture and scalable deployment strategy ensure that the solution can grow and adapt as the business needs evolve.
 
 
+## FlowCharts:
 
+### 1. DATA INGESTION PIPELINE
+![Data Ingestion Pipeline](Flowcharts/Data_Ingestion_Pipeline.drawio.svg)
