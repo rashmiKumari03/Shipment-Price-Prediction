@@ -304,4 +304,5 @@ The Shipment Price Prediction model can revolutionize the way logistics companie
 ## FlowCharts:
 
 ### 1. DATA INGESTION PIPELINE
-![Data Ingestion Pipeline](Flowcharts/Data_Ingestion_Pipeline.drawio.svg)
+![Data Ingestion](<Flowcharts/Data_Ingestion_Pipeline.drawio (1).svg>)
+
