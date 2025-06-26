@@ -81,8 +81,8 @@ Data Ingestion Flow Overview:
 4. Final Outputs:
    - Feature_Store: Contains the complete cleaned dataset with target variable.
    - Train_Test_Split: Train and test datasets saved as:
-     - Data_Ingestion_Artifact/timestamp/ingested/train.csv
-     - Data_Ingestion_Artifact/timestamp/ingested/test.csv
+     - Data_Ingestion_Artifact/Train/train.csv
+     - Data_Ingestion_Artifact/Test/test.csv
 
 Detailed Flow Diagram:
     ┌──────────────────────────────┐
