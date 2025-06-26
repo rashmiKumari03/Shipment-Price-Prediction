@@ -135,10 +135,6 @@ Detailed Flow Diagram:
         ┌──────────┴─────────────┐
         ▼                        ▼
     train.csv                 test.csv
-      │                          │
-      ▼                          ▼
-Data_Ingestion_Artifact/    Data_Ingestion_Artifact/
-timestamp/ingested/         timestamp/ingested/
 
 Purpose:
 This workflow ensures modular, reproducible, and efficient data ingestion for machine learning pipelines, with clear separation of raw data, cleaned data, and training/testing datasets. The flow allows for seamless handling of duplicates, missing values, target variable creation, and data splitting to ensure data quality and readiness for modeling.
