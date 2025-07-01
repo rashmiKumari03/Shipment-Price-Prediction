@@ -160,3 +160,27 @@ class Model_Pusher_Config:
         
         # S3 path (key) where the model file will be stored in the specified bucket
         self.S3_MODEL_KEY_PATH: str = os.path.join(S3_MODEL_NAME)
+        
+        
+
+@dataclass
+class S3_to_Local_Config:
+    """
+    Configuration class for pulling the best-trained model
+    from the S3 bucket to a local directory.
+
+    Attributes:
+    - BUCKET_NAME (str): Name of the S3 bucket where the model resides.
+    - S3_MODEL_KEY_PATH (str): Path of the model object in S3.
+    - LOCAL_MODEL_SAVE_DIR (str): Local directory to store the downloaded model for DVC or reuse.
+    """
+
+    def __init__(self):
+        # Name of the S3 bucket
+        self.BUCKET_NAME: str = BUCKET_NAME
+
+        # S3 key of the model
+        self.S3_MODEL_KEY_PATH: str = os.path.join(S3_MODEL_NAME)
+
+        # Path on local disk to store pulled model
+        self.LOCAL_MODEL_SAVE_DIR: str = os.path.join(from_root(),ARTIFACTS_DIR,S3_TO_LOCAL)

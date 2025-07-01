@@ -1,5 +1,0 @@
-outs:
-- md5: bfe989f606b351c3a78dcb28a71ee350
-  size: 7295936
-  hash: md5
-  path: test_data.npz

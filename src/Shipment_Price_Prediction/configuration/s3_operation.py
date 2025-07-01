@@ -168,3 +168,40 @@ class S3_Operation:
         except Exception as e:
             logging.error("Error occurred while uploading file to S3: %s", str(e))
             raise CustomException(str(e), sys)
+        
+        
+        
+    def download_model_from_s3(self, bucket_name: str, s3_model_key: str, local_dir: str) -> str:
+        """
+        Method Name: download_model_from_s3
+        Description:
+        - Downloads a single model file from S3 to a specified local directory.
+        - Useful if we know the exact model key inside the bucket.
+
+        Parameters:
+        - bucket_name: the S3 bucket name
+        - s3_model_key: the key/path of the model file inside S3
+        - local_dir: local directory to store the model
+
+        Returns:
+        - Local path of the downloaded file
+        """
+        logging.info(f"Starting download of model '{s3_model_key}' from bucket '{bucket_name}' to '{local_dir}'")
+
+        try:
+            os.makedirs(local_dir, exist_ok=True)
+            local_file_path = os.path.join(local_dir, os.path.basename(s3_model_key))
+
+            self.s3_resource.meta.client.download_file(
+                bucket_name,
+                s3_model_key,
+                local_file_path
+            )
+
+            logging.info(f"Model successfully downloaded to {local_file_path}")
+            return local_file_path
+
+        except Exception as e:
+            logging.error(f"Error downloading model from S3: {e}")
+            raise CustomException(str(e), sys)
+

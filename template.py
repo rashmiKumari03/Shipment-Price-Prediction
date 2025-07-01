@@ -19,7 +19,7 @@ list_of_files=[
     f"src/{project_name}/components/model_trainer.py",
     f"src/{project_name}/components/model_evaluation.py",
     f"src/{project_name}/components/model_pusher.py",
-    f"src/{project_name}/components/model_predictor.py",
+    f"src/{project_name}/components/s3_to_local_model.py",
     
     f"src/{project_name}/pipelines/__init__.py",
     f"src/{project_name}/pipelines/training_pipeline.py",
@@ -44,7 +44,8 @@ list_of_files=[
     
     
     
-    "trail_app.py",
+    "trial_app.py",
+    "trial_app_runner.py",
     "app.py",
     "Dockerfile",
     ".dockerignore",
@@ -52,10 +53,11 @@ list_of_files=[
     "setup.py",
     "config/model.yaml", 
     "config/schema.yaml",
+    "dvc.yaml",
     
     
-    "templates/index.html",
-    "static/css/style.css"
+    "templates/Home_page.html",
+    "static"
 ]
 
 # Now code will execute these above paths and make directories.
@@ -99,12 +101,12 @@ for filepath in list_of_files:
             model_trainer.py : Contains logic for training machine learning models using the prepared data.
             model_evaluation.py : Evaluates the performance of trained models using metrics like accuracy, precision, etc.
             model_pusher.py : Manages the deployment of trained models to production environments.
-            model_predictor.py : Provides functionality for making predictions with deployed models.
+            s3_to_local_model.py : Downloads the best model from S3 to local path so it can be tracked by DVC or reused.
             
     Pipelines
             pipelines/__init__.py : Initializes the pipelines package.
             training_pipeline.py : Orchestrates the entire training process, integrating data ingestion, validation, transformation, and model training.
-            prediction_pipeline.py : Manages the prediction workflow, including data input and model inference.
+            prediction_pipeline.py : Manages the prediction workflow, including data input and model inference. Provides functionality for making predictions with deployed models.
                         
     Utilities
             utils/__init__.py : Initializes the utilities package 
@@ -133,18 +135,20 @@ for filepath in list_of_files:
             This directory usually includes configurations and functions for logging application events.
             
     Root Directory Files
-            trail_app.py : A script that may serve as an entry point or main application logic for running experiments or testing.
+            trial_app.py : A script that may serve as an entry point or main application logic for running experiments or testing.
             app.py : Another entry point that might be used to start a web application or API service.
             Dockerfile : Contains instructions for building a Docker image of your application, ensuring consistent environments across different deployments.
             .dockerignore : Specifies files and directories that should be ignored when building a Docker image (similar to .gitignore, but for Docker).
             requirements.txt : Lists all Python dependencies required to run your project. It is used by pip to install necessary packages.
             setup.py : A script for packaging your project as a Python package. It defines metadata about your project and its dependencies.
+            dvc.yaml : Defines and tracks the end-to-end ML pipeline stages (e.g., data_ingestion, training, evaluation), ensuring reproducible execution; whereas `dvc add` is used separately to track specific data files or model artifacts.
+
             Configuration Files
                 config/model.yaml  : Stores model parameters, hyperparameters, and settings necessary for training and evaluating machine learning models.
                 config/schema.yaml : Defines data types and schema configurations used for validating input data before processing it through the pipeline.
     
     Frontend Files
             templates/index.html : An HTML file that serves as a template for rendering web pages in a web application.
-            static/css/style.css : Contains CSS stylesheets used to style HTML templates in your web application.
+            static : Contains CSS stylesheets used to style HTML templates in your web application.
     """
 

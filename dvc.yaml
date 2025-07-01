@@ -1,5 +1,4 @@
 # ================================================================
-# File: ml_pipeline_dvc.yaml
 # Purpose: Define and track the ML pipeline stages using DVC
 #
 # What is this file for?
@@ -66,9 +65,9 @@ stages:
       - src/Shipment_Price_Prediction/components/model_trainer.py
       - Artifacts/Data_Transformation_Artifacts/train_data.npz
       - Artifacts/Data_Transformation_Artifacts/transformed_object.pkl
-    # DO NOT add if already dvc added
-    # outs:
-    #   - Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+    # No need to track this intermediate model with DVC here,
+    # since the finalized model will later be uploaded to S3 and tracked from there.
+
 
   model_evaluation:
     cmd: python -m src.Shipment_Price_Prediction.components.model_evaluation
@@ -83,6 +82,17 @@ stages:
       - src/Shipment_Price_Prediction/components/model_pusher.py
       - src/Shipment_Price_Prediction/configuration/s3_operation.py
       - Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl
+
+
+  s3_to_local_model:
+    cmd: python -m src.Shipment_Price_Prediction/components/s3_to_local_model
+    deps:
+      - src/Shipment_Price_Prediction/components/s3_to_local_model.py
+      - src/Shipment_Price_Prediction/configuration/s3_operation.py
+
+   # DO NOT add if already dvc added
+   # outs:
+   #   - Artifacts/S3_Best_Model_Artifacts/Shipping_Price_Prediction_Model.pkl
 
 
 # Now Just Run : dvc repro

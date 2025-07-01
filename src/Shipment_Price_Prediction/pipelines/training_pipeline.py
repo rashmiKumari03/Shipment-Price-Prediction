@@ -2,8 +2,8 @@ import sys
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.mongo_operation import MongoDB_Operation
-from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts,Model_Pusher_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config,Model_Evaluation_Config,Model_Pusher_Config)
+from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts,Data_Transformation_Artifacts,Model_Trainer_Artifacts,Model_Evaluation_Artifacts,Model_Pusher_Artifacts,S3_to_Local_Artifacts)
+from src.Shipment_Price_Prediction.entity.config_entity import (Data_Ingestion_Config , Data_Validation_Config,Data_Transformation_Config,Model_Trainer_Config,Model_Evaluation_Config,Model_Pusher_Config,S3_to_Local_Config)
 
 from src.Shipment_Price_Prediction.components.data_ingestion import Data_Ingestion
 from src.Shipment_Price_Prediction.components.data_validation import Data_Validation
@@ -12,6 +12,7 @@ from src.Shipment_Price_Prediction.components.model_trainer import Model_Trainer
 from src.Shipment_Price_Prediction.components.model_evaluation import Model_Evaluation
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 from src.Shipment_Price_Prediction.components.model_pusher import Model_Pusher
+from src.Shipment_Price_Prediction.components.s3_to_local_model import S3_to_Local_Model
 
 import warnings
 
@@ -27,6 +28,7 @@ class TrainPipeline:
         self.model_trainer_config = Model_Trainer_Config()
         self.model_evaluation_config = Model_Evaluation_Config()
         self.model_pusher_config = Model_Pusher_Config()
+        self.s3_to_local_config = S3_to_Local_Config()
         
         # Also need to initialise S3
         self.s3_operations = S3_Operation()
@@ -160,6 +162,33 @@ class TrainPipeline:
             raise CustomException(str(e),sys)
         
         
+        
+    def start_s3_to_local_pull(self,s3: S3_Operation) -> S3_to_Local_Artifacts:
+        
+            """
+            This method starts a dedicated pull of the best model
+            from S3 to local path for DVC tracking or reuse.
+            """
+            logging.info("Entered the start_s3_to_local_pull method of TrainPipeline class")
+            try:
+                s3_local_model = S3_to_Local_Model(
+                    s3_to_local_config=self.s3_to_local_config, 
+                    s3=s3
+                )
+                artifact = s3_local_model.initiate_s3_to_local()
+                logging.info("Model successfully pulled from S3 to local.")
+                logging.info("Exited the start_s3_to_local_pull method of TrainPipeline class")
+                return artifact
+
+            except Exception as e:
+                logging.error(f"Error in start_s3_to_local_pull: {e}")
+                raise CustomException(str(e), sys)
+
+
+
+
+        
+        
     # To start this data ingestion,validation etc... we need to make another method call run_pipeline
     # This method is used to start the training pipeline
     
@@ -209,7 +238,11 @@ class TrainPipeline:
                 )
                 logging.info("Model Got Pushed Successfully!!!!!.........")
                 
-            
+            # 👉 regardless of acceptance or rejection, pull the best model back from S3 to local
+            logging.info("Synchronizing local with best model from S3...")
+            s3_to_local_artifact = self.start_s3_to_local_pull(self.s3_operations)
+            logging.info("Pulled best model from S3 to local successfully.")
+
             logging.info("Exited the run_pipeline method of TrainPipeline class")
                 
         except Exception as e:

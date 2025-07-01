@@ -74,6 +74,8 @@ MODEL_SAVE_FORMAT = ".pkl"
 BUCKET_NAME = "shipment-price-predictor-ml"   # All must be small always otherwise s3 won't accept it
 S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"  # Both Names Model_filename and S3_Modelname must be same to fetch it from s3 later.
 
+# S3 to Local
+S3_TO_LOCAL = "S3_Best_Model_Artifacts"
 
 # Constants for Webpage
 APP_HOST = "127.0.0.1"

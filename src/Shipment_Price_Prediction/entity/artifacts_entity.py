@@ -145,6 +145,32 @@ class Model_Pusher_Artifacts:
     """
     bucket_name: str
     s3_model_path: str
+    
+    
+@dataclass
+class S3_to_Local_Artifacts:
+    """
+    This class holds the information related to downloading the best-trained model
+    from S3 to a local directory, typically for DVC tracking or local reuse.
+
+    Attributes:
+    - bucket_name (str): The name of the S3 bucket where the model is stored.
+      This allows verification of the remote storage location.
+    - s3_model_path (str): The S3 object key (path) of the model in the bucket.
+      Knowing this helps trace which exact model was pulled.
+    - local_model_path (str): The local filesystem path where the model has been
+      downloaded and saved. This enables local reproducibility, testing, or DVC tracking.
+
+    Purpose:
+    The S3-to-local stage is responsible for pulling the trained model back from
+    S3 to a local directory to ensure it is available for reproducible pipelines,
+    version tracking with DVC, or local testing and debugging. This artifact class
+    captures all relevant details to trace both the remote source and the local
+    destination of the model in a structured way.
+    """
+    bucket_name: str
+    s3_model_path: str
+    local_model_path: str
 
   
     

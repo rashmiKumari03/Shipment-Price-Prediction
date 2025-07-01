@@ -1,5 +1,0 @@
-outs:
-- md5: d40bb3ca9512bb16440dc1a8b4d52ed3
-  size: 29179808
-  hash: md5
-  path: train_data.npz
