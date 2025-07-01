@@ -14,6 +14,7 @@ logging.info("Yeah! My logger is working fine.")
 # In Terminal : Run   " python trail_app.py "
 # Observation : We have to use logging.info on the things we want to log.
 
+
 # Example to cross check wheather exception working or not?
 logging.info("Crosschecking wheather exception working or not?")
 

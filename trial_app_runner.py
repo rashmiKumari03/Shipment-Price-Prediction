@@ -13,5 +13,4 @@ if __name__=='__main__':
     obj.run_pipeline()
     
     
-    
 # Firstly on running this in terminal : We will get the artifacts folder : having Train and Test data.
