@@ -29,6 +29,5 @@ stages:
     cmd: python app.py
     deps:
       - app.py
-      - src/Shipment_Price_Prediction/**
     outs:
       - Artifacts/
