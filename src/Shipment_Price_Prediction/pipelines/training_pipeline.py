@@ -224,7 +224,6 @@ class TrainPipeline:
             if not model_evaluation_artifact.is_model_accepted:
                 logging.info("Model evaluation completed: The model was NOT accepted based on the evaluation criteria.")
                 print("Model evaluation completed: The model was NOT accepted.")
-                return None
             
             else:
                 

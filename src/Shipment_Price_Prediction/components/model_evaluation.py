@@ -251,8 +251,6 @@ class Model_Evaluation:
                 logging.info(f"New model rejected: It does not improve over the existing model.")
                 logging.info(f"Action: Keeping the existing S3 model unchanged.")
 
-        
-
 
             logging.info("Exited the evaluate_model method of Model Evaluation Class")
             
@@ -263,6 +261,8 @@ class Model_Evaluation:
                 is_model_accepted=is_model_accepted,
                 difference=difference
             )
+            
+            
 
         except Exception as e:
             logging.info(CustomException(str(e),sys))

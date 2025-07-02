@@ -138,6 +138,11 @@ ENV/
 env.bak/
 venv.bak/
 
+
+#I do not want this file to be tracked — neither by DVC nor by Git — because it is only an intermediate checkpoint model. 
+# That is why I have added it here in .gitignore
+Artifacts/
+
 # Spyder project settings
 .spyderproject
 .spyproject
