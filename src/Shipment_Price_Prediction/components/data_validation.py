@@ -11,7 +11,7 @@ from typing import Tuple,Union
 from evidently.model_profile import Profile 
 from evidently.model_profile.sections import DataDriftProfileSection
 
-from src.Shipment_Price_Prediction.entity.config_entity import Data_Validation_Config
+from src.Shipment_Price_Prediction.entity.config_entity import Data_Ingestion_Config, Data_Validation_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import(Data_Ingestion_Artifacts,Data_Validation_Artifacts)
 
 
@@ -327,9 +327,10 @@ if __name__ == "__main__":
         # ------------------------------------------------------
         # Creating the Data Ingestion Artifacts object
         # ------------------------------------------------------
+        data_ingestion_config = Data_Ingestion_Config()
         data_ingestion_artifacts = Data_Ingestion_Artifacts(
-            train_data_file_path="Artifacts/Data_Ingestion_Artifacts/Train/train.csv",
-            test_data_file_path="Artifacts/Data_Ingestion_Artifacts/Test/test.csv",
+            train_data_file_path= data_ingestion_config.TRAIN_DATA_FILE_PATH,
+            test_data_file_path= data_ingestion_config.TEST_DATA_FILE_PATH,
         )
 
         # ------------------------------------------------------
