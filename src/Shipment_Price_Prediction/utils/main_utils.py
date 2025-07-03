@@ -206,20 +206,20 @@ class MainUtils:
             raise CustomException(str(e),sys)
         
 
-  
+        
     @staticmethod
     def load_object(file_path: str) -> object:
-    
         logging.info("Entered the load_object method of MainUtils class")
         try:
-            obj = joblib.load(file_path)
+            with open(file_path, "rb") as file_obj:
+                obj = dill.load(file_obj)
             logging.info(f"Successfully loaded object of type: {type(obj).__name__}")
             logging.info("Exited the load_object method of MainUtils class")
             return obj
-        
         except Exception as e:
             logging.error(f"Unexpected error: {str(e)}")
             raise CustomException(str(e), sys)
+
 
 
     # Create a zip archive of a specified folder
