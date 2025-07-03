@@ -9,7 +9,8 @@ from io import StringIO
 import boto3  # AWS SDK for Python to interact with AWS services like S3 for file storage.
 from botocore.exceptions import ClientError  # To handle errors from AWS API calls made using boto3.
 from mypy_boto3_s3.service_resource import Bucket  # Type hint for representing an S3 bucket resource.
-
+from io import BytesIO
+import joblib
 
 
 class S3_Operation:
@@ -135,7 +136,8 @@ class S3_Operation:
             model_file = model_name if model_dir is None else model_dir + "/" + model_name
             f_obj = self.get_file_object(model_file, bucket_name)
             model_obj = self.read_object(f_obj, decode=False)
-            model = pickle.loads(model_obj)
+            model = joblib.load(BytesIO(model_obj))
+           
             logging.info("Exited the load_model method of S3_Operation class")
             return model
         except Exception as e:
