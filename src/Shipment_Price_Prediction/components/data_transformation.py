@@ -24,6 +24,10 @@ from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Validation_Artifacts, Data_Transformation_Artifacts)
 
+
+import warnings
+warnings.filterwarnings("ignore")
+
 # Creating Data_Transformation class
 
 UTILS = MainUtils()
@@ -457,3 +461,47 @@ class Data_Transformation:
         except Exception as e:
             logging.error(f"Error in initiate_data_transformation: {str(e)}")
             raise CustomException(str(e), sys)
+    
+
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Data Transformation stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the Data Ingestion Artifacts object
+        # ------------------------------------------------------
+        data_ingestion_artifacts = Data_Ingestion_Artifacts(
+            train_data_file_path="Artifacts/Data_Ingestion_Artifacts/Train/train.csv",
+            test_data_file_path="Artifacts/Data_Ingestion_Artifacts/Test/test.csv",
+        )
+
+        # ------------------------------------------------------
+        # Creating the Data Transformation Config
+        # ------------------------------------------------------
+        data_transformation_config = Data_Transformation_Config()
+
+        # ------------------------------------------------------
+        # Instantiating the Data_Transformation class
+        # ------------------------------------------------------
+        data_transformation = Data_Transformation(
+            data_ingestion_artifacts=data_ingestion_artifacts,
+            data_transformation_config=data_transformation_config,
+        )
+
+        # ------------------------------------------------------
+        # Calling the Data Transformation pipeline
+        # ------------------------------------------------------
+        data_transformation_artifact = data_transformation.initiate_data_transformation()
+
+        logging.info(">>>>>> Data Transformation stage completed <<<<<<\n")
+        logging.info(f"Data Transformation Artifacts: {data_transformation_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
+
+
+    
