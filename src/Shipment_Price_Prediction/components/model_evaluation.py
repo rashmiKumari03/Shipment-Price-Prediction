@@ -292,6 +292,66 @@ class Model_Evaluation:
         except Exception as e:
             logging.info(CustomException(str(e),sys))
             raise CustomException(str(e), sys)
+        
+        
+        
+        
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Model Evaluation stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the data ingestion artifacts object
+        # ------------------------------------------------------
+        data_ingestion_artifact = Data_Ingestion_Artifacts(
+            train_data_file_path="Artifacts/Data_Ingestion_Artifacts/Train/train.csv",
+            test_data_file_path="Artifacts/Data_Ingestion_Artifacts/Test/test.csv"
+        )
+
+        # ------------------------------------------------------
+        # Creating the data transformation artifacts object
+        # ------------------------------------------------------
+        data_transformation_artifact = Data_Transformation_Artifacts(
+            train_file_path="Artifacts/Data_Transformation_Artifacts/train_data.npz",
+            test_file_path="Artifacts/Data_Transformation_Artifacts/test_data.npz",
+            transformed_object_file_path="Artifacts/Data_Transformation_Artifacts/transformed_object.pkl",
+        )
+
+        # ------------------------------------------------------
+        # Creating the model trainer artifacts object
+        # ------------------------------------------------------
+        model_trainer_artifact = Model_Trainer_Artifacts(
+            trained_model_file_path="Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl"
+        )
+
+        # ------------------------------------------------------
+        # Creating the model evaluation config
+        # ------------------------------------------------------
+        model_evaluation_config = Model_Evaluation_Config()
+
+        # ------------------------------------------------------
+        # Instantiating the Model_Evaluation class
+        # ------------------------------------------------------
+        model_evaluation = Model_Evaluation(
+            model_trainer_artifact=model_trainer_artifact,
+            model_evaluation_config=model_evaluation_config,
+            data_ingestion_artifact=data_ingestion_artifact,
+            data_transformation_artifact=data_transformation_artifact
+        )
+
+        # ------------------------------------------------------
+        # Calling the evaluation pipeline
+        # ------------------------------------------------------
+        model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
+
+        logging.info(">>>>>> Model Evaluation stage completed <<<<<<\n")
+        logging.info(f"Model Evaluation Artifacts: {model_evaluation_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
 
 
 
