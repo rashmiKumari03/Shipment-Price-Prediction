@@ -61,7 +61,7 @@ TRAIN_DATA_FILE_NAME = "train_data.npz"
 TEST_DATA_FILE_NAME = "test_data.npz"
 
 
-PREPROCESSOR_OBJECT_FILE_NAME = "shipping_preprocessor.pkl"   # used for predicting new data
+PREPROCESSOR_OBJECT_FILE_NAME = "transformed_object.pkl"   # used for predicting new data
 
 
 # Model Trainer related Constants:
