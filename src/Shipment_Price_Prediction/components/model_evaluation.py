@@ -10,7 +10,7 @@ from src.Shipment_Price_Prediction.exception import CustomException
 
 from src.Shipment_Price_Prediction.constant import *
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Ingestion_Artifacts, Data_Transformation_Artifacts,Model_Trainer_Artifacts, Model_Evaluation_Artifacts)
-from src.Shipment_Price_Prediction.entity.config_entity import Model_Evaluation_Config
+from src.Shipment_Price_Prediction.entity.config_entity import Data_Ingestion_Config , Data_Transformation_Config , Model_Trainer_Config, Model_Evaluation_Config
 
 from src.Shipment_Price_Prediction.components.model_trainer import Cost_Model
 
@@ -307,25 +307,28 @@ if __name__ == "__main__":
         # ------------------------------------------------------
         # Creating the data ingestion artifacts object
         # ------------------------------------------------------
+        data_ingestion_config = Data_Ingestion_Config()
         data_ingestion_artifact = Data_Ingestion_Artifacts(
-            train_data_file_path="Artifacts/Data_Ingestion_Artifacts/Train/train.csv",
-            test_data_file_path="Artifacts/Data_Ingestion_Artifacts/Test/test.csv"
+            train_data_file_path= data_ingestion_config.TRAIN_DATA_FILE_PATH,
+            test_data_file_path= data_ingestion_config.TEST_DATA_FILE_PATH
         )
 
         # ------------------------------------------------------
         # Creating the data transformation artifacts object
         # ------------------------------------------------------
+        data_transformation_config = Data_Transformation_Config()
         data_transformation_artifact = Data_Transformation_Artifacts(
-            train_file_path="Artifacts/Data_Transformation_Artifacts/train_data.npz",
-            test_file_path="Artifacts/Data_Transformation_Artifacts/test_data.npz",
-            transformed_object_file_path="Artifacts/Data_Transformation_Artifacts/transformed_object.pkl",
+            train_file_path= data_transformation_config.TRAIN_FILE_PATH,
+            test_file_path= data_transformation_config.TEST_FILE_PATH,
+            transformed_object_file_path= data_transformation_config.PREPROCESSOR_FILE_PATH,
         )
 
         # ------------------------------------------------------
         # Creating the model trainer artifacts object
         # ------------------------------------------------------
+        model_trainer_config = Model_Trainer_Config()
         model_trainer_artifact = Model_Trainer_Artifacts(
-            trained_model_file_path="Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl"
+            trained_model_file_path= model_trainer_config.TRAINED_MODEL_FILE_PATH
         )
 
         # ------------------------------------------------------
