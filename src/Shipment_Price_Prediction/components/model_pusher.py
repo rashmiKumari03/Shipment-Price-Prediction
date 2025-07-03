@@ -5,7 +5,7 @@ from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transformation_Artifacts , Model_Trainer_Artifacts , Model_Pusher_Artifacts)
 
-from src.Shipment_Price_Prediction.entity.config_entity import Model_Pusher_Config
+from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config , Model_Pusher_Config
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -67,8 +67,9 @@ if __name__ == "__main__":
         # ------------------------------------------------------
         # Creating the model trainer artifacts object
         # ------------------------------------------------------
+        model_trainer_config = Model_Trainer_Config()
         model_trainer_artifact = Model_Trainer_Artifacts(
-            trained_model_file_path="Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl"
+            trained_model_file_path= model_trainer_config.TRAINED_MODEL_FILE_PATH
         )
 
         # ------------------------------------------------------
