@@ -14,6 +14,11 @@ from evidently.model_profile.sections import DataDriftProfileSection
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Validation_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import(Data_Ingestion_Artifacts,Data_Validation_Artifacts)
 
+
+import warnings
+warnings.filterwarnings("ignore")
+
+
 # We need to mention some of the constant to the constant folder.
 # Creating Data_Validation_Config in config_entity  also Data_Validation_Artifacts in artifacts_entity and call them here.
 
@@ -312,4 +317,43 @@ class Data_Validation:
             logging.info(CustomException(str(e), sys))
             raise CustomException(str(e), sys)
         
-# After this Lets go to Training Pipeline and code ...
+
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Data Validation stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the Data Ingestion Artifacts object
+        # ------------------------------------------------------
+        data_ingestion_artifacts = Data_Ingestion_Artifacts(
+            train_data_file_path="Artifacts/Data_Ingestion_Artifacts/Train/train.csv",
+            test_data_file_path="Artifacts/Data_Ingestion_Artifacts/Test/test.csv",
+        )
+
+        # ------------------------------------------------------
+        # Creating the Data Validation Config
+        # ------------------------------------------------------
+        data_validation_config = Data_Validation_Config()
+
+        # ------------------------------------------------------
+        # Instantiating the Data_Validation class
+        # ------------------------------------------------------
+        data_validation = Data_Validation(
+            data_ingestion_artifacts=data_ingestion_artifacts,
+            data_validation_config=data_validation_config
+        )
+
+        # ------------------------------------------------------
+        # Calling the Data Validation pipeline
+        # ------------------------------------------------------
+        data_validation_artifact = data_validation.initiate_data_validation()
+
+        logging.info(">>>>>> Data Validation stage completed <<<<<<\n")
+        logging.info(f"Data Validation Artifacts: {data_validation_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
