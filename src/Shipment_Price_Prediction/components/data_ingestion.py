@@ -18,6 +18,10 @@ from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Ingestion
 
 from src.Shipment_Price_Prediction.constant import TEST_SIZE 
 
+import warnings
+warnings.filterwarnings("ignore")
+
+
 # Note : We first have to create Data_Ingestion_Config , Data_Ingestion_Artifacts and TEST_SIZE in their respective path.
 
 """
@@ -389,6 +393,43 @@ class Data_Ingestion:
         
         
         
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Data Ingestion stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the Data Ingestion Config
+        # ------------------------------------------------------
+        data_ingestion_config = Data_Ingestion_Config()
+
+        # ------------------------------------------------------
+        # Instantiating the MongoDB_Operation
+        # ------------------------------------------------------
+        mongo_op = MongoDB_Operation()
+
+        # ------------------------------------------------------
+        # Instantiating the Data_Ingestion class
+        # ------------------------------------------------------
+        ingestion = Data_Ingestion(
+            data_ingestion_config=data_ingestion_config,
+            mongo_op=mongo_op
+        )
+
+        # ------------------------------------------------------
+        # Calling the Data Ingestion pipeline
+        # ------------------------------------------------------
+        data_ingestion_artifact = ingestion.initiate_data_ingestion()
+
+        logging.info(">>>>>> Data Ingestion stage completed <<<<<<\n")
+        logging.info(f"Data Ingestion Artifacts: {data_ingestion_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
+
             
         
     
