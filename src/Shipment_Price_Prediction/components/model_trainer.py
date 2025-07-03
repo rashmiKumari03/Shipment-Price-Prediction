@@ -11,9 +11,15 @@ from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
 from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE, SCHEMA_FILE_PATH 
+from src.Shipment_Price_Prediction.components.data_transformation import datetime_transform_wrapper
+
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
+
+import warnings
+warnings.filterwarnings("ignore")
+
 
 class Cost_Model:
 
@@ -162,33 +168,64 @@ class Model_Trainer:
                 logging.info(f"Model Trainer Artifacts: {model_trainer_artifacts}")
 
                 return model_trainer_artifacts
-
+            
             else:
-                
-                logging.info("No better model found. Re-saving previous best model to maintain pipeline continuity.")
+                logging.info("No better model found. Keeping previous best model artifact unchanged.")
 
-                # Load previous best model from existing trained model path
                 existing_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
-                logging.info(f"Exiting Model Path : {existing_model_path}")
+                logging.info(f"Using existing model at path: {existing_model_path}")
 
                 if not os.path.exists(existing_model_path):
-                    raise Exception("No previously trained model found at expected path.")
-
-                # Load and re-save to same path (ensures availability for evaluation)
-                logging.info("Load and re-save to same path (ensures availability for evaluation)")
-                base_model_object = self.model_trainer_config.UTILS.load_object(existing_model_path)
-                self.model_trainer_config.UTILS.save_object(existing_model_path, base_model_object)
-
-                logging.info(f"Base model re-saved at {existing_model_path} to ensure evaluation won't break.")
+                    logging.warning("No previous model found. Returning artifacts with empty path.")
+                    return Model_Trainer_Artifacts(trained_model_file_path=None)
 
                 model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=existing_model_path)
-                logging.info(f"Returning Model Trainer Artifacts: {model_trainer_artifacts}")
+                logging.info(f"Returning existing model artifact: {model_trainer_artifacts}")
                 return model_trainer_artifacts
 
-                
-            
-                
             
         except Exception as e:
             logging.error(f"Error in initiate_model_trainer: {str(e)}")
             raise CustomException(str(e), sys)
+
+
+
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Model Trainer stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the Data Transformation Artifacts object
+        # ------------------------------------------------------
+        data_transformation_artifact = Data_Transformation_Artifacts(
+            train_file_path="Artifacts/Data_Transformation_Artifacts/train_data.npz",
+            test_file_path="Artifacts/Data_Transformation_Artifacts/test_data.npz",
+            transformed_object_file_path="Artifacts/Data_Transformation_Artifacts/transformed_object.pkl",
+        )
+
+        # ------------------------------------------------------
+        # Creating the Model Trainer Config
+        # ------------------------------------------------------
+        model_trainer_config = Model_Trainer_Config()
+
+        # ------------------------------------------------------
+        # Instantiating the Model_Trainer class
+        # ------------------------------------------------------
+        model_trainer = Model_Trainer(
+            data_transformation_artifact=data_transformation_artifact,
+            model_trainer_config=model_trainer_config
+        )
+
+        # ------------------------------------------------------
+        # Calling the Model Trainer pipeline
+        # ------------------------------------------------------
+        model_trainer_artifact = model_trainer.initiate_model_trainer()
+
+        logging.info(">>>>>> Model Trainer stage completed <<<<<<\n")
+        logging.info(f"Model Trainer Artifacts: {model_trainer_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
