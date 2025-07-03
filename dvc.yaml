@@ -63,8 +63,8 @@ stages:
       - Artifacts/Data_Transformation_Artifacts
       - src/Shipment_Price_Prediction/entity/config_entity.py
       - src/Shipment_Price_Prediction/utils/main_utils.py
-    outs:
-      - Artifacts/Model_Trainer_Artifacts
+    # outs:
+    #  - Artifacts/Model_Trainer_Artifacts    # This is intentionally not tracked since it stores intermediate models, not the final best model to be versioned.
 
   model_evaluation:
     cmd: python -m src.Shipment_Price_Prediction.components.model_evaluation
@@ -73,8 +73,7 @@ stages:
       - Artifacts/Model_Trainer_Artifacts
       - src/Shipment_Price_Prediction/entity/config_entity.py
       - src/Shipment_Price_Prediction/utils/main_utils.py
-    outs:
-      - Artifacts/Model_Evaluation_Artifacts
+  
 
   model_pusher:
     cmd: python -m src.Shipment_Price_Prediction.components.model_pusher
@@ -84,16 +83,14 @@ stages:
       - src/Shipment_Price_Prediction/configuration/s3_operation.py
       - src/Shipment_Price_Prediction/entity/config_entity.py
       - src/Shipment_Price_Prediction/utils/main_utils.py
-    outs:
-      - Artifacts/Model_Pusher_Artifacts
+  
 
   s3_to_local_model:
     cmd: python -m src.Shipment_Price_Prediction.components.s3_to_local_model
     deps:
       - src/Shipment_Price_Prediction/components/s3_to_local_model.py
-      - Artifacts/Model_Pusher_Artifacts
       - src/Shipment_Price_Prediction/configuration/s3_operation.py
       - src/Shipment_Price_Prediction/entity/config_entity.py
       - src/Shipment_Price_Prediction/utils/main_utils.py
     outs:
-      - Artifacts/S3_to_Local_Artifacts
+      - Artifacts/S3_Best_Model_Artifacts
