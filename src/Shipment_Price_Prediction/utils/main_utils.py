@@ -168,18 +168,17 @@ class MainUtils:
         except Exception as e:
             raise CustomException(f"Error during parameter tuning: {str(e)}", sys)
 
-  # Save object with dill and return the file path
     @staticmethod
     def save_object(file_path: str, obj: object) -> str:
-        logging.info("Entered the save_object method of MainUtils class")
+        logging.info("Entered the save_object method of MainUtils class (joblib version)")
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            with open(file_path, "wb") as file_obj:
-                dill.dump(obj, file_obj)
+            joblib.dump(obj, file_path)
             logging.info(f"Successfully saved object at {file_path}")
             return file_path
         except Exception as e:
             raise CustomException(f"Error saving object: {str(e)}", sys)
+
 
         
     @staticmethod
@@ -209,16 +208,16 @@ class MainUtils:
         
     @staticmethod
     def load_object(file_path: str) -> object:
-        logging.info("Entered the load_object method of MainUtils class")
+        logging.info("Entered the load_object method of MainUtils class (joblib version)")
         try:
-            with open(file_path, "rb") as file_obj:
-                obj = dill.load(file_obj)
+            obj = joblib.load(file_path)
             logging.info(f"Successfully loaded object of type: {type(obj).__name__}")
             logging.info("Exited the load_object method of MainUtils class")
             return obj
         except Exception as e:
             logging.error(f"Unexpected error: {str(e)}")
             raise CustomException(str(e), sys)
+
 
 
 
