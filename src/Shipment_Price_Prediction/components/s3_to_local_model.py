@@ -49,3 +49,40 @@ class S3_to_Local_Model:
         except Exception as e:
             logging.error(f"Error in initiate_s3_to_local: {e}")
             raise CustomException(str(e), sys)
+
+
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> S3 to Local stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the S3 to Local Config
+        # ------------------------------------------------------
+        s3_to_local_config = S3_to_Local_Config()
+
+        # ------------------------------------------------------
+        # Instantiating S3_Operation
+        # ------------------------------------------------------
+        s3 = S3_Operation()
+
+        # ------------------------------------------------------
+        # Instantiating the S3_to_Local_Model class
+        # ------------------------------------------------------
+        s3_to_local_model = S3_to_Local_Model(
+            s3_to_local_config=s3_to_local_config,
+            s3=s3
+        )
+
+        # ------------------------------------------------------
+        # Calling the S3 to Local pipeline
+        # ------------------------------------------------------
+        s3_to_local_artifact = s3_to_local_model.initiate_s3_to_local()
+
+        logging.info(">>>>>> S3 to Local stage completed <<<<<<\n")
+        logging.info(f"S3 to Local Artifacts: {s3_to_local_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
