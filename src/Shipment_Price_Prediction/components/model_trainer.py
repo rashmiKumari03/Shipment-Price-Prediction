@@ -14,7 +14,7 @@ from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE, SCHEMA_FIL
 from src.Shipment_Price_Prediction.components.data_transformation import datetime_transform_wrapper
 
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
-from src.Shipment_Price_Prediction.entity.config_entity import Model_Trainer_Config
+from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config , Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
 
 import warnings
@@ -199,10 +199,11 @@ if __name__ == "__main__":
         # ------------------------------------------------------
         # Creating the Data Transformation Artifacts object
         # ------------------------------------------------------
+        data_transformation_config = Data_Transformation_Config()
         data_transformation_artifact = Data_Transformation_Artifacts(
-            train_file_path="Artifacts/Data_Transformation_Artifacts/train_data.npz",
-            test_file_path="Artifacts/Data_Transformation_Artifacts/test_data.npz",
-            transformed_object_file_path="Artifacts/Data_Transformation_Artifacts/transformed_object.pkl",
+            train_file_path= data_transformation_config.TRAIN_FILE_PATH ,
+            test_file_path= data_transformation_config.TEST_FILE_PATH,
+            transformed_object_file_path= data_transformation_config.PREPROCESSOR_FILE_PATH
         )
 
         # ------------------------------------------------------
