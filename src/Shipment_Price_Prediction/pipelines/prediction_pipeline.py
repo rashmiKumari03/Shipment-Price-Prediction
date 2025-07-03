@@ -9,6 +9,7 @@ from pandas import DataFrame
 from src.Shipment_Price_Prediction.constant import *
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 
+
 class ShippingData:
     
     def __init__(self,
