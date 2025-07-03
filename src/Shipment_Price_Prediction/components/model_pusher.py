@@ -7,7 +7,10 @@ from src.Shipment_Price_Prediction.entity.artifacts_entity import (Data_Transfor
 
 from src.Shipment_Price_Prediction.entity.config_entity import Model_Pusher_Config
 
+import warnings
+warnings.filterwarnings('ignore')
 # Lets  Create first the Model_Pusher_Artifacts and Model_Pusher_Config
+
 
 class Model_Pusher:
     

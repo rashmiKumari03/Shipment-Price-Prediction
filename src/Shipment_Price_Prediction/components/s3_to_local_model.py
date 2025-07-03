@@ -5,6 +5,9 @@ from src.Shipment_Price_Prediction.entity.config_entity import S3_to_Local_Confi
 from src.Shipment_Price_Prediction.entity.artifacts_entity import S3_to_Local_Artifacts
 from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operation
 
+import warnings
+warnings.filterwarnings('ignore')
+
 class S3_to_Local_Model:
     """
     The S3_to_Local_Model class is responsible for pulling the

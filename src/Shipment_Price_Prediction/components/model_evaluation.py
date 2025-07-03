@@ -14,6 +14,9 @@ from src.Shipment_Price_Prediction.entity.config_entity import Model_Evaluation_
 
 from src.Shipment_Price_Prediction.components.model_trainer import Cost_Model
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # Define constants for model evaluation in the constants folder.
 # Implement the S3 bucket configuration in the configuration folder for better organization.
 
