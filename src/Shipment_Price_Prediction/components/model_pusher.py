@@ -55,6 +55,52 @@ class Model_Pusher:
             raise CustomException(str(e),sys)
         
         
+
+if __name__ == "__main__":
+    try:
+        logging.info("*******************")
+        logging.info(">>>>>> Model Pusher stage started <<<<<<")
+
+        # ------------------------------------------------------
+        # Creating the model trainer artifacts object
+        # ------------------------------------------------------
+        model_trainer_artifact = Model_Trainer_Artifacts(
+            trained_model_file_path="Artifacts/Model_Trainer_Artifacts/Shipping_Price_Prediction_Model.pkl"
+        )
+
+        # ------------------------------------------------------
+        # Creating the model pusher config
+        # ------------------------------------------------------
+        model_pusher_config = Model_Pusher_Config()
+
+        # ------------------------------------------------------
+        # Instantiating S3_Operation
+        # ------------------------------------------------------
+        s3 = S3_Operation()
+
+        # ------------------------------------------------------
+        # Instantiating the Model_Pusher class
+        # ------------------------------------------------------
+        model_pusher = Model_Pusher(
+            model_pusher_config=model_pusher_config,
+            model_trainer_artifacts=model_trainer_artifact,
+            s3=s3
+        )
+
+        # ------------------------------------------------------
+        # Calling the model pusher pipeline
+        # ------------------------------------------------------
+        model_pusher_artifact = model_pusher.initiate_model_pusher()
+
+        logging.info(">>>>>> Model Pusher stage completed <<<<<<\n")
+        logging.info(f"Model Pusher Artifacts: {model_pusher_artifact}")
+
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
+        
+        
             
                          
         
