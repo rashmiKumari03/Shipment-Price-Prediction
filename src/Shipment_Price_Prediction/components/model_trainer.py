@@ -110,7 +110,6 @@ class Model_Trainer:
             logging.info("===========================================")
 
             trained_models = self.get_trained_models(train_arr, test_arr)
-            mlflow.log_dict(trained_models,"Intermediate_Models")
             
             best_model_name,best_model_object, best_model_score , best_model_metrics= self.model_trainer_config.UTILS.get_best_model_with_name_and_score(trained_models)
             
@@ -162,15 +161,15 @@ class Model_Trainer:
                 - Parameters: All hyperparameter settings
                 - Artifacts: Saved trained model(s)
                 """
-
-   
-
+        
                 # Start an MLflow run to track this training stage
                 with mlflow.start_run(run_name="Model_Trainer_Run"):
                     
                     # Tag this run with the pipeline stage and model name
                     mlflow.set_tag("stage", "Model_Trainer")
                     mlflow.set_tag("model_name", best_model_name)
+                    
+                    mlflow.log_dict(trained_models, "Intermediate_Models")
 
                     # Log all evaluation metrics
                     for metric_name, metric_value in best_model_metrics.items():
