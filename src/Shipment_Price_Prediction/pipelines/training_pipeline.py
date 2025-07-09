@@ -14,7 +14,11 @@ from src.Shipment_Price_Prediction.configuration.s3_operation import S3_Operatio
 from src.Shipment_Price_Prediction.components.model_pusher import Model_Pusher
 from src.Shipment_Price_Prediction.components.s3_to_local_model import S3_to_Local_Model
 
+import mlflow
+import mlflow.sklearn
+
 import warnings
+warnings.filterwarnings('ignore')
 
 
 # Initializing the Training Pipeline.
@@ -101,6 +105,8 @@ class TrainPipeline:
                             model_trainer_config: Model_Trainer_Config) -> Model_Trainer_Artifacts:
         try:
             logging.info("Entered the start_model_trainer method of TrainPipeline")
+            mlflow.set_tracking_uri("http://127.0.0.1:5000")
+            mlflow.set_experiment("Shipment_Price_Prediction_Tracking")
             model_trainer = Model_Trainer(
                 data_transformation_artifact=data_transformation_artifact,
                 model_trainer_config= model_trainer_config
