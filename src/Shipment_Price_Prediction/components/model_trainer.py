@@ -18,6 +18,9 @@ from src.Shipment_Price_Prediction.components.data_transformation import Data_Tr
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config , Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
 
+import mlflow
+import mlflow.sklearn
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -107,14 +110,16 @@ class Model_Trainer:
             logging.info("===========================================")
 
             trained_models = self.get_trained_models(train_arr, test_arr)
+            mlflow.log_dict(trained_models,"Intermediate_Models")
             
-            best_model_name,best_model_object, best_model_score = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(trained_models)
+            best_model_name,best_model_object, best_model_score , best_model_metrics= self.model_trainer_config.UTILS.get_best_model_with_name_and_score(trained_models)
             
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
             base_model_score = float(model_config["base_model_score"])
             
-            
+                                    
             if best_model_score >= base_model_score:
+                
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
 
                 preprocessor_obj = self.model_trainer_config.UTILS.load_object(self.data_transformation_artifact.transformed_object_file_path)
@@ -122,10 +127,68 @@ class Model_Trainer:
 
                 cost_model = Cost_Model(preprocessor_obj, best_model_object)
                 logging.info(f"Created a Cost_Model: {cost_model} of type {type(cost_model)}")
+            
 
                 model_file_path = self.model_trainer_config.UTILS.save_object(self.model_trainer_config.TRAINED_MODEL_FILE_PATH, cost_model)
                 logging.info(f"Model saved at {model_file_path}")
+                
+                # ------------------------------------------------------------------------------------------------------------------
+                # STARTING MLflow Run
+                """
+                MLflow Tracking Summary - Model Training Stage
 
+                This section initiates an MLflow run to log and track key details of the model training process.
+
+                1. Tags (Metadata)
+                - "stage": Indicates the current pipeline step, e.g., "Model_Trainer"
+                - "model_name": Captures the name of the best-performing model
+
+                2. Metrics
+                - Logs model evaluation metrics such as R² score, RMSE, MAE, etc.
+                - These metrics are useful for performance tracking and model comparison
+
+                3. Parameters
+                - Logs the model's hyperparameters (e.g., max_depth, learning_rate)
+                - Enables reproducibility and better understanding of model behavior
+
+                4. Artifacts
+                - Saves the trained model using `mlflow.sklearn.log_model`
+                - Stored under the "Artifacts" tab in a folder named "best_model"
+
+                Expected Outputs in the MLflow UI:
+                - Run name: "Model_Trainer_Run"
+                - Tags: Pipeline stage and model name
+                - Metrics: All key performance indicators
+                - Parameters: All hyperparameter settings
+                - Artifacts: Saved trained model(s)
+                """
+
+   
+
+                # Start an MLflow run to track this training stage
+                with mlflow.start_run(run_name="Model_Trainer_Run"):
+                    
+                    # Tag this run with the pipeline stage and model name
+                    mlflow.set_tag("stage", "Model_Trainer")
+                    mlflow.set_tag("model_name", best_model_name)
+
+                    # Log all evaluation metrics
+                    for metric_name, metric_value in best_model_metrics.items():
+                        mlflow.log_metric(metric_name, float(metric_value))
+
+
+                    # Log hyperparameters if available
+                    if hasattr(best_model_object, 'get_params'):
+                        for param_name, param_value in best_model_object.get_params().items():
+                            mlflow.log_param(param_name, str(param_value))
+
+                    # Log the trained model (saved in the "Artifacts" tab under "best_model" folder)
+                    mlflow.sklearn.log_model(best_model_object, "best_model")
+                # ------------------------------------------------------------------------------------------------------------------
+                    
+                self.model_trainer_config.UTILS.update_model_score(best_model_score)
+
+                logging.info(f"Model logged to MLflow & saved at {model_file_path}")
                 model_trainer_artifacts = Model_Trainer_Artifacts(trained_model_file_path=model_file_path)
                 logging.info(f"Model Trainer Artifacts: {model_trainer_artifacts}")
 
@@ -155,6 +218,9 @@ class Model_Trainer:
 
 if __name__ == "__main__":
     try:
+        mlflow.set_tracking_uri("http://127.0.0.1:5000")
+        mlflow.set_experiment("Shipment_Price_Prediction_Tracking")
+
         logging.info("*******************")
         logging.info(">>>>>> Model Trainer stage started <<<<<<")
 
