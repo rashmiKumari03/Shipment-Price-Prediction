@@ -106,7 +106,8 @@ class MainUtils:
             
             logging.info("Exited the get_tunned_model method of MainUtils class")
             
-            return model_r2_score, model, model.__class__.__name__
+            return model_r2_score, model, model.__class__.__name__, model_all_metrics
+
         
         except Exception as e:
             raise CustomException(f"Error tuning model {model_name}: {str(e)}", sys)
@@ -182,24 +183,27 @@ class MainUtils:
 
         
     @staticmethod
-    def get_best_model_with_name_and_score(model_list : list) -> Tuple[str,object,float]:
+    def get_best_model_with_name_and_score(model_list : list) -> Tuple[str,object,float,dict]:
         logging.info("Entered the get_best_model_with_name_and_score method of MainUtils class")
         try:
             if model_list:
                 logging.info("Model list is empty.")
                 # Find the best model based on the score
                 best_model_tuple = max(model_list, key=lambda x: x[2]) 
-
+                
                 best_model_score = best_model_tuple[0]
                 best_model_object = best_model_tuple[1]
                 best_model_name = best_model_tuple[2]
+                best_model_metrics = best_model_tuple[3]
+
+               
 
                 logging.info(
                     f"Best model: {best_model_name} with score: {best_model_score}"
                 )
                 logging.info("Exited the get_best_model_with_name_and_score method of MainUtils class")
                 
-                return best_model_name , best_model_object ,  best_model_score 
+                return best_model_name , best_model_object ,  best_model_score , best_model_metrics
 
         except Exception as e:
             raise CustomException(str(e),sys)
