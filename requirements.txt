@@ -13,6 +13,9 @@ xgboost                # Optimized gradient boosting library for efficient model
 catboost               # Gradient boosting library that handles categorical features automatically.
 category-encoders      # Provides various encoding techniques for categorical variables in ML models.
 
+# To load the envirnoment var.
+dotenv 
+
 # Model Evaluation
 evidently==0.1.45.dev0          # Tool for monitoring ML models in production, assessing performance over time.
 
@@ -39,7 +42,8 @@ dill                   # Serialization library that extends pickle to support mo
 PyYAML                 # YAML parser and emitter for Python, useful for configuration files.
 
 # MLFlow 
-mlflow
+mlflow==2.11.1  # Chosen because latest mlflow log_model causes DagsHub endpoint issues, this version is stable and compatible
+dagshub
 
 # Data Version Control
 dvc

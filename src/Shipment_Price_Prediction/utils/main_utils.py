@@ -281,3 +281,10 @@ class MainUtils:
             return float(value) if value.strip() else None
         except ValueError:
             return None
+        
+    @staticmethod    
+    def sanitize_key(s: str) -> str:
+                    """Clean model/metric/param names for MLflow logging."""
+                    return s.translate(str.maketrans({
+                        " ": "_", "/": "_", "\\": "_", ":": "_", ".": "_", "%": "_", "\"": "_", "'": "_"
+                    }))
