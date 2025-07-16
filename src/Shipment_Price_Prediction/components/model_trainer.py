@@ -194,11 +194,11 @@ class Model_Trainer:
                     mlflow.log_artifact(best_metrics_file, artifact_path=best_folder)
                     os.remove(best_metrics_file)
 
-                    # Optionally log metrics globally for best model
+                    # This is  Optional : log metrics globally for best model
                     for metric_key, metric_val in best_model_metrics.items():
                         mlflow.log_metric(f"Best_model_{self.model_trainer_config.UTILS.sanitize_key(metric_key)}", float(metric_val))
 
-                    # Save and log best model parameters
+                    # Saving and loggging best model parameters
                     if hasattr(best_model_object, "get_params"):
                         best_params = best_model_object.get_params()
                         best_params_file = os.path.join(
