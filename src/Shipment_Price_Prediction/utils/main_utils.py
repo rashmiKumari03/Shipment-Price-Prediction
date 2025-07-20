@@ -143,10 +143,11 @@ class MainUtils:
     def get_model_score(test_y: DataFrame, preds: DataFrame) -> Dict:
         logging.info("Entered get_model_score")
         try:
-            r2 = r2_score(test_y, preds)
-            mse = mean_squared_error(test_y, preds)
-            rmse = np.sqrt(mse)
-            mae = mean_absolute_error(test_y, preds)
+            r2 = np.round(r2_score(test_y, preds), 4)
+            mse = np.round(mean_squared_error(test_y, preds), 4)
+            rmse = np.round(np.sqrt(mse), 4)
+            mae = np.round(mean_absolute_error(test_y, preds), 4)
+
             metrics = {"R2 Score": r2, "MSE": mse, "RMSE": rmse, "MAE": mae}
             logging.info(f"Model Metrics: {metrics}")
             return metrics

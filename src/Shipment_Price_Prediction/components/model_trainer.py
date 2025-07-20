@@ -11,12 +11,23 @@ from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
 from src.Shipment_Price_Prediction.utils.main_utils import MainUtils
 from src.Shipment_Price_Prediction.constant import MODEL_CONFIG_FILE, SCHEMA_FILE_PATH 
-from src.Shipment_Price_Prediction.components.data_transformation import datetime_transform_wrapper
 from src.Shipment_Price_Prediction.components.cost_model import Cost_Model
-
-from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config , Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
+
+# Imported because the saved preprocessor object (via joblib) internally references 
+# the Data_Transformation class. Even though we don’t call it directly here,
+# joblib.load() needs this class to be importable in the current context.
+
+from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
+
+# Imported because the saved preprocessor object also references a custom transformer
+# function/class called datetime_transform_wrapper inside its pipeline. 
+# When loading the object, Python must be able to locate this symbol.
+
+from src.Shipment_Price_Prediction.components.data_transformation import datetime_transform_wrapper
+
+
 
 import mlflow
 import mlflow.sklearn
