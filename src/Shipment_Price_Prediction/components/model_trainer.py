@@ -139,7 +139,6 @@ class Model_Trainer:
                 self.model_trainer_config.UTILS.update_model_score(best_model_score)
 
                 preprocessor_obj = self.model_trainer_config.UTILS.load_object(self.data_transformation_artifact.transformed_object_file_path)
-                logging.info("Saving the Cost_Model using save_object")
 
                 cost_model = Cost_Model(preprocessor_obj, best_model_object)
                 logging.info(f"Created a Cost_Model: {cost_model} of type {type(cost_model)}")
