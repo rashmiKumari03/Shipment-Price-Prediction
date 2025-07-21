@@ -15,18 +15,13 @@ from src.Shipment_Price_Prediction.components.cost_model import Cost_Model
 from src.Shipment_Price_Prediction.entity.config_entity import Data_Transformation_Config , Model_Trainer_Config
 from src.Shipment_Price_Prediction.entity.artifacts_entity import Data_Transformation_Artifacts, Model_Trainer_Artifacts
 
-# Imported because the saved preprocessor object (via joblib) internally references 
-# the Data_Transformation class. Even though we don’t call it directly here,
-# joblib.load() needs this class to be importable in the current context.
-
+# Required so that joblib.load() can rebuild the saved preprocessor pipeline.
+# The pipeline references this custom class; without importing it, deserialization will fail.
 from src.Shipment_Price_Prediction.components.data_transformation import Data_Transformation
 
-# Imported because the saved preprocessor object also references a custom transformer
-# function/class called datetime_transform_wrapper inside its pipeline. 
-# When loading the object, Python must be able to locate this symbol.
-
+# Required because the saved preprocessor also uses this custom transformer in its pipeline.
+# Importing ensures joblib can locate it while loading.
 from src.Shipment_Price_Prediction.components.data_transformation import datetime_transform_wrapper
-
 
 
 import mlflow

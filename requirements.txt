@@ -35,8 +35,10 @@ mypy-boto3-s3         # Type stubs for Boto3's S3 service, aiding static type ch
 pymongo                # MongoDB driver for Python, used to interact with MongoDB databases.
 dnspython              # DNS toolkit for Python; useful for working with DNS records in pymongo.
 
-# Serialization
-dill                   # Serialization library that extends pickle to support more Python objects.
+
+joblib         # Used for serialization/deserialization of Python objects (e.g., models, pipelines); 
+               # more efficient than pickle for large NumPy arrays and commonly used in scikit‑learn.
+
 
 # Configuration
 PyYAML                 # YAML parser and emitter for Python, useful for configuration files.
