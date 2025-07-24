@@ -94,6 +94,7 @@ jobs:
     #   run: |
     #     docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment || true
 
+
     - name: Run Docker Image
       run: |
         docker run -d -p 8080:8080 \
