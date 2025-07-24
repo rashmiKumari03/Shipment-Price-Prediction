@@ -18,7 +18,7 @@ stages:
     outs:
     - path: Artifacts/Data_Ingestion_Artifacts
       hash: md5
-      md5: 7359e03140e610a4446b6f8fefdd693c.dir
+      md5: 8680d6757fb69a4033fa12194233372e.dir
       size: 2581232
       nfiles: 2
   data_validation:
@@ -26,7 +26,7 @@ stages:
     deps:
     - path: Artifacts/Data_Ingestion_Artifacts
       hash: md5
-      md5: 7359e03140e610a4446b6f8fefdd693c.dir
+      md5: 8680d6757fb69a4033fa12194233372e.dir
       size: 2581232
       nfiles: 2
     - path: src/Shipment_Price_Prediction/components/data_validation.py
@@ -44,16 +44,16 @@ stages:
     outs:
     - path: Artifacts/Data_Validation_Artifacts
       hash: md5
-      md5: 1587748fd18f927ff44d071ed98ea4e1.dir
-      size: 610017
+      md5: 6e4ed11b65e8b4247e5582aa636b276b.dir
+      size: 611128
       nfiles: 1
   data_transformation:
     cmd: python -m src.Shipment_Price_Prediction.components.data_transformation
     deps:
     - path: Artifacts/Data_Validation_Artifacts
       hash: md5
-      md5: 1587748fd18f927ff44d071ed98ea4e1.dir
-      size: 610017
+      md5: 6e4ed11b65e8b4247e5582aa636b276b.dir
+      size: 611128
       nfiles: 1
     - path: src/Shipment_Price_Prediction/components/data_transformation.py
       hash: md5
@@ -70,16 +70,16 @@ stages:
     outs:
     - path: Artifacts/Data_Transformation_Artifacts
       hash: md5
-      md5: 593478f6a4220756b4df7004344bc459.dir
-      size: 41474775
+      md5: d34189e4397606c31eff8fe2bfea862b.dir
+      size: 40734479
       nfiles: 3
   model_trainer:
     cmd: python -m src.Shipment_Price_Prediction.components.model_trainer
     deps:
     - path: Artifacts/Data_Transformation_Artifacts
       hash: md5
-      md5: 593478f6a4220756b4df7004344bc459.dir
-      size: 41474775
+      md5: d34189e4397606c31eff8fe2bfea862b.dir
+      size: 40734479
       nfiles: 3
     - path: src/Shipment_Price_Prediction/components/model_trainer.py
       hash: md5
@@ -98,8 +98,8 @@ stages:
     deps:
     - path: Artifacts/Model_Trainer_Artifacts
       hash: md5
-      md5: 5ab1c59f59e99dad9f901cac37fdedaa.dir
-      size: 5633134
+      md5: d8c3f7960e5a33711970e39249efd6cf.dir
+      size: 5155978
       nfiles: 1
     - path: src/Shipment_Price_Prediction/components/model_evaluation.py
       hash: md5
@@ -118,8 +118,8 @@ stages:
     deps:
     - path: Artifacts/Model_Trainer_Artifacts
       hash: md5
-      md5: 5ab1c59f59e99dad9f901cac37fdedaa.dir
-      size: 5633134
+      md5: d8c3f7960e5a33711970e39249efd6cf.dir
+      size: 5155978
       nfiles: 1
     - path: src/Shipment_Price_Prediction/components/model_pusher.py
       hash: md5
@@ -159,6 +159,6 @@ stages:
     outs:
     - path: Artifacts/S3_Best_Model_Artifacts
       hash: md5
-      md5: 5ab1c59f59e99dad9f901cac37fdedaa.dir
-      size: 5633134
+      md5: d8c3f7960e5a33711970e39249efd6cf.dir
+      size: 5155978
       nfiles: 1
