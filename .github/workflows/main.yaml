@@ -48,7 +48,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, Tag, and Push Image to Amazon ECR
         id: build-image
@@ -61,17 +61,23 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+
   deployment:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
     steps:
-    
-      # Free up space before pulling a new image
+
+
+      - name: Stop and Remove Existing Container
+        run: |
+          docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment || true
+ 
       - name: Clean Docker Space
         run: |
           docker system prune -a -f
           docker volume prune -f
+    
 
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -90,10 +96,6 @@ jobs:
       - name: Pull the Latest Image
         run: |
           docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-
-      # - name: Stop and Remove Existing Container
-      #   run: |
-      #     docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment || true
 
 
       - name: Run Docker Image
