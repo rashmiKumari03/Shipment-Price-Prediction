@@ -10,7 +10,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-
 class Cost_Model:
 
     def __init__(self, preprocessing_object: object, trained_model_object: object):
