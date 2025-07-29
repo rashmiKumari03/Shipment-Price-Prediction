@@ -62,7 +62,7 @@ jobs:
 
       - name: Clean up dangling Docker images and cache (safe after push)
         run: |
-          echo "Cleaning up unused Docker data..."
+          echo "Cleaning up unused Docker data... "
           docker system prune -af --volumes || true
 
   deployment:    
