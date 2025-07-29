@@ -79,10 +79,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Stop and Remove Existing Container (if running)
-        run: |
-          docker ps -a --format '{{.Names}}' | grep -Eq '^shipment$' && \
-            docker stop shipment && docker rm shipment || echo "No existing container found"
+      # - name: Stop and Remove Existing Container (if running)
+      #   run: |
+      #     docker ps -a --format '{{.Names}}' | grep -Eq '^shipment$' && \
+      #       docker stop shipment && docker rm shipment || echo "No existing container found"
 
       - name: Clean Docker Space
         run: |
