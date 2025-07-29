@@ -78,6 +78,6 @@ S3_MODEL_NAME = "Shipping_Price_Prediction_Model.pkl"  # Both Names Model_filena
 S3_TO_LOCAL = "S3_Best_Model_Artifacts"
 
 # Constants for Webpage
-APP_HOST = "0.0.0.0"
+APP_HOST = "127.0.0.1"
 APP_PORT = 8080
 
