@@ -64,7 +64,6 @@ jobs:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -90,11 +89,6 @@ jobs:
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           docker pull $IMAGE_URI
 
-      # - name: Stop and Remove Existing Container (if any)
-      #   run: |
-      #     docker ps -a --format '{{.Names}}' | grep -Eq '^shipment$' && \
-      #     docker stop shipment && docker rm shipment || echo "No existing container"
-
       - name: Run Docker Container
         env:
           IMAGE_URI: ${{ env.IMAGE_URI }}
@@ -115,7 +109,6 @@ jobs:
       - name: Show Running Containers
         run: docker ps -a
 
-      # Clean up space AFTER confirming success
       - name: Clean Docker Space
         if: always()
         run: |
