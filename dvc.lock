@@ -137,3 +137,28 @@ stages:
       hash: md5
       md5: fa17d6e8c1b635223561f8b84c388af6
       size: 10832
+  s3_to_local_model:
+    cmd: python -m src.Shipment_Price_Prediction.components.s3_to_local_model
+    deps:
+    - path: src/Shipment_Price_Prediction/components/s3_to_local_model.py
+      hash: md5
+      md5: fd62ad55a65736721f089f96b949a561
+      size: 3578
+    - path: src/Shipment_Price_Prediction/configuration/s3_operation.py
+      hash: md5
+      md5: 16afaa8d329f5ff10f374a12c2e1ce6b
+      size: 9975
+    - path: src/Shipment_Price_Prediction/entity/config_entity.py
+      hash: md5
+      md5: 4792b9c1dd7eca3d968299235edc121a
+      size: 8066
+    - path: src/Shipment_Price_Prediction/utils/main_utils.py
+      hash: md5
+      md5: fa17d6e8c1b635223561f8b84c388af6
+      size: 10832
+    outs:
+    - path: Artifacts/S3_Best_Model_Artifacts
+      hash: md5
+      md5: d6d3419bcd8510037956af59606881cf.dir
+      size: 5164102
+      nfiles: 1
