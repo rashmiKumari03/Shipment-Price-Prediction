@@ -60,12 +60,17 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
+      - name: Clean up dangling Docker images and cache (safe after push)
+        run: |
+          echo "Cleaning up unused Docker data..."
+          docker system prune -af --volumes || true
+
   deployment:    
-    name : Continuous-Deployment
+    name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Configure AWS credentials
@@ -79,16 +84,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       
-      - name: Pull latest image
+      - name: Pull latest image from ECR
         run: |
           docker pull ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      # Optional: Stop and remove existing container
-      # - name: Stop and remove container if running
-      #   run: |
-      #     docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment
+      - name: Stop and remove existing container (if running)
+        run: |
+          docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment || true
 
-      - name: Run Docker Image to serve users
+      - name: Run Docker container
         run: |
           docker run -d -p 8080:8080 \
             --name=shipment \
@@ -98,6 +102,7 @@ jobs:
             -e MONGO_DB_URL="${{ secrets.MONGO_DB_URL }}" \
             ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
-      - name: Clean previous images and containers
+      - name: Optional: Remove unused Docker images and containers
         run: |
-          docker system prune -f
+          echo "Performing cleanup on self-hosted runner..."
+          docker system prune -af --volumes || true

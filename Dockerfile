@@ -1,13 +1,22 @@
 FROM python:3.9-slim
 
-RUN apt update -y && apt install awscli -y
+# Install only what's necessary and clean up afterward
+RUN apt-get update && \
+    apt-get install -y awscli && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-COPY . /app
+# Copy only needed files
+COPY . .
 
-RUN pip install -r requirements.txt
+# Install dependencies efficiently
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Expose port
 EXPOSE 8080
 
+# Run the app
 CMD ["python3", "app.py"]
