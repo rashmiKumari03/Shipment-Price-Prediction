@@ -1,4 +1,4 @@
-name: workflow
+name: Shipment CI/CD Workflow
 
 on:
   push:
@@ -11,106 +11,73 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: ap-south-1
+  REPOSITORY_NAME: shipment
+  IMAGE_TAG: latest
+
 jobs:
-  integration:
-    name: Continuous Integration
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Lint Code
-        run: echo "Linting repository"
-
-      - name: Run unit tests
-        run: echo "Running unit tests"
 
   build-and-push-ecr-image:
-    name: Continuous Delivery
-    needs: integration
+    name: Build and Push Docker Image to ECR
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Install Utilities
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq unzip
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, Tag, and Push Image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-          IMAGE_TAG: latest
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-  deployment:
-    name: Continuous Deployment
-    needs: build-and-push-ecr-image
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<GITHUB_OIDC_ROLE>
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Pull the Latest Image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-          IMAGE_TAG: latest
+      - name: Set up Docker image URI
+        id: image
+        run: echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_URI .
+
+      - name: Push Docker Image to ECR
+        run: docker push $IMAGE_URI
+
+  deployment:
+    name: Deploy to EC2
+    needs: build-and-push-ecr-image
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<GITHUB_OIDC_ROLE>
+          aws-region: ${{ env.AWS_REGION }}
+
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker image URI
+        run: echo "IMAGE_URI=123456789012.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+
+      - name: Pull Latest Image from ECR
+        run: docker pull $IMAGE_URI
+
+      # - name: Stop and Remove Existing Container (if running)
+      #   run: |
+      #     docker stop shipment_container || true
+      #     docker rm shipment_container || true
+
+      - name: Run New Container
         run: |
-          IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-          docker pull $IMAGE_URI
+          docker run -d --name shipment_container -p 8080:8080 $IMAGE_URI
 
-      - name: Run Docker Container
-        env:
-          IMAGE_URI: ${{ env.IMAGE_URI }}
+      - name: Final Cleanup (Safe)
         run: |
-          docker run -d -p 8080:8080 \
-            --name=shipment \
-            -e MONGO_DB_URL="${{ secrets.MONGO_DB_URL }}" \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e AWS_REGION="${{ secrets.AWS_REGION }}" \
-            "$IMAGE_URI"
-
-      - name: Show Docker Logs
-        run: |
-          echo "Logs from the container (useful for debugging):"
-          docker logs shipment || true
-
-      - name: Show Running Containers
-        run: docker ps -a
-
-      - name: Clean Docker Space
-        if: always()
-        run: |
-          docker system prune -a -f
-          docker volume prune -f
+          docker image prune -f
+          docker builder prune -f
