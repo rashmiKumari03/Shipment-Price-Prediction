@@ -64,6 +64,7 @@ jobs:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -79,16 +80,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # - name: Stop and Remove Existing Container (if running)
-      #   run: |
-      #     docker ps -a --format '{{.Names}}' | grep -Eq '^shipment$' && \
-      #       docker stop shipment && docker rm shipment || echo "No existing container found"
-
-      - name: Clean Docker Space
-        run: |
-          docker system prune -a -f
-          docker volume prune -f
-
       - name: Pull the Latest Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -98,6 +89,11 @@ jobs:
           IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           docker pull $IMAGE_URI
+
+      # - name: Stop and Remove Existing Container (if any)
+      #   run: |
+      #     docker ps -a --format '{{.Names}}' | grep -Eq '^shipment$' && \
+      #     docker stop shipment && docker rm shipment || echo "No existing container"
 
       - name: Run Docker Container
         env:
@@ -111,7 +107,17 @@ jobs:
             -e AWS_REGION="${{ secrets.AWS_REGION }}" \
             "$IMAGE_URI"
 
-      - name: Verify container is running
+      - name: Show Docker Logs
         run: |
-          sleep 5
-          docker logs shipment
+          echo "Logs from the container (useful for debugging):"
+          docker logs shipment || true
+
+      - name: Show Running Containers
+        run: docker ps -a
+
+      # Clean up space AFTER confirming success
+      - name: Clean Docker Space
+        if: always()
+        run: |
+          docker system prune -a -f
+          docker volume prune -f
