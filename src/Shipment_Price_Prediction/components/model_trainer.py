@@ -264,16 +264,10 @@ if __name__ == "__main__":
         os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("MLFLOW_TRACKING_USERNAME")
         os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("MLFLOW_TRACKING_PASSWORD")
 
-        # Set URI via dagshub or manually
-        # username and password ==> This automatically sets the remote tracking URI and authenticates with DagsHub.
         dagshub.init(repo_owner='rashmiKumari03', repo_name='Shipment-Price-Prediction', mlflow=True)
         
-        # Initialize MLflow tracking with DagsHub — this sets the tracking URI internally
-        # No need to call mlflow.set_tracking_uri or run `mlflow ui` locally
-        # therefore in terminal no need to specifiy mlflow ui --port 5000
-        
-        # mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
-        # logging.info(f"MLFLOW URI: {os.getenv('MLFLOW_TRACKING_URI')}")
+        mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
+        logging.info(f"MLFLOW URI: {os.getenv('MLFLOW_TRACKING_URI')}")
         mlflow.set_experiment("Shipment_Price_Prediction_Tracking")
         
         print("USERNAME:", os.getenv("MLFLOW_TRACKING_USERNAME"))
