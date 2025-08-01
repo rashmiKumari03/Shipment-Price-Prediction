@@ -12,6 +12,7 @@ trial_app_runner.py
 trial_app.py
 README.md
 LICENSE
+mlruns/
 
 # Ignore compiled Python files
 __pycache__/
