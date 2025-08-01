@@ -1,9 +1,18 @@
-Artifacts
-shipment_env
-Documents
-FLowcharts
-Notebook
-ref_images
-.git
-Dataset
-logs
+# Ignore local and development folders
+Artifacts/
+shipment_env/
+Documents/
+FLowcharts/
+Notebook/
+ref_images/
+Dataset/
+logs/
+.git/
+trial_app_runner.py
+trial_app.py
+README.md
+LICENSE
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc

@@ -1,22 +1,24 @@
+# Using a lightweight Python image , Smaller images download and build faster.
 FROM python:3.9-slim
-
-# Install only what's necessary and clean up afterward
-RUN apt-get update && \
-    apt-get install -y awscli && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy only needed files
+# Copy only requirements first to leverage Docker caching , So that Docker will reuse the already-installed dependencies if requirements.txt hasn't changed. 
+COPY requirements.txt .
+
+# Install system dependencies and Python packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends awscli && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apt-get clean && \                          
+    rm -rf /var/lib/apt/lists/*         
+
+# Copy the rest of the application code
 COPY . .
 
-# Install dependencies efficiently
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose port
+# Expose the port your app runs on
 EXPOSE 8080
 
-# Run the app
+# Start the application
 CMD ["python3", "app.py"]
