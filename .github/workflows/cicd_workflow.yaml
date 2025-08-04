@@ -83,14 +83,13 @@ jobs:
 
       - name: Debug ECR tag
         run: |
-          echo "ECR_REGISTRY=${{ secrets.AWS_ECR_LOGIN_URI }}"
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}"
           echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_NAME }}"
-          echo "Tag: ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest"
+          echo "Tag: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest"
 
-      
       - name: Pull latest image from ECR
         run: |
-          docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{secrets.ECR_REPOSITORY_NAME}}:latest
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Stop and remove existing container (if running)
         run: |
@@ -105,7 +104,7 @@ jobs:
             -e AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} \
             -e AWS_REGION=${{secrets.AWS_REGION}} \
             -e MONGO_DB_URL="${{secrets.MONGO_DB_URL}}" \
-            ${{secrets.AWS_ECR_LOGIN_URI}}/${{secrets.ECR_REPOSITORY_NAME}}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Final Docker cleanup
         run: docker system prune -af --volumes || true
