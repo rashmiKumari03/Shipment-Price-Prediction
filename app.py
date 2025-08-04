@@ -266,4 +266,4 @@ async def predictRouteClient(request: Request):
 if __name__ == '__main__':
     warnings.filterwarnings("ignore")
     logging.info("Launching FastAPI app...")
-    uvicorn.run("app:app", host=APP_HOST, port=APP_PORT, reload=True)
+    uvicorn.run("app:app", host=APP_HOST, port=APP_PORT, reload=False)  # reload=True is fine for local and not while deployment.
