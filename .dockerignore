@@ -7,7 +7,6 @@ Notebook/
 ref_images/
 Dataset/
 logs/
-.git/
 trial_app_runner.py
 trial_app.py
 README.md
