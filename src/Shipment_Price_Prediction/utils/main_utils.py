@@ -9,7 +9,6 @@ from typing import Dict, Tuple, Optional
 from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.utils import all_estimators
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-import xgboost
 
 from src.Shipment_Price_Prediction.logger import logging
 from src.Shipment_Price_Prediction.exception import CustomException
@@ -85,9 +84,6 @@ class MainUtils:
     def get_base_model(model_name: str) -> object:
         logging.info("Entered get_base_model")
         try:
-            # For XGBoost models
-            if model_name.lower().startswith("xgb"):
-                return xgboost.__dict__.get(model_name, lambda: None)()
             # For sklearn models
             all_models = dict(all_estimators())
             return all_models.get(model_name)()
