@@ -50,12 +50,9 @@ drop_columns:
 # We will list these columns thinking of that we have dropped the columns we wanted..
 numerical_columns:
   - Line Item Quantity
-  - Line Item Value
   - Pack Price
   - Unit Price
   - Weight (Kilograms)
-  - Freight Cost (USD)
-  - Line Item Insurance (USD)
   - Unit of Measure (Per Pack)
 
 categorical_columns:
