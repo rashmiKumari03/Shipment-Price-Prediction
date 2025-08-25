@@ -185,7 +185,10 @@ class Model_Trainer:
                             os.remove(params_file)
 
                     # --------------------- Best Model ---------------------
-                    best_folder = "Best_Model_Artifact"
+                    
+                    best_model_name_clean = self.model_trainer_config.UTILS.sanitize_key(type(best_model_object).__name__)
+                    best_folder = f"Best_Model_Artifact_{best_model_name_clean}"
+
 
                     # Log model
                     mlflow.sklearn.log_model(best_model_object, artifact_path=best_folder)
