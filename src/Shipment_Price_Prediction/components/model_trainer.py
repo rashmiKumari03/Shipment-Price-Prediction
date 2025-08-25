@@ -149,7 +149,8 @@ class Model_Trainer:
                     # Tags for tracking
                     mlflow.set_tag("stage", "Model_Trainer")
                     mlflow.set_tag("pipeline", "Shipment_Price_Prediction")
-                    mlflow.set_tag("best_model", best_model_name)
+                    mlflow.set_tag("best_model", type(best_model_object).__name__)
+
 
                     # --------------------- Intermediate Models ---------------------
                     for score, model_obj, model_name, model_metrics in trained_models:
