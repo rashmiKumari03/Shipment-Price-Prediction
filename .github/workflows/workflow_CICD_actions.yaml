@@ -82,6 +82,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Debug ECR tag
+        run: |
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}"
+          echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_NAME }}"
+          echo "Tag: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest"
 
       - name: Pull latest image from ECR
         run: |
@@ -103,4 +108,4 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Final Docker cleanup
-        run: docker system prune -af --volumes || true
+        run: docker system prune -af --volumes || true but where is it
