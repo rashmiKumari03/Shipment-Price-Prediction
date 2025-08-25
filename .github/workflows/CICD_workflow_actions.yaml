@@ -82,11 +82,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Debug ECR tag
+      - name: Debug ECR registry
         run: |
           echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}"
-          echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_NAME }}"
-          echo "Tag: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest"
+
 
       - name: Pull latest image from ECR
         run: |
