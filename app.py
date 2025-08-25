@@ -168,12 +168,9 @@ async def predictRouteClient(request: Request):
         shipping_data = ShippingData(
             # Numerical Variables
             line_item_quantity=form.line_item_quantity,
-            line_item_value=form.line_item_value,
             pack_price=form.pack_price,
             unit_price=form.unit_price,
             weight=form.weight,
-            freight_cost=form.freight_cost,
-            line_item_insurance=form.line_item_insurance,
 
             # Categorical Variables
             country=form.country,
@@ -223,12 +220,9 @@ async def predictRouteClient(request: Request):
             # Numerical Variables
             "cost_value": cost_value,
             "line_item_quantity": form.line_item_quantity,
-            "line_item_value": form.line_item_value,
             "pack_price": form.pack_price,
             "unit_price": form.unit_price,
             "weight": form.weight,
-            "freight_cost": form.freight_cost,
-            "line_item_insurance": form.line_item_insurance,
 
             # Categorical Variables
             "country": form.country,

@@ -1,29 +1,53 @@
 train_model:
   LinearRegression:
-    fit_intercept: [true, false]
-    positive: [true, false]
-
+    fit_intercept:
+    - true
+    - false
+    positive:
+    - true
+    - false
   Ridge:
-    alpha: [0.01, 0.1, 1.0]
-    solver: [auto, lsqr]
-    max_iter: [5000]
-
+    alpha:
+    - 0.01
+    - 0.1
+    - 1.0
+    solver:
+    - auto
+    - lsqr
+    max_iter:
+    - 5000
   Lasso:
-    alpha: [0.01, 0.1, 1.0]
-    max_iter: [5000]
-
+    alpha:
+    - 0.01
+    - 0.1
+    - 1.0
+    max_iter:
+    - 5000
   ElasticNet:
-    alpha: [0.01, 0.1, 1.0]
-    l1_ratio: [0.3, 0.5, 0.7]
-    max_iter: [5000]
-
+    alpha:
+    - 0.01
+    - 0.1
+    - 1.0
+    l1_ratio:
+    - 0.3
+    - 0.5
+    - 0.7
+    max_iter:
+    - 5000
   SVR:
-    kernel: [rbf]
-    C: [1.0, 10.0]
-    gamma: ['scale', 'auto']
-
+    kernel:
+    - rbf
+    C:
+    - 1.0
+    - 10.0
+    gamma:
+    - scale
+    - auto
   AdaBoostRegressor:
-    n_estimators: [50, 150]
-    learning_rate: [0.01, 0.1]
-
-base_model_score: '0.0'
+    n_estimators:
+    - 50
+    - 150
+    learning_rate:
+    - 0.01
+    - 0.1
+base_model_score: '0.9158'

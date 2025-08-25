@@ -95,8 +95,7 @@ creating_target_columns:
 
 non_numeric_to_handle_columns:
   - Weight (Kilograms)
-  - Freight Cost (USD)
-
+ 
 
 target_column: Shipment Price  # Define the target explicitly
 
