@@ -9,8 +9,6 @@ seaborn                # Statistical data visualization library built on matplot
 
 # Machine Learning
 scikit-learn           # Comprehensive machine learning library for classification, regression, and clustering.
-xgboost                # Optimized gradient boosting library for efficient model training on structured data.
-catboost               # Gradient boosting library that handles categorical features automatically.
 category-encoders      # Provides various encoding techniques for categorical variables in ML models.
 
 # To load the envirnoment var.

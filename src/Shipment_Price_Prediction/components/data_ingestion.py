@@ -371,8 +371,11 @@ class Data_Ingestion:
             logging.info("Creating target column 'Shipment Price' in cleaned dataset...")
             cleaned_data = self.create_target_column(cleaned_data)
             logging.info(f"Cleaned dataset with 'Shipment Price' column:\n {cleaned_data.head()}")
-
             
+            
+            # To Avoid Data Leakage : Removing the columns which created the Shipment Price.
+            cleaned_data = cleaned_data.drop(columns=self.data_ingestion_config.LEAKAGE_COLS , errors='ignore')
+        
             
             # Splitting the data as train set and test set
             self.split_data_as_train_test(cleaned_data)
