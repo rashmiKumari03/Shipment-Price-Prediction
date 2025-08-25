@@ -14,12 +14,9 @@ class ShippingData:
     
     def __init__(self,
                  line_item_quantity: int,
-                 line_item_value: float,
                  pack_price: float,
                  unit_price: float,
                  weight: float,
-                 freight_cost: Optional[float] = None,
-                 line_item_insurance: Optional[float] = None,
                  unit_of_measure: Optional[str] = None,
                  country: str = None,
                  managed_by: Optional[str] = None,
@@ -41,12 +38,9 @@ class ShippingData:
 
                 # Numerical Inputs (8)
                 self.line_item_quantity = line_item_quantity
-                self.line_item_value = line_item_value
                 self.pack_price = pack_price
                 self.unit_price = unit_price
                 self.weight = weight
-                self.freight_cost = freight_cost
-                self.line_item_insurance = line_item_insurance
                 self.unit_of_measure = unit_of_measure
 
                 # Categorical Inputs (14)
@@ -101,12 +95,9 @@ class ShippingData:
                 "Delivery Recorded Date": [self.delivery_recorded_date],
 
                 "Line Item Quantity": [self.line_item_quantity],
-                "Line Item Value": [self.line_item_value],
                 "Pack Price": [self.pack_price],
                 "Unit Price": [self.unit_price],
                 "Weight (Kilograms)": [self.weight],
-                "Freight Cost (USD)": [self.freight_cost],
-                "Line Item Insurance (USD)": [self.line_item_insurance],
                 "Unit of Measure (Per Pack)": [self.unit_of_measure]
             }
             
