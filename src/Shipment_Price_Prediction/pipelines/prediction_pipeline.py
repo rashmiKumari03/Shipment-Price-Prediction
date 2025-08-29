@@ -66,6 +66,7 @@ class ShippingData:
                 # Binary Input (1)
                 self.first_line_designation = first_line_designation
                 
+                
     def get_data(self) -> Dict:
         """
         Method Name : get_data
@@ -127,6 +128,28 @@ class CostPredictor:
     def __init__(self):
         self.s3 = S3_Operation()
         self.bucket_name = BUCKET_NAME
+        self.log_file = os.path.join("Artifacts", "Log_Prediction", "prediction_logs.csv")
+        os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+        
+        
+    # Its a choice...But beneficial to use.
+    def log_prediction(self, X: DataFrame, prediction: float):
+        """
+        This method is just to log the input + prediction + timestamp into a local CSV
+        """
+        try:
+            log_data = X.copy()
+            log_data["Predicted Cost"] = prediction
+            log_data["Timestamp"] = datetime.now()
+            
+            if not os.path.exists(self.log_file):
+                log_df.to_csv(self.log_file, index=False)
+            else:
+                log_df.to_csv(self.log_file, mode="a", index=False, header=False)
+
+            logging.info("Prediction logged successfully into local CSV")
+        except Exception as e:
+            logging.error(f"Logging failed: {e}")
         
     def predict(self, X: DataFrame) -> float:
         """
@@ -144,13 +167,16 @@ class CostPredictor:
             result = best_model.prediction(X)
             final_cost_result = np.expm1(result)
             logging.info("Successfully made predictions")
-            logging.info(f"Result is based on prediction in model_predictor: {final_cost_result}")
+            logging.info(f"Prediction result: {final_cost_result}")
+
+            # Calling the method to log the prediction output.
+            self.log_prediction(X, float(final_cost_result[0]))
             
-            # Check if result is a list or array-like
-            if isinstance(result, (list, np.ndarray)) and len(result) > 0:
-                return result[0]
-            elif isinstance(result, float):  # If result is a single float value
-                return result
+            # Checking if result is a list or array-like
+            if isinstance(final_cost_result, (list, np.ndarray)) and len(final_cost_result) > 0:
+                return float(final_cost_result[0])
+            elif isinstance(final_cost_result, float):  
+                return final_cost_result
             else:
                 logging.warning("Prediction result is empty or not in expected format.")
                 return None
