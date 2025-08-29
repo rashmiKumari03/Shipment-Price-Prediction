@@ -164,13 +164,6 @@ The primary costs involved in this project include:
 
 -----------------------------------------------------------------------------------
 
-## FlowCharts:
-
-### 1. DATA INGESTION PIPELINE
-![Data Ingestion Pipeline](Flowcharts/Data_Ingestion_Pipeline.drawio.svg)
-
-
-
 
 ## Creation:
 ![alt text](ref_images/flow_2.png)
@@ -195,26 +188,7 @@ The primary costs involved in this project include:
 
 ![alt text](ref_images/dashboard.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+----------------------------------------
 
 ## 🚀 **Deployment Strategy**
 
@@ -310,7 +284,7 @@ Using this dataset, logistics companies can address several key business problem
 
 ### 🎯**Prerequisites**  
 - Basic understanding of machine learning and data preprocessing.  
-- Familiarity with Python libraries like Pandas, Scikit-learn, and XGBoost.
+- Familiarity with Python libraries like Pandas, Scikit-learn.
 
 ---
 
