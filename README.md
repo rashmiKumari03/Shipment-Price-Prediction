@@ -1,12 +1,6 @@
-# 📦 **Shipment Price Prediction**  
+# 📦 **Shipment Price Prediction : SmartShip**  
 
-![alt text](ref_images/shipment_image.jpg)
-----
-
-
-![alt text](ref_images/shipment.png)
-
-
+<img src="ref_images/shipment.png" alt="Shipment Architecture" width="70%"/>
 
 
 ---
