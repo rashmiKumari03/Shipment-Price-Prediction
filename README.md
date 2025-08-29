@@ -190,6 +190,12 @@ The primary costs involved in this project include:
 
 ----------------------------------------
 
+### Tech Stack & tools:
+
+![alt text](ref_images/tech_stack.png)
+
+---------------------------------------
+
 ## 🚀 **Deployment Strategy**
 
 ### **Tools and Platforms**
