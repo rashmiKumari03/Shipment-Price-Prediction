@@ -193,7 +193,7 @@ The primary costs involved in this project include:
 
 ------------------------------------
 
-![alt text](ref_images/dashboards.png)
+![alt text](ref_images/dashboard.png)
 
 
 
