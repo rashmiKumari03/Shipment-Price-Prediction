@@ -101,7 +101,7 @@ The supply chain analytics market is growing at an expected Compound Annual Grow
 
 #### 🎯**Approach**
 
-The approach follows a classical machine learning pipeline:
+Classical machine learning pipeline:
 1. **Data Exploration:** Analyzing the dataset to understand the underlying patterns.
 2. **Data Cleaning:** Handling missing values and correcting inconsistencies in the data.
 3. **Feature Engineering:** Identifying and creating new features that contribute to the price prediction.
@@ -128,7 +128,6 @@ The solution starts with data preprocessing and feature engineering, followed by
 - Model training using algorithms such as Random Forest, XGBoost, and Neural Networks.
 - Evaluation of models based on metrics such as RMSE (Root Mean Squared Error) and R-squared.
 
-This walkthrough will provide a clear understanding of how the code is implemented and how data flows through the system.
 
 #### 🎯**Tour to Architecture**
 
@@ -136,6 +135,7 @@ The architecture consists of:
 1. **Data Ingestion:** A pipeline that fetches and preprocesses raw data.
 2. **Feature Engineering:** Extracting important features for model training.
 3. **Model Training and Evaluation:** Using different machine learning algorithms to predict shipment prices.
+4. **Experiment Tracking & Data Versioning:** Using mlflow and DagsHub for the experiment tracking and DVC for data versioning.
 4. **Deployment:** Deploying the trained model into a production environment where it can be used to predict prices in real-time.
 
 The architecture is modular and scalable, which means new features and models can be easily integrated in the future.
@@ -153,28 +153,9 @@ The primary costs involved in this project include:
 
 #### 🎯**Folder Structure Overview**
 
-The project follows a modular and organized structure to ensure easy maintenance and collaboration. Below is an overview of the folder structure:
+![alt text](ref_images/folderstru.drawio.png)
 
-```plaintext
-├── components
-│   ├── data_ingestion.py          # Handles data fetching and storage
-│   ├── data_validation.py         # Ensures data consistency and quality
-│   ├── data_transformation.py     # Prepares data for modeling
-│   ├── model_training.py          # Implements machine learning models
-│   ├── model_evaluation.py        # Evaluates model performance
-│   ├── model_pusher.py            # Deploys the trained model
-├── pipelines
-│   ├── training_pipeline.py       # Automates the training process
-│   ├── prediction_pipeline.py     # Automates the prediction workflow
-├── frontend
-│   ├── templates                 # Frontend interface for users
-├── configurations                 # Manages settings and parameters
-├── constants                      # Defines static variables
-├── entity                         # Represents dataset entities
-├── utils                          # Common utility functions
-├── logger                         # Centralized logging system
-├── exception                      # Robust error handling
-```
+
 
 **Explanation:**
 - **components:** Contains scripts for data handling (ingestion, validation, transformation), machine learning tasks (training, evaluation), and model deployment.
@@ -183,7 +164,6 @@ The project follows a modular and organized structure to ensure easy maintenance
 - **configurations, constants:** Stores configurations and constants used throughout the project.
 - **utils, logger, exception:** Includes utility functions, logging, and error handling to improve maintainability.
 
-This organized structure ensures that each module can be tested, updated, and maintained independently.
 
 -----------------------------------------------------------------------------------
 
@@ -195,6 +175,28 @@ This organized structure ensures that each module can be tested, updated, and ma
 
 
 
+## Creation:
+![alt text](ref_images/flow_2.png)
+
+-------------------------------------
+
+![alt text](ref_images/flow_1.jpg)
+
+-------------------------------------
+
+![alt text](ref_images/Home.png)
+
+------------------------------------
+
+![alt text](ref_images/about.png)
+
+------------------------------------
+
+![alt text](ref_images/service.png)
+
+------------------------------------
+
+![alt text](ref_images/dashboards.png)
 
 
 
