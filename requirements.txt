@@ -14,6 +14,10 @@ category-encoders      # Provides various encoding techniques for categorical va
 # To load the envirnoment var.
 dotenv 
 
+
+# Model Evaluation
+evidently==0.1.45.dev0          # Tool for monitoring ML models in production, assessing performance over time.
+
 # Web Development
 fastapi                # Modern web framework for building APIs quickly with Python type hints.
 
@@ -47,6 +51,6 @@ dvc
 
 # Miscellaneous
 from-root              # Simplifies imports from the root directory of a project.
-
+ 
 # Development
 # -e .                 # Editable install of the current package (useful during development).
