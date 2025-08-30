@@ -55,12 +55,9 @@ class DataForm:
 
         # Numerical Variables
         self.line_item_quantity: Optional[int] = None
-        self.line_item_value: Optional[float] = None
         self.pack_price: Optional[float] = None
         self.unit_price: Optional[float] = None
         self.weight: Optional[float] = None
-        self.freight_cost: Optional[float] = None
-        self.line_item_insurance: Optional[float] = None
 
         # Categorical Variables
         self.country: Optional[str] = None
@@ -92,12 +89,9 @@ class DataForm:
 
         # Numerical Variables
         self.line_item_quantity = self.UTILS.safe_int(form.get("line_item_quantity", "0"))
-        self.line_item_value = self.UTILS.safe_float(form.get("line_item_value", "0.0"))
         self.pack_price = self.UTILS.safe_float(form.get("pack_price", "0.0"))
         self.unit_price = self.UTILS.safe_float(form.get("unit_price", "0.0"))
         self.weight = self.UTILS.safe_float(form.get("weight", "0.0"))
-        self.freight_cost = self.UTILS.safe_float(form.get("freight_cost", "0.0"))
-        self.line_item_insurance = self.UTILS.safe_float(form.get("line_item_insurance", "0.0"))
 
         # Categorical Variables
         self.country = form.get("country", "").strip()
