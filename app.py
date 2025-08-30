@@ -203,7 +203,7 @@ async def predictRouteClient(request: Request):
         if isinstance(predicted_log_cost, (list, np.ndarray)):
             predicted_log_cost = predicted_log_cost[0]
 
-        cost_value = round(np.expm1(float(predicted_log_cost)), 2)  
+        cost_value = round(float((predicted_log_cost)), 2)  
 
         logging.info(f"Predicted cost is: {cost_value}")
 
